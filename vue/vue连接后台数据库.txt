@@ -1,0 +1,43 @@
+用代理解决
+config/index.js
+proxyTable: {//添加
+      '/api': {
+        target: 'http://localhost:8086/',
+        changeOrigin: true,
+        pathRewrite: {'^/api': ''}
+      },
+    },
+//resource 连接后台
+const url = `api/GymManagementSystem/register`
+this.$http.post(url,user)
+            .then(response => {
+              // 成功了, 更新数据(成功)
+              index = response.data
+              alert(response.data)
+            })
+            .catch(error => {
+              // 失败了, 更新数据(失败)
+              alert("服务器异常")
+            })
+
+后台获取数据：
+//用String 对象可以接收JSON数据
+//spingMVC
+	@ResponseBody()
+	@RequestMapping(value="/register", method=RequestMethod.POST)
+	public String test(@RequestBody(required=true) String user) {
+		System.out.println("hello");
+		if(user != null) {
+			System.out.println(user);
+		}
+		
+		JSONObject obj = JSONObject.fromObject(user);//将json字符串转换为json对象
+//		将json对象转换为java对象
+		User user1 = (User)JSONObject.toBean(obj,User.class);//将建json对象转换为java对象
+		
+		System.out.println(user1);
+		
+		userService.saveAndFlush(user1);
+		
+		return "1";
+	}

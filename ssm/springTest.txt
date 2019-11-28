@@ -1,0 +1,104 @@
+导入 spring-test jar 包
+
+
+//测试数据源
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="classpath:applicationContext.xml")
+public class SSMTest {
+
+	@Autowired
+	private EmployeeMapper employeeMapper;
+	
+	@Autowired
+	private DepartmentMapper departmentMapper;
+	
+	@Autowired
+	private SqlSession sqlSession;
+	
+	@Test
+	public void testInsert() {
+//		System.out.println(departmentMapper);
+		
+//		departmentMapper.insertSelective(new Department(null, "销售部"));
+		
+//		employeeMapper.insert(new Employee(null, "tom", "1", "tom@tan.com", 1, null));
+		
+		//批量插入
+		EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+		
+		for(int i=1; i < 1000; i++) {
+			Random rd = new Random();
+			int num  = rd.nextInt(2);//取得0，1 随机数
+			String uid = UUID.randomUUID().toString().substring(0, 5) + i;
+			mapper.insertSelective(new Employee(null, uid, num+"", uid + "@tan.com", num+1, null));
+		}
+		
+	}
+	
+	private ApplicationContext ioc = new ClassPathXmlApplicationContext("applicationContext.xml");
+	
+	@Test
+	public void testMbg() throws Exception {
+		List<String> warnings = new ArrayList<String>();
+		boolean overwrite = true;
+		File configFile = new File("mbg.xml");
+		ConfigurationParser cp = new ConfigurationParser(warnings);
+		Configuration config = cp.parseConfiguration(configFile);
+		DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+		MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config,
+				callback, warnings);
+		myBatisGenerator.generate(null);
+	}
+	
+	@Test
+	public void testConn() throws SQLException {
+		DataSource dataSource =  ioc.getBean(DataSource.class);
+		Connection conn = dataSource.getConnection();
+		System.out.println(conn);
+	}
+}
+
+模拟页面请求
+//模拟mvc 页面请求操作
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations = {"classpath:applicationContext.xml",
+		 "file:src/main/webapp/WEB-INF/dispatcherServlet-servlet.xml"})
+public class MvcTest {
+
+	@Autowired
+	private WebApplicationContext context;
+	
+	private MockMvc mockMvc;
+	
+	@Before//org.junit.Before;
+	public void initMockMvc() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+	}
+	
+	@Test
+	public void testGetEmps() throws Exception {
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/emps").param("pn", "5"))
+				.andReturn();
+		
+		MockHttpServletRequest request = result.getRequest();
+		
+		PageInfo pageInfo = (PageInfo) request.getAttribute("pageInfo");
+		
+		System.out.println("总页码： " + pageInfo.getPages());
+		System.out.println("当前页码：" + pageInfo.getPageNum());
+		System.out.println("当前页的记录数：" + pageInfo.getPageSize());
+		System.out.println("总记录数：" + pageInfo.getTotal());
+		System.out.println("连续显示的页码：" );
+		int[] pages = pageInfo.getNavigatepageNums();
+		for (int i : pages) {
+			System.out.println(i);
+		}
+		
+		//得到当页数据
+		List<Employee> list = pageInfo.getList();
+		for (Employee emp: list) {
+			System.out.println(emp);
+		}
+	}
+}

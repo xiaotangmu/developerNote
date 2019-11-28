@@ -1,0 +1,19 @@
+在 spring-applicationContext.xml 中配置可以批量操作的sqlSession
+
+<!-- 配置一个可以执行批量的sqlSession -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+		<constructor-arg name="executorType" value="BATCH"></constructor-arg>
+	</bean>
+
+
+执行批量操作 sqlSession.getMapper(EmployeeMapper.class); 再用 for 循环插入
+//批量插入
+		EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+		
+		for(int i=1; i < 1000; i++) {
+			Random rd = new Random();
+			int num  = rd.nextInt(2);//取得0，1 随机数
+			String uid = UUID.randomUUID().toString().substring(0, 5) + i;
+			mapper.insertSelective(new Employee(null, uid, num+"", uid + "@tan.com", num+1, null));
+		}

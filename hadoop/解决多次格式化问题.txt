@@ -1,0 +1,7 @@
+namenode 与datanode clusterID 不相等
+修改version 中的clusterID（其中一台机）
+	（slave : hadoop data /dfs/data/Version）
+	 （master: hadooop data/dfs/name/Version）
+注：操作前先关闭 hadoop
+
+使slave 和 master 的 version 下的clusterID 相等 ，重新启动 hadoop 即可

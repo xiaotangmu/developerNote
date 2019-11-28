@@ -1,0 +1,2 @@
+别忘了先给 Set 初始化，再用 .Size() 等取操作
+Set<User> users = new HashSet<User>();

@@ -1,0 +1,4 @@
+在部署好外部tomcat 并添加了工程 （war）后，
+
+遇到问题：启动了tomcat，但springboot 没有跟着启动
+解决：点击右框边 Maven project 打开工程下的lifecycle -> 先运行 compile 再运行 package

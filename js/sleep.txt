@@ -1,0 +1,10 @@
+function sleep(numMillis){
+			var now = new Date();
+			var exitTime = now.getTime() + numMillis;
+			while(1){
+				now = new Date();
+				if(now.getTime() > exitTime){
+					return;
+				}
+			}
+		}

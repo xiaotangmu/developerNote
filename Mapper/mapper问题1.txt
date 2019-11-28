@@ -1,0 +1,10 @@
+
+整合spring boot时操作数据库时报错Caused by: java.lang.InstantiationException: tk.mybatis.mapper.provider.base.B
+
+MapperScan时导错了包，此时应该导入的包是
+
+tk.mybatis.spring.annotation.MapperScan，而不是
+
+org.mybatis.spring.annotation.MapperScan
+
+参考：https://blog.csdn.net/u__f_o/article/details/82756701

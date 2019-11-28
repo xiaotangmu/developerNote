@@ -1,0 +1,16 @@
+会话
+	可以跨页得到数据
+	在一个请求中 HttpSession session
+
+	session.setAttribute("user", user);
+	在页面直接
+		${user.userName} 
+
+
+退出系统返回到login页面
+	//退出登录，清空session 数据
+	@RequestMapping("logOut")
+	public String logout(HttpSession session) {
+		session.invalidate();//使原来数据无效，可理解为清空数据
+		return "redirect:login";
+	}

@@ -1,0 +1,5 @@
+校验格式可以查看 jquery 文档 其他 的正则表达式
+
+var email = $("#email_add_input").val();
+var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+if(!regEmail.test(email)){}

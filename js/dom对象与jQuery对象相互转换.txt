@@ -1,0 +1,5 @@
+var v=document.getElementById("v");  //DOM对象 
+var $v=$(v);    //jQuery对象 
+
+var $v=$("#v");  //jQuery对象 
+var v=$v.get(0);   //DOM对象

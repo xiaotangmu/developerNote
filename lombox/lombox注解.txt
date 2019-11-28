@@ -1,0 +1,156 @@
+
+要使用lombox，先给bean 类序列化
+
+一、简述
+
+lombok是一款在Java开发中简洁化代码的插件工具。使用lombok注解，目的就在于不用再去写一些反复的代码（如Getter，Setter，Constructor等）。
+
+首先，用到的几个注解：
+
+    @Setter 和 @Getter
+    @Data
+    @Log(这是一个泛型注解，具体有很多种形式)
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @NonNull
+    @Cleanup
+    @ToString
+    @RequiredArgsConstructor
+    @Value
+    @SneakyThrows
+    @Synchronized
+
+二、@Getter和@Setter
+
+该注解使用在类或者属性上。生成的getter遵循布尔属性的约定。例如：boolean类型的flag，getter方法为 isFlag() 而不是 getFlag()。在使用该注解时，会默认生成一个无参构造，和对应的 getter 和 setter 方法 。
+三、@NonNull
+
+该注解使用在属性上，该注解用于属性的非空检查，当放在setter方法的字段上，将生成一个空检查，如果为空则抛出NullPointerException。该注解会默认是生成一个无参构造。
+四、@ToString
+
+该注解使用在类上，该注解默认生成任何非静态字段以名称-值的形式输出。
+
+    如果需要可以通过注释参数includeFieldNames来控制输出中是否包含的属性名称。
+    可以通过exclude参数中包含字段名称，可以从生成的方法中排除特定字段。
+    可以通过callSuper参数控制父类的输出。
+
+注意：父类也要有toString方法，不然打印的是对象内存地址
+五、@EqualsAndHashCode
+
+该注解使用在类上，会同时生成equals和hashCode。注意继承关系的时候该注解的使用。存在继承关系需要设置callSuper参数为true。
+六、@Data
+
+该注解使用在类上，该注解会提供Getter、Setter、equals、canEqual、hasCode和toString等方法，注解后在编译时会自动加进去。该注解是最常用的注解，本质上使用@Data注解，类默认@ToString和@EqualsAndHashCode以及每个字段都有@Setter和@Getter。该注解也会生成一个公共构造函数，可以将任何@NonNull和final字段作为参数。
+
+虽然@Data注解非常有用，但是它没有与其他注解相同的控制粒度。@Data提供了一个可以生成静态工厂的单一参数，将staticConstructor参数设置为所需要的名称，Lombok自动生成的构造函数设置为私有，并提供公开的给定名称的静态工厂方法。
+七、@AllArgsConstructor
+
+该注解使用在类上。该注解提供一个全参数的构造方法，默认不提供无参构造。
+八、@NoArgsConstructor
+
+该注解使用在类上。使用后创建一个无参构造函数。
+九、@RequiredArgsConstructor
+
+该注解使用在类上。使用类中所有带有@NonNull注解的或者带有 final 修饰的成员变量生成对应的构造方法。
+十、 @Value
+
+这个注解用在类上。会生成含所有参数的构造方法，get 方法。此外还提供了equals、hashCode、toString 方法。
+
+注意：没有setter
+十一、@Cleanup
+
+该注解使用在属性前。该注解是用来保证分配的资源被释放。在本地变量上使用该注解，任何后续代码都将封装在try/finally中，确保当前作用于中的资源被释放。默认@Cleanup清理的方法为close，可以使用value指定不同的方法名称。
+十二、@Synchronized
+
+该注解使用在类或者实例方法上。Synchronized在一个方法上，使用关键字可能会导致结果和想要的结果不同，因为多线程情况下会出现异常情况。Synchronized
+关键字将在this示例方法情况下锁定当前对象，或者class讲台方法的对象上多锁定。这可能会导致死锁现象。一般情况下建议锁定一个专门用于此目的的独立锁，而不是允许公共对象进行锁定。该注解也是为了达到该目的。
+十三、@SneakyThrows
+
+该注解使用在方法上。该注解可以将方法中的代码用 try-catch 语句包裹起来，捕获异常并在 catch 中用 Lombok.sneakyThrow(e)把异常抛出，可以使用 @SneakyThrows(Exception.class)的形式指定抛出哪种异常。该注解需要谨慎使用。
+十四、Log(这是一个泛型注解，具体有很多种形式)
+
+注解在类上。有如下选择可用：
+
+//@CommonsLog
+private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(LogExample.class);
+//@JBossLog
+private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(LogExample.class);
+//@Log
+private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(LogExample.class.getName());
+//@Log4j
+private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(LogExample.class);
+//@Log4j2
+private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(LogExample.class);
+//@Slf4j
+private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LogExample.class);
+//@XSlf4j
+private static final org.slf4j.ext.XLogger log = org.slf4j.ext.XLoggerFactory.getXLogger(LogExample.class);
+
+默认情况下，记录器的主题（或名称）将是使用注释进行@Log注释的类的类名称。这可以通过指定topic参数来定制。例如：@XSlf4j(topic="reporting")。该类型注解可以满足不同的日志系统的日志使用，Lombok提供了一些自定义配置项可以参看官方说明文档。
+十五、@Builder Builder Pattern
+
+关于Builder较为复杂一些，Builder的作用之一是为了解决在某个类有很多构造函数的情况，也省去写很多构造函数的麻烦，在设计模式Design Pattern中的思想是：用一个内部类去实例化一个对象，避免一个类出现过多构造函数。
+十六、结语
+
+Lombok的目的是减少代码的重复编写，并提供比较好的解决方案。当然也存在一些争议性的注解，可以根据实际场景选择使用。
+
+作者：MChopin
+链接：https://www.jianshu.com/p/e2e91216fb13
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+lombok的@Accessors注解3个属性说明
+发布时间： 2019-02-27 21:13:58
+
+Accessors翻译是存取器。通过该注解可以控制getter和setter方法的形式。
+@Accessors(fluent = true)
+
+使用fluent属性，getter和setter方法的方法名都是属性名，且setter方法返回当前对象
+	-- 属性名调用 name()/name(int id) -- getter/setter(int)
+
+@Data
+@Accessors(fluent = true)
+class User {
+	private Integer id;
+	private String name;
+	
+	// 生成的getter和setter方法如下，方法体略
+	public Integer id(){}
+	public User id(Integer id){}
+	public String name(){}
+	public User name(String name){}
+}
+
+@Accessors(chain = true)
+
+使用chain属性，setter方法返回当前对象
+
+@Data
+@Accessors(chain = true)
+class User {
+	private Integer id;
+	private String name;
+	
+	// 生成的setter方法如下，方法体略
+	public User setId(Integer id){}
+	public User setName(String name){}
+}
+
+@Accessors(prefix = “f”)
+
+使用prefix属性，getter和setter方法会忽视属性名的指定前缀（遵守驼峰命名）
+
+@Data
+@Accessors(prefix = "f")
+class User {
+	private Integer fId;
+	private String fName;
+	
+	// 生成的getter和setter方法如下，方法体略
+	public Integer id(){}
+	public void id(Integer id){}
+	public String name(){}
+	public void name(String name){}
+}

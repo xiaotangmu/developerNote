@@ -1,0 +1,86 @@
+后台数据 ${}
+链接 @{}
+配置文件信息 #{}
+标签内设值 th:xx=""
+标签外设值 [[]]   [()]  转义  不转义
+
+链接携带参数信息 ('xx=xxx')
+th:href="@{/index.html(l='zh_CN')}" 
+此时地址是当前项目下的地址，不用再像以前那样声明 ${APP_PATH}
+
+th:href="@{add(id=${emp.id})}"
+
+th:src="@{/webjars/jquery/3.2.1/jquery.min.js}
+	别忘了webjars 前面的 /
+
+
+public class UserNotExistException extends RuntimeException{
+	
+	public UserNotExistException(){
+		super("用户不存在");
+	}
+}
+
+
+常用：
+th:属性="${}"
+循环
+<h4 th:each="user:${users}" th:text="${user}"></h4>
+判断
+<p th:if="1=1"></P>
+<input th:checked="${数据}=='1'" type="checkbox" />
+
+
+传值给 javascript -- 需要转义\'
+
+<a th:href="'javascript:a(\'' + ${hello} + '\');'">hello</a>
+此时单引号起到转义作用 最后就是a("str"); 传的是值不是参
+
+<script language="JavaScript">
+	function a(hello){
+		allert();
+	}
+</script>
+
+
+页面引入
+indexInner.html 同级thml文件
+引入整个部分
+<div th:include="indexInner"></div>
+
+页面公共部分的声明与引入（thymeleat）
+
+1. 两种方式声明方式
+1) th:fragement="xxx" 声明公共部分
+	此时利用上面方法引入
+
+2) 利用选择器声明公共部分，如：id="xx"
+	引用方式：如：
+	<div th:insert="~{模板名::#id}"
+	
+注：模板名 ： templates 下的 页面名称如login.html 页面的模板名为 login
+
+三种引入功能片段的th 属性：
+1）th:insert: 将公共片段整个插入到声明插入的元素中
+内容：
+	<div th:insert>
+		被引入的公共部分
+	</div>
+	
+2）th:replace: 将声明引入的元素替换为公共片段
+内容：
+	被引入的公共部分（div 被替换了）
+	
+3）th:include：将被引入的片段的内容包含进这个标签中
+	（只要其子标签）
+若被引用的公共部分为
+	<form th:fragment="xxx">
+		<input/>
+	</form>
+内容：
+	<div>
+		<input/>
+	</div>
+
+如果使用th:insert 等属性进行引入，可以不用写！{}
+而行内写法可以加上 [[~{}]] 	[(~{})]

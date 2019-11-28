@@ -1,0 +1,4 @@
+const users = JSON.parse('[{"name": "hello"}]') 这是数组格式
+对象格式： '{"name": "hello"}'
+
+后台直接返回 {"name": "hello"}， 前端接收到的是Object 对象，可以直接调用数据，response.data.name

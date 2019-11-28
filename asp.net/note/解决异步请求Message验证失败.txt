@@ -1,0 +1,11 @@
+问题：Message: "身份验证失败。", StackTrace: null, ExceptionType: "System.InvalidOperationException"}。
+
+解决：
+将APP-Start文件夹中的RouteConfig.cs文件做出如下更改：
+    
+public static void RegisterRoutes(RouteCollection routes)
+     {
+     var settings = new FriendlyUrlSettings();
+     settings.AutoRedirectMode = RedirectMode.Off;
+     routes.EnableFriendlyUrls(settings);
+     }

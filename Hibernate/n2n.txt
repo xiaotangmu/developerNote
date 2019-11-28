@@ -1,0 +1,103 @@
+多对多：双向一对多
+
+
+由user 维护不用保存authority，保存维护方就可以了，保存authority 会报错，
+对于authority中的users 对象也不需要add新的Authority, 完全操作维护方即可。
+
+注意：对象中注意实现 toString() 方法，不然可能会出现无限循环而出错。
+对象：（Set 不可重复, List 可重复）
+public class Book {
+
+	private Integer id;
+	private String title;
+	private double price;
+	
+	private Set<ShoppingCar> cars = new HashSet();
+	
+	
+	/...getter and setter ...
+}
+
+public class ShoppingCar {
+
+	private Integer id;
+	private String name;
+	
+	private Set<Book> books = new HashSet<>();
+	
+	/...getter and setter ...
+}
+
+*.hbm.xml 配置：
+Book.hbm.xml:
+<hibernate-mapping>
+    <class name="com.test.ssh.entities.Book" table="BOOKS">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="title" type="java.lang.String">
+            <column name="TITLE" />
+        </property>
+        <property name="price" type="double">
+            <column name="PRICE" />
+        </property>
+
+        <!-- 指向关联表格:  BOOKS_SHOPPINGCARS , 其中 key 中 column 是该对象的相关属性-->
+        <set name="cars" table="BOOKS_SHOPPINGCARS">
+            <key>
+                <column name="BOOK_ID" />
+            </key>
+            <!-- many 别写错了，写完 class， 别忘了自己的相关属性 column -->
+            <many-to-many class="com.test.ssh.entities.ShoppingCar" column="SHOPPINGCAR_ID"/>
+        </set>
+
+    </class>
+</hibernate-mapping>
+
+ShoppingCar.hbm.xml:
+<hibernate-mapping>
+    <class name="com.test.ssh.entities.ShoppingCar" table="SHOPPINGCARS">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+
+        <!-- n2n 在其中一个对象 set 属性中 设置 inverse="true" ，表示由该对象负责维护该关联表 -->
+         <set name="books" table="BOOKS_SHOPPINGCARS" inverse="true">
+            <key>
+                <column name="SHOPPINGCAR_ID" />
+            </key>
+            <many-to-many class="com.test.ssh.entities.Book" column="BOOK_ID"/>
+        </set>
+        
+        <!-- 使用 many-to-one 的方式来映射 1-1 关联关系 -->
+	<many-to-one name="account" class="com.test.ssh.entities.Account" 
+			column="ACCOUNT_ID" unique="true"></many-to-one>
+    </class>
+</hibernate-mapping>
+
+需要两边都添加了对方，才能 save：
+Book book = bookService.get(id);
+ShoppingCar car = shoppingCarService.get();
+
+car.getBooks().add(book);
+book.getCars().add(car);
+		
+bookService.saveOrUpdate(book);
+shoppingCarService.saveOrUpdate(car);
+
+如果用 List 实现关联，则需要在*.hml.xml 中更改 <set> 属性， 如下：
+
+<list name="books" table="BOOKS_SHOPPINGCARS" inverse="true" lazy="true">
+            <key>
+                <column name="SHOPPINGCAR_ID" />
+            </key>
+            <list-index column="ID"></list-index>
+            <many-to-many class="com.test.ssh.entities.Book" column="BOOK_ID"/> 
+</list>
+
+注意添加了  <list-index column="ID"></list-index>

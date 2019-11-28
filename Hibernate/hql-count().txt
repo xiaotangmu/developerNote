@@ -1,0 +1,3 @@
+String hql = "SELECT COUNT(*) FROM BookCar WHERE bookId = ? AND carId = ?";
+        Query query = getSession().createQuery(hql).setInteger(0, bookId).setInteger(1, carId);
+        return ((Long) query.iterate().next()).intValue();

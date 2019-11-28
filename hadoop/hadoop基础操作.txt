@@ -1,0 +1,39 @@
+﻿hadoop 基本操作
+2.重新进行格式化
+hadoop name -formate
+
+3.启动集群
+start-all.sh
+
+4.创造目录
+hadoop fs -mkdir /user
+hadoop fs -mkdir /user/root
+
+5上传文件
+hdfs dfs -put movie.csv /user/root/ 
+
+获取文件（下载文件）
+hadoop fs -get  README.txt   /本地路径
+
+
+
+启动hadoop 节点
+~/hadoop/sbin/start-all.sh (start-all.sh文件的运行)
+
+关闭hadoop 节点
+~/hadoop/sbin/stop-all.sh (stop-all.sh文件的运行)
+
+查看进程 jps
+
+
+查看 hadoop 磁盘
+hadoop dfsadmin -report
+
+
+
+
+
+
+
+
+

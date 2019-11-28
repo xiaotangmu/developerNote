@@ -1,0 +1,32 @@
+问题:
+
+form表单的enctype设置为multipart/form-data后，表单中除了文件后台能拿到，其他值后台都拿不到。
+
+知识点:
+
+一、application/x-www-form-urlencoded:
+
+1、表单中的enctype值如果不设置，则默认是application/x-www-form-urlencoded，它会将表单中的数据变为键值对
+
+的形式
+
+2、如果action为get，则将表单数据编码为(name1=value1&name2=value2…)，然后把这个字符串加到url后面，中间
+
+用?分隔
+
+3、如果action为post，浏览器把form数据封装到http body中，然后发送到服务器。
+
+二、text/plain：
+
+表单以纯文本形式进行编码
+
+三、multipart/form-data：
+
+1、当我们上传的含有非文本内容，即含有文件（txt、MP3等）的时候，需要将form的enctype设置为multipart/form-
+
+data。
+
+2、将表单中的数据变成二进制数据进行上传，所以这时候这时如果用request是无法直接获取到相应表单的值的
+————————————————
+版权声明：本文为CSDN博主「一只仰望天空的菜鸟」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/tuesdayma/article/details/78773437

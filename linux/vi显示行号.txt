@@ -1,0 +1,1 @@
+到vi或者vim编辑器的末行模式下，输入 set number 或者 set nu，按下回车就显示行号了

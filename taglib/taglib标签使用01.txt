@@ -1,0 +1,24 @@
+<s:if test="#request.books == null || #request.books.size() == 0">
+			没有书籍
+		</s:if>
+		<s:else>
+			<div class="box1">
+			<table id="content">
+			<s:iterator value="#request.thisPage4">
+				<tr height="50px">
+					<td width="40px">${id }</td>
+					<td width="100px">${title }</td>
+					<td width="150px">价格：${price }</td>
+					<td width="100px"><a href="shoppingCar-add?id=${id }">加入购物车</a></td>
+				</tr>
+			</s:iterator>
+			</table>
+			</div>
+			<a href="book-initPage" id="initPage">首页</a>
+			<a href="book-beforePage" id="beforePage">上一页</a>
+			<span id="thisPage">${page.thisPage }</span>
+			<a href="book-afterPage" id="afterPage">下一页</a>
+			<a href="book-endPage" id="endPage">尾页</a><br>
+			共 ${page.endPage } 页
+			&nbsp;&nbsp;跳转：<input name="jump" value="" size="1" width="10px"/>		
+		</s:else>

@@ -1,0 +1,5 @@
+this.announcements.sort(function (a, b) { //a, b 都为数组元素     this.announcements 是数组
+              let index1 = -a.id    //负数变为降序 ，数据直接比较为升序
+              let index2 = -b.id
+              return index1 - index2
+            })

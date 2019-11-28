@@ -1,0 +1,2 @@
+$(".right_ul>li").eq(index).find("input").attr("checked",false);
+ÕÒ.right_ul µÄµÚindex¸öli

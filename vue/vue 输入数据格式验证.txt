@@ -1,0 +1,6 @@
+validateJyh(glhm){//校验关联交易号
+        let reg = /^[A-Za-z0-9]{1,30}$/;
+        if(!reg.test(glhm)){
+          alert("请输入字母或数字组成的交易关联号");
+        }
+      },

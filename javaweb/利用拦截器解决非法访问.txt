@@ -1,0 +1,81 @@
+1. 没有登录，非法进入
+/**
+ * 登陆拦截器
+ * @author 18801
+ *
+ */
+public class LoginInterceptor implements HandlerInterceptor {
+
+	/**
+	 * 在控制器执行之前完成业务逻辑操作
+	 * 方法的返回值决定逻辑是否继续执行， true，表示继续执行， false, 表示不再继续执行。
+	 */
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		
+		// 判断当前用户是否已经登陆
+		HttpSession session = request.getSession();
+		User loginUser = (User)session.getAttribute("loginUser");//登录时配置的值
+		
+		if ( loginUser == null ) {
+			String path = session.getServletContext().getContextPath();
+			response.sendRedirect(path + "/login");
+			return false;	
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * 在控制器执行完毕之后执行的逻辑操作
+	 */
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 在完成视图渲染之后，执行此方法。
+	 */
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		
+	}
+
+}
+
+2. 登录了，访问非该权限的地址
+	XX
+
+最后要将拦截器加载到 springmvc 的配置文件中
+<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/login" />  <!-- exclude 是指明不用拦截的访问 -->
+            <mvc:exclude-mapping path="/doAJAXLogin" />
+            <mvc:exclude-mapping path="/bootstrap/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/fonts/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/jquery/**" />
+            <mvc:exclude-mapping path="/layer/**" />
+            <mvc:exclude-mapping path="/script/**" />
+            <mvc:exclude-mapping path="/ztree/**" />
+            <bean class="com.atguigu.atcrowdfunding.web.LoginInterceptor"></bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/login" />
+            <mvc:exclude-mapping path="/doAJAXLogin" />
+            <mvc:exclude-mapping path="/bootstrap/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/fonts/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/jquery/**" />
+            <mvc:exclude-mapping path="/layer/**" />
+            <mvc:exclude-mapping path="/script/**" />
+            <mvc:exclude-mapping path="/ztree/**" />
+            <bean class="com.atguigu.atcrowdfunding.web.AuthInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>

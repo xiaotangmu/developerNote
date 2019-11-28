@@ -1,0 +1,252 @@
+大小写敏感
+
+变量类型
+字符串 string
+布尔型 Boolean True False
+double 双精度型 67.5
+float 单精度型 67.5f 
+日期DateTime
+	dt = Convert.ToDateTime("1999-1-2");
+	dt = DateTime.Now;
+
+Response.Write("<br/>");
+
+字符串转整形：
+int i = Convert.ToInt16("90");//int16 短整型
+
+char < - > int
+char a = Convert.ToChar(65);
+
+
+数组
+int[] a = new int[5];
+
+字符型数组默认值为空字符， 对应ACSII值=0，不是null；
+
+lal_result.ForeColor = System.Drawing.Color.Green;
+
+从页面获取字符转换
+d_Fen= double.Parse(txt_fen2.Text);
+i_End = int.Parse(txt_end.Text);
+
+
+
+服务器控件
+runat="server"
+
+html 也可以变成服务器控件
+	<input type="text" ... runat="server"/>
+
+ASP: TextBox.Text
+html: htmlBox.Value		(加了服务器控件属性的html可以在后台这样获取值)
+
+日期形式
+DateTime.Now.ToLongDateString(); -> 2013年12月10日（长日期）
+DateTime.Now.ToString(); -> 2013/3/14 22:12:14
+
+
+asp文本框 TextBox 的形式
+单行文本框（默认的TextBox）
+	TextMode="SingleLine"
+多行文本框
+	TextMode="MulitLIne"
+	<asp:TextBox ID="" runat="server" TextMode="MulitLIne" Rows="5"
+		Columns="20"></asp:TextBox>
+	可以不指定行数和宽度，而是指定像素 Height="200px" Width="200px"
+
+密码文本框
+	TextMode="Password"
+
+
+html <div> 转为服务器控件 
+	添加 runat="server"
+	在后台可以操作两个属性
+	div_id.InnerHtml -> string
+	div_id.InnerText -> string
+
+	实例：
+	<div runat="server">
+		<p>hello</p>
+	</div>
+	InnerText: - > "hello"
+	InnerHtml: -> "<p>hello</p>
+	
+TextBox的属性
+	- text	设置文本框内容
+	- TextMode	SingleLine, MulitLIne, Password
+	- height, width	设置文本框宽高
+	- MaxLanth	文本框最大长度（多行无效）
+	- Enable	TRUE/FALSE 是否只读
+	- AutoPostBack	自动提交（输入完，enter，数据提交给后台）
+		此时，其他文本框的change事件也会被执行
+		
+		
+单选按钮 RadioButton  -- radio
+GroupName 相当于name
+Text 
+AutoPostBack="True||False"
+	在change 事件发生后立即执行（提交页面）
+Checked="True||False"
+OnCheckedChanged="functionName" 更改选中状态时，激发
+	
+	
+复选框CheckBox
+Text 
+AutoPostBack
+Checked
+oncheckedchanged
+
+三元运算符
+	a=(xx)?值1:值2
+	
+Foreach
+	Foreach(a in 集合b)
+	{
+		。。。
+	}
+	变量a 还可以是textbox，label，control。。。
+
+	
+BulletedList与数据绑定
+也就是无序列表
+	<ul>
+		<li></li>
+	</ul>
+	
+操作
+1. 放置好BulletedList 后，点击列表框最右边的箭头，编辑项，
+	手动添加 li 项
+	
+样式选择：
+在属性框中DisplayMode 选择li的样式（文本，超链接 。。）
+
+设置链接地址，回到第一步，设置Value（网址）
+	
+	
+CSS控制页面元素
+引用与html一样（<link> <style></style>）
+
+元素使用CssClass 来指定要引入的css类
+
+定义BulletedList 下的li属性
+可以先定义 BulletedList cssClass .style1
+再定义 .style li{} 就可以定义到 列表项的样式
+	还有 .style1 a
+	
+导航栏直接 display: inline-block
+
+
+DropDownList 下拉列表
+属性
+	Text 	id.SelectItem.Text;
+	Value   id.SelectValue;
+	
+id.SelectIndex	返回选择项的序值（从0开始）
+取指定项的数值
+id.Items[i].Text;
+id.Items[i].value;
+	
+ListItem 列表对象
+属性
+	Text
+	Value
+	Selected
+	注意：先把原来设true的对象设置为false，
+		再设置新的true 对象
+		
+	
+重定向：Response.Redirect(网址);
+
+boj.getType() 可以获取某个对象的类型
+
+ListItem obj_li = new ListItem();
+obj_li.Text = "google";
+obj_li.Value = "xxx";
+
+DropDownList1.Items.Add(obj_li);
+
+
+DropDownList obj_li = new DropDownList();
+oj_dd1 = DropDownList1;
+Panel1.Controls.Add(obj_dd1);
+
+
+列表框 ListBox
+lb_food.Items.Count;	获取总数
+
+怕段 Selected
+
+增删：ListItem
+obj.Items.Add(lt);
+obj.Items.Remove(lt);删除一个特定的listItem
+obj.Items.RemoveAt(i); 删除索引号为i的项
+
+注意增删不能用 foreach 操作
+	迭代变量找不到对象
+	使用for()
+
+	
+HyperLink 链接控件
+	可用后台代码控制生成超链接
+	
+HyperLink link = nwe HyperLink();
+link.NavigateUrl = "Http:....";
+link.Text = "";
+Panel1.Controls.Add(link);
+	注意：一个HyperLink 只能知道指定给一个控件
+	
+ImageMap
+
+热区定义
+
+圆形热区：
+<asp:CircleHotSpot NavigateUrl="地址" 
+AlternateText="提示文字" X="23" Y="23"
+Radius="23"></asp:CircleHotSpot>
+
+方形热区：
+<asp:RectangleHostSpot NavigeteUrl=""
+Alternatetext="" top="" left="" bottom=""
+right=""></asp:RectangleHostSpot>
+
+多边形热区
+定位属性（两个数据为一点）
+Coordinates="0,0,12,12,434,242"	
+
+后台定义：
+RectangleHotSpot ha = new RectangleHostSpot();
+...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+

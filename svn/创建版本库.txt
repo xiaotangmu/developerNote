@@ -1,0 +1,6 @@
+在 命令提示符 中输入：已经存在D:\DevRepository\SvnRep\OA
+1. d:     //进入d盘
+2. cd D:\DevRepository\SvnRep\OA
+3. svnadmin create
+4. svnadmin create D:\DevRepository\SvnRep\OA
+5. 创建成功 OA文件间中多了一些文件 

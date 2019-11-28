@@ -1,0 +1,2 @@
+      对 a，submit 等具有提交功能的标签，在使用 onclick="xxx()" 属性时，要注意避免二重调用，它是先执行onclick事件，再执行默认事件，解决需要在 onclick 中添加 return false，表示去除默认事件，具体如下：
+<a href="shoppingCar-add?id=${id }" onclick="addToCar(this);return false">加入购物车</a>

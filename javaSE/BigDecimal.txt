@@ -1,0 +1,201 @@
+    加减乘除
+    精度控制
+    除法特写
+        推荐做法
+        默认除法精度
+    总结
+
+BigDecimal 是java小数操作的一个专有类,在电商、金融行业 存储跟金额有关的字段
+
+java里面明明已经有了,float,double这种精度的小数,为什么还需要BigDecimal呢?
+这难道不是多余吗?
+
+接下来看一个例子:
+
+@Test
+public void testDoubleSimple() {
+    double a = 3;
+    double b = 10;
+    double c = a / b;
+    System.out.println(c);
+}
+
+控制台输出:0.3
+
+在小数操作中,我们通常希望能有多种自由的定义方式。
+
+    例如在不同的场景可能需要返回: 0.3, 0.4, 0.333 不同精度,在不同的精度进位时希望能自主控制
+
+这个时候,就轮到BigDecimal出场了
+加减乘除
+
+首先来一段最简单的加减乘除
+
+@Test
+ public void testDecimalSimple() {
+     BigDecimal a = new BigDecimal(5);
+     BigDecimal b = new BigDecimal(40);
+     BigDecimal add = a.add(b);
+     BigDecimal subtract = a.subtract(b);
+     BigDecimal multiply = a.multiply(b);
+     BigDecimal divide = a.divide(b);
+     System.out.println("add:" + add);
+     System.out.println("subtract:" + subtract);
+     System.out.println("multiply:" + multiply);
+     System.out.println("divide:" + divide);
+}
+
+控制台输出内容如下:
+
+add:45
+subtract:-35
+multiply:200
+divide:0.125
+
+
+在了解了BigDecimal基本内容后,在去深入的去使用它的精度
+精度控制
+
+精度有7种模式，举例如下
+
+@Test
+public void testRound() {
+     // 正无穷大方向取整
+     System.out.println("celling:" + new BigDecimal(0.125, new MathContext(2, RoundingMode.CEILING)));
+     // 负无穷大方向取整
+     System.out.println("floor:" + new BigDecimal(0.125, new MathContext(2, RoundingMode.FLOOR)));
+     //向 0 的方向取整
+     System.out.println("down a:" + new BigDecimal(0.121, new MathContext(2, RoundingMode.DOWN)));
+     System.out.println("down b:" + new BigDecimal(-0.129, new MathContext(2, RoundingMode.DOWN)));
+     // 正数向正无穷大取整，负数向负无穷大取整
+     System.out.println("up a:" + new BigDecimal(0.121, new MathContext(2, RoundingMode.UP)));
+     System.out.println("up b:" + new BigDecimal(-0.129, new MathContext(2, RoundingMode.UP)));
+     /**
+      * 5,6,7,8,9 向上取整
+      * 1,2,3,4 向下取整
+      *
+      * 常用的4舍5入
+      */
+     System.out.println("half up:" + new BigDecimal(0.125, new MathContext(2, RoundingMode.HALF_UP)));
+     /**
+      *  6,7,8,9 向上取整
+      *  1,2,3,4,5 向下取整
+      *
+      *  5 向下取整
+      */
+     System.out.println("half down:" + new BigDecimal(0.125, new MathContext(2, RoundingMode.HALF_DOWN)));
+
+     /**
+      * 小数位是5时，判断整数部分是奇数就进位
+      * 1,2,3,4,  舍弃
+      * 6,7,8,9,  进位
+      */
+     System.out.println("odd a:" + new BigDecimal(5.4, new MathContext(1, RoundingMode.HALF_EVEN)));
+     System.out.println("odd b:" + new BigDecimal(5.5, new MathContext(1, RoundingMode.HALF_EVEN)));
+     /**
+      * 小数位是5时，判断整数部分是偶数就舍弃
+      * 1,2,3,4,  舍弃
+      * 6,7,8,9,  进位
+      */
+     System.out.println("even a:" + new BigDecimal(6.5, new MathContext(1, RoundingMode.HALF_EVEN)));
+     System.out.println("even b:" + new BigDecimal(6.6, new MathContext(1, RoundingMode.HALF_EVEN)));
+ }
+
+
+控制台输出内容如下
+
+celling:0.13
+floor:0.12
+down a:0.12
+down b:-0.12
+up a:0.13
+up b:-0.13
+half up:0.13
+half down:0.12
+odd a:5
+odd b:6
+even a:6
+even b:7
+
+
+在 RoundingMode.XXXXX 类型的源码注释上面，有更加详细的例子，可以看到是怎么舍入的
+除法特写
+
+我认为在电商，金融领域中，用BigDecimal最重要的原因有两个：
+1. 精度准确
+2. 除法运算支持好
+
+所以一定要对除法做深入的了解,做项目的时候，才能不会对这些类型感到疑惑
+
+    @Test
+    public void testDecimalDivide() {
+        BigDecimal a = new BigDecimal(5.4);
+        BigDecimal b = new BigDecimal(3.1);
+        BigDecimal divide = a.divide(b);
+        System.out.println("divide:" + divide);
+    }
+
+
+出现异常:
+java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
+
+明明刚刚还好好的，怎么现在出了事?
+
+那是因为 5.4、3.1都是double类型转换的 BigDecimal。
+
+实际上5.4在内存中可能是 5.40000003321546546 的内容。导致BigDecimal内部精度计算的时候，发生错误
+
+这个错误是因为没有指定精度导致的，我们只要指定了结果的精度，就可以避免这个问题。
+推荐做法
+
+    @Test
+    public void testDecimalStandDivide() {
+        BigDecimal a = new BigDecimal(5.4);
+        BigDecimal b = new BigDecimal(3.1);
+        // 保留几位小数
+        int scale = 2;
+        // 重点:务必是3个参数
+        BigDecimal divide = a.divide(b,scale,RoundingMode.HALF_UP);
+        System.out.println("divide:" + divide);
+
+    }
+
+
+控制台输出:divide:1.74
+
+我们额外传入第二个参数:保留的小数,指定了结果的精度,就可以避免出现这种问题。
+
+所以我们日常用BigDecimal做除法运算的时候，务必写成推荐的形式。避免出现了异常，自己还莫名其妙
+默认除法精度
+
+在文章的开头的除法，是用整数转成BigDecimal， 保留的3为小数。 那默认情况下会精确到几位呢？
+
+在跟进到divide函数内部时，发现了构造MathContext的部分内容:
+
+ MathContext mc = new MathContext( (int)Math.min(this.precision() +
+                                                            (long)Math.ceil(10.0*divisor.precision()/3.0),
+                                                            Integer.MAX_VALUE),
+                                              RoundingMode.UNNECESSARY);
+
+
+    整数 12345 的precision 是5
+    整数 332 的precision 是 3
+    小数5.4 的precision可能是 5.40000065464698656565454454555 的长度。 值不固定
+
+根据MathContext的第一个参数的计算方式得到默认除法精度:
+1. 当被除数为:0x1 最低精度5
+2. 当被除数为:0xFFFFFFFF 最高精度36
+总结
+
+BigDecimal 精度描述:
+模式 	描述
+CEILING 	正无穷大方向取整
+FLOOR 	负无穷大方向取整
+DOWN 	向 0 的方向取整
+UP 	正数向正无穷大取整，负数向负无穷大取整
+HALF_UP 	5,6,7,8,9 向上取整、 1,2,3,4 向下取整、 常用的4舍5入
+HALF_DOWN 	6,7,8,9 向上取整 1,2,3,4,5 向下取整
+HALF_EVEN 	小数位是5时，判断整数部分是奇数就进位、 小数位是5时，判断整数部分是偶数就舍弃、 1,2,3,4, 舍弃、 6,7,8,9, 进位 
+————————————————
+版权声明：本文为CSDN博主「东平王北星」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/mz4138/article/details/82708815

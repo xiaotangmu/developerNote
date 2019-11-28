@@ -1,0 +1,4 @@
+//±éÀú
+	$.each(navigatepageNums, function(index, pNum){
+		var pageNum_li = $("<li></li>").append($("<a></a>").append(pNum).attr("href", "#")).click(function(){
+			to_page(pNum)

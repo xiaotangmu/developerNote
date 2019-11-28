@@ -1,0 +1,24 @@
+	解决数据乱码问题
+		
+		提交的数据处理
+		//将乱码字符串按照错误的编码方式转换为原始的字节码序列
+		byte[] bs = loginacct.getBytes("ISO8859-1");
+		
+		//将原始的字节码序列暗战正确的编码转换为正确的文字即可
+		loginacct = new String(bs, "UTF-8");
+		
+		但是如果数据多时，转换会很麻烦
+		
+		所以利用 spring 提交的字符编码过滤器，添加到web.xml
+			CharacterEncodingFilter 一定要放在所有过滤器之前
+		
+		但是上面两种方法只能解决post 数据的乱码
+		而get 的解决需要修改在 tomcat文件
+			找到 Server 下 tomcat文件 server.xml
+			在<Connector .. port="8080" 这里添加 
+				URIEncoding="UTF-8"
+				此时post get 都解决了乱码问题
+
+
+	数据库
+	jdbc.url=jdbc:mysql://localhost:3306/ssm_crud?useUnicode=true&characterEncoding=utf8

@@ -1,0 +1,30 @@
+<!-- ******************** 模糊查询的常用的3种方式:********************* -->
+    <select id="getUsersByFuzzyQuery" parameterType="User" resultType="User">
+        select <include refid="columns"/> from users
+        <where>
+            <!--
+                方法一: 直接使用 % 拼接字符串 
+                注意:此处不能写成  "%#{name}%" ,#{name}就成了字符串的一部分,
+                会发生这样一个异常: The error occurred while setting parameters,
+                应该写成: "%"#{name}"%",即#{name}是一个整体,前后加上%
+            -->
+            <if test="name != null">
+                name like "%"#{name}"%"
+            </if>
+            <!--方法二: 使用concat(str1,str2)函数将两个参数连接 -->
+            <if test="phone != null">
+                and phone like concat(concat("%",#{phone}),"%")
+            </if>
+            <!--方法三: 使用 bind 标签,对字符串进行绑定,然后对绑定后的字符串使用 like 关键字进行模糊查询 -->
+            <if test="email != null">
+                <bind name="pattern" value="'%'+email+'%'"/>
+                and email like #{pattern}
+            </if>
+        </where>
+    </select>
+
+
+也可以直接赋予 %xxx%  这样的字符串 
+
+
+resultType 不要写错了，不是List 而是对象 User

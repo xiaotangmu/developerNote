@@ -1,0 +1,3 @@
+
+去除多余字符/选择所需的字符串字段
+str.subString(0, (str.length -1))

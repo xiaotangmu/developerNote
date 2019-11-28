@@ -1,0 +1,133 @@
+router index.js
+/*
+路由器对象模块
+ */
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import First from './../main/components/First'
+import Equipment from './../main/components/Equipment'
+import Competition from './../main/components/Competition'
+import Site from './../main/components/Site'
+import Manager from './../main/components/Manager'
+
+// 声明使用vue-router插件
+/*
+内部定义并注册了2个组件标签(router-link/router-view),
+给组件对象添加了2个属性:
+  1. $router: 路由器
+  2. $route: 当前路由
+ */
+Vue.use(VueRouter)
+
+export default new VueRouter ({
+  routes: [
+    {
+      path: '/first',
+      component: First,
+    },
+    {
+      path: '/equipment',
+      component: Equipment,
+    },
+    {
+      path: '/competition',
+      component: Competition,
+    },
+    {
+      path: '/site',
+      component: Site,
+    },
+    {
+      path: '/manager',
+      component: Manager,
+    },
+    {
+      path: '/',
+      redirect: '/first',
+    },
+  ]
+})
+
+
+调用：
+<div class="main clearfix">
+      <div class="menu">
+        <ul class="clearfix">
+          <li class="li1">体育馆管理系统</li>
+          <router-link to="/first"><li class="li2" @click="changColor(2)" :style="{backgroundColor: li2BgColor}">首页</li></router-link>
+          <router-link to="/equipment"><li @click="changColor(3)" :style="{backgroundColor: li3BgColor}">器材租借</li></router-link>
+          <router-link to="/site"><li @click="changColor(4)" :style="{backgroundColor: li4BgColor}">场地预定</li></router-link>
+          <router-link to="/competition"><li @click="changColor(5)" :style="{backgroundColor: li5BgColor}">赛事预定</li></router-link>
+          <router-link to="/manager"><li @click="changColor(6)" :style="{backgroundColor: li6BgColor}">管理员</li></router-link>
+        </ul>
+      </div>
+      <div class="header"></div>
+      <div class="content">
+        <!--显示当前组件-->
+        <keep-alive>
+          <router-view msg="abc"></router-view>
+        </keep-alive>
+      </div>
+    </div>
+
+页面js 配置：
+import router from './../router'      。。。。。。。。。。。。。
+import resourse from 'vue-resource'
+
+Vue.use(resourse)
+new Vue({
+  el: '#main',
+  components:{
+    Main,
+  },
+  template: '<Main/>',
+  store,
+  router,           。。。。。。。。。。。。。。。。。
+})
+
+
+import Equipment from './../main/components/Equipment' 这些路由是普通组件
+
+
+
+
+嵌套路由 ：
+export default new VueRouter ({
+  // 注册应用中所有的路由
+  routes: [
+    {
+      path: '/about',
+      component: About
+    },
+    {
+      path: '/home',
+      component: Home,
+      children: [
+        {
+          path: '/home/news',
+          component: News
+        },
+        {
+          path: 'message',
+          component: Message,
+          children: [
+            {
+              path:'detail/:id',
+              component: MessageDetail
+            }
+          ]
+        },
+        {
+          path: '',
+          redirect: '/home/news'
+        }
+      ]
+    },
+    {
+      path: '/',
+      redirect: '/about'
+    }
+]
+})
+
+

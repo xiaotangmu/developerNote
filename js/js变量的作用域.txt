@@ -1,0 +1,13 @@
+JS 变量的作用域
+	
+	局部变量
+	//JS中使用var声明的变量就是局部变量
+	var username = "zhang";
+	作用域就是所在的{}中
+	
+	全局变量
+	//JS中不适用var 声明的变量就是全局变量
+	username = "zhang";//全局使用
+	
+	实际是窗口变量：window.username = "zhang";
+		省略了 window

@@ -1,0 +1,2 @@
+vm 能连接，但操作系统不能连接网  出现红叉
+参考：https://jingyan.baidu.com/album/6181c3e0a08c59152ff15374.html?picindex=6

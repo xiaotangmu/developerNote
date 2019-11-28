@@ -1,0 +1,12 @@
+1. 当后台 return "1"  类似的的数字数据时，vue接收的是数字，不是字符串
+2. 当后台 return "a" 时，vue接收为null，
+解决，在原数据添加 "\"a\"", 此时vue成功接收数据为 a
+
+但是，后面又正常了，字符串{。。。}，前端接收的是Obejct, 不用添加\" 了
+上面的原因可能直接return 造成的
+
+springmvc
+解决中文乱码：
+在@RequestMapping() 中添加 produces = { "text/html;charset=UTF-8;", "application/json;charset=UTF-8;" }
+如：
+@RequestMapping(value="/login", method=RequestMethod.POST, produces = { "text/html;charset=UTF-8;", "application/json;charset=UTF-8;" })

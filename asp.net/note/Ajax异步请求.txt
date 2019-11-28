@@ -1,0 +1,29 @@
+页面
+$("#btn_submit").click(function () {
+            
+            var jsonStr = { studentId: $("#input_studentId").val(), pwd: $("#input_pwd").val() };
+            var jsonStr2 = JSON.stringify(jsonStr);
+            alert(jsonStr2);
+            $.ajax({
+                url: "test.aspx/login",
+                dataType: "json",
+                type: "post",
+                contentType: "application/json; charset=utf-8",
+            /*data: $("#form_login").serialize(),//studentId=&&pwd= 不符合json 格式*/
+                data: jsonStr2,
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        });
+
+后台：test.aspx.cs
+        [WebMethod]
+        public static String login(String studentId, String pwd)
+        {
+            if (studentId == "d" && pwd == "d")
+            {
+                return "0";
+            }
+            return "1";
+        }

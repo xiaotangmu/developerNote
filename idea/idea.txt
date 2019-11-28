@@ -1,0 +1,34 @@
+
+IDEA提示快捷键：Ctrl + Alt + 空格
+
+创建类时，输入 controller.HelloController, 会在所在包下创建包controller 
+	再创建类 HelloController
+	
+运行 Ctrl + Shift + F10
+
+关闭工程：file -> close project
+
+快速选择构造器、getter、setter、toString
+	Alt + insert
+	
+输出控制台快捷：sout
+
+main 函数快捷：psvm
+
+复制全类名：Ctrl + Shift + Alt + c 
+
+自动补全代码: Ctrl + Alt + v
+	也可以 new String().var 补全参数代码
+
+if 语句
+	条件.if
+	
+在上一行换行
+	Ctrl + Alt + 换行
+	
+在下一行换行
+	Ctrl + Shift + 换行
+
+实时显示文档
+settings -> general -> 勾选 show quick document...
+	

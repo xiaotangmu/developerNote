@@ -1,0 +1,5 @@
+一般情况下可以这样理解 -- 不是一定
+汉字字节数 utf-8 的汉字占3个字节  gbk 是两个
+
+
+具体：https://www.cnblogs.com/lslk89/p/6898526.html

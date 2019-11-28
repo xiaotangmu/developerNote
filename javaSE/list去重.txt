@@ -1,0 +1,6 @@
+前提：//set不重复，list可添加重复的值
+
+List<Object> list = new ArrayList();
+/... list = 
+Set<Object> set = new HashSet();
+set.addAll(list);

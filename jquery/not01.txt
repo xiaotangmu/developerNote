@@ -1,0 +1,46 @@
+//页面跳转函数（发送ajax请求）
+	function to_page(pn){
+		$.ajax({
+			type: "GET",
+			url: "${APP_PATH}/emps",
+			data: "pn=" + pn,
+			success: function(result){
+				//1. 员工数据分类
+				employee_data_classify(result);
+				
+				//2. 分页数据
+				page_split_nav(result);
+				
+				//3. 页面信息显示
+				page_data_display(result);
+			}
+		});
+	}
+	
+	//上一页
+	var lastPage_li = $("<li></li>").append($("<a></a>").append("&laquo;").attr("href", "#"));
+	//判断是否有上一页，没有则设置为 disabled，记住pageHelper 插件mybatis 配置中要设置属性 resonable 为 true
+		//不然还会发送请求
+	if(!pageInfo.hasPreviousPage){
+		firstPage_li.addClass("disabled");
+		lastPage_li.addClass("disabled");
+	}
+	
+	//添加跳转事件
+	lastPage_li.click(function(){
+		to_page(pageInfo.pageNum - 1);
+	});
+
+	$("<tr></tr>").append(empId_td).appendTo($("#empTable_tbody"));
+	
+//页面加载先清空原来数据
+	$("#empTable_tbody").empty();
+
+
+
+
+序列化 用于ajax提交请求
+	var empData = $("#add_emp_form").serialize();//empName=hhh&email=&gender=0&dId=2
+
+
+		});

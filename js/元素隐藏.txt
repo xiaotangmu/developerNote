@@ -1,0 +1,10 @@
+方法一： 
+document.getElementById("EleId").style.visibility="hidden"; 
+document.getElementById("EleId").style.visibility="visible"; 
+　　利用上述方法实现隐藏后，页面的位置还被控件占用，显示空白。
+　
+
+方法二： 
+document.getElementById("EleId").style.display="none"; 
+document.getElementById("EleId").style.display="inline"; 
+　　利用上述方法实现隐藏后，页面的位置不被占用。

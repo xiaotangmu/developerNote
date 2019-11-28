@@ -1,0 +1,3 @@
+String hql = "FROM ShoppingCar c WHERE c.name = ?";
+		Query query = getSession().createQuery(hql).setString(0, "TomCar");
+		ShoppingCar car = (ShoppingCar) query.uniqueResult();

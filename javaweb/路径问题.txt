@@ -1,0 +1,52 @@
+绝对路径：不可改变的路径
+	本地绝对路径：增加盘符的路径（etesttest.html）
+	网络绝对路径：增加协议，IP地址，端口号的路径（httplocalhost8080testtest.html）
+相对路径：可以改变的路径，但是以基准路径为参考，查找其他路径
+	默认情况下，相对路径的基准路径是以当前资源的访问路径为基准
+
+路径以斜杠开头，表示的特殊的相对路径，在不同的场景中，相对的位置会发生变化。
+
+    url  httplocalhost8080atcrowdfunding-webtesttest.html
+
+	前台路径：a href=”sssss”img src=””
+		相对服务器的根 ： httplocalhost8080sssss
+	后台路径：forward（”user.jsp”）, xml
+		相对web应用的根：httplocalhost8080atcrowdfunding-webuser.jsp
+
+
+在jsp 页面中可以利用
+	${pageContext.request.contextPath} 获取当前工程路径
+		对象： pageContext 写错了页面不会报错，只是获取不到相应的样式
+		属性：contextPath写错了页面会报错
+
+所以为了避免写错，可以利用${APP_PATH}
+	可以在当前页面配置
+		<%
+			pageContext.setAttribute("APP_PATH", request.getContextPath());
+		%>
+	但实际上每页都要用到，所以一般通过配置一个监听器，在页面加载前得到路径
+	例如：
+	
+	public class ServletStartupListener implements ServletContextListener{//com.tan.atcrowdfunding.web
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+			//将 web 应用路径保存到 application 范围
+			ServletContext application = sce.getServletContext();
+			application.setAttribute("APP_PATH", application.getContextPath());
+		}
+
+		@Override
+		public void contextDestroyed(ServletContextEvent sce) {
+			// TODO Auto-generated method stub
+			
+		}
+
+	}
+	
+	web.xml
+		<listener>
+			<listener-class>com.tan.atcrowdfunding.web.ServletStartupListener</listener-class>
+		</listener>
+
+使用<script src="${APP_PATH }/jquery/jquery-2.1.1.min.js"></script>

@@ -1,0 +1,15 @@
+配置了中央仓库的镜像：（换成了阿里的，比较稳定）
+
+settings.xml文件中，在mirrors标签中添加子标签如下
+<mirror>      
+		<id>nexus-aliyun</id>    
+		<name>nexus-aliyun</name>  
+		<url>http://maven.aliyun.com/nexus/content/groups/public</url>    
+		<mirrorOf>central</mirrorOf>      
+</mirror>
+
+
+
+可以解决<scope>import</scope> 带来的错误
+
+参考：https://blog.csdn.net/qq_36908872/article/details/82696348

@@ -1,0 +1,14 @@
+$("form")[0].reset();//重置表单 $("form")[0]: 转为dom对象 表单内容的值恢复到最原始的状态
+
+
+序列化 用于ajax提交请求
+var empData = $("#add_emp_form").serialize();//empName=hhh&email=&gender=0&dId=2
+	
+
+		$.ajax({
+			url: "${APP_PATH}/putEmp",
+			type: "PUT",
+			data: $("#add_emp_form").serialize(),
+			//empName=hhh&email=&gender=0&dId=2
+			success: function(result){}
+		});

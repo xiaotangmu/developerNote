@@ -1,0 +1,146 @@
+简单的理解：
+@RequestBody -- json  xml -- ajax 提交
+@RequestParamter -- http://.../get?id=1 
+@PathVariable --  http://.../get/1 此时controller中id是特定指出来的
+	 @RequestMapping("/get/{petId}")
+
+经验告诉我除了@PathVariable 外的参数，其他两个标签不写也可以get到
+
+
+原文链接：https://blog.csdn.net/walkerjong/article/details/7946109/
+
+1、 @PathVariable 
+
+当使用@RequestMapping URI template 样式映射时， 即 someUrl/{paramId}, 
+这时的paramId可通过 @Pathvariable注解绑定它传过来的值到方法的参数上。
+
+@Controller
+@RequestMapping("/owners/{ownerId}")
+public class RelativePathUriTemplateController {
+ 
+  @RequestMapping("/pets/{petId}")
+  public void findPet(@PathVariable String ownerId, @PathVariable String petId, Model model) {    
+    // implementation omitted
+  }
+}
+
+
+简单的理解：
+@RequestBody -- json  xml -- ajax 提交
+@RequestParamter -- http://.../get?id=1 
+
+
+原文链接：https://www.cnblogs.com/fobei/p/5603447.html
+@RequestBody 
+
+作用：
+
+      i) 该注解用于读取Request请求的body部分数据，使用系统默认配置的HttpMessageConverter进行解析，然后把相应的数据绑定到要返回的对象上；
+
+      ii) 再把HttpMessageConverter返回的对象数据绑定到 controller中方法的参数上。
+
+ 
+
+使用时机：
+
+ 
+
+A) GET、POST方式提时， 根据request header Content-Type的值来判断:
+
+ 
+
+        application/x-www-form-urlencoded， 可选（即非必须，因为这种情况的数据@RequestParam, @ModelAttribute也可以处理，当然@RequestBody也能处理）；
+        multipart/form-data, 不能处理（即使用@RequestBody不能处理这种格式的数据）；
+        其他格式， 必须（其他格式包括application/json, application/xml等。这些格式的数据，必须使用@RequestBody来处理）；
+
+ 
+
+B) PUT方式提交时， 根据request header Content-Type的值来判断:
+
+ 
+
+        application/x-www-form-urlencoded， 必须；
+        multipart/form-data, 不能处理；
+        其他格式， 必须；
+
+说明：request的body部分的数据编码格式由header部分的Content-Type指定；
+@ResponseBody
+
+ 
+
+作用：
+
+ 
+
+      该注解用于将Controller的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区。
+
+ 
+
+使用时机：
+
+ 
+
+      返回的数据不是html标签的页面，而是其他某种格式的数据时（如json、xml等）使用；
+
+ 
+
+ByteArrayHttpMessageConverter: 负责读取二进制格式的数据和写出二进制格式的数据；
+
+ 
+
+StringHttpMessageConverter：   负责读取字符串格式的数据和写出二进制格式的数据；
+
+ 
+
+
+ 
+
+ResourceHttpMessageConverter：负责读取资源文件和写出资源文件数据； 
+
+ 
+
+FormHttpMessageConverter：       负责读取form提交的数据（能读取的数据格式为 application/x-www-form-urlencoded，不能读取multipart/form-data格式数据）；负责写入 application/x-www-from-urlencoded和multipart/form-data格式的数据；
+
+ 
+
+ 
+
+MappingJacksonHttpMessageConverter:  负责读取和写入json格式的数据；
+
+ 
+
+ 
+
+SouceHttpMessageConverter：                   负责读取和写入 xml 中javax.xml.transform.Source定义的数据；
+
+ 
+
+Jaxb2RootElementHttpMessageConverter:  负责读取和写入xml 标签格式的数据；
+
+ 
+
+ 
+
+AtomFeedHttpMessageConverter:              负责读取和写入Atom格式的数据；
+
+ 
+
+RssChannelHttpMessageConverter:           负责读取和写入RSS格式的数据；
+
+ 
+
+ 
+
+当使用@RequestBody和@ResponseBody注解时，RequestMappingHandlerAdapter就使用它们来进行读取或者写入相应格式的数据。
+
+ 
+
+配置：<mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <ref bean="BSY_Crm.FormHttpMessageConverter" />
+            <ref bean="BSY_Crm.StringHttpMessageConverter" />
+            <ref bean="BSY_Crm.JacksonHttpMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+

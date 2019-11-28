@@ -1,0 +1,25 @@
+//将JSON数据转换User 对象
+	public User getUserByJSONString(String user) {
+		JSONObject obj = JSONObject.fromObject(user);//将json字符串转换为json对象
+		//	将json对象转换为java对象
+		return (User)JSONObject.toBean(obj,User.class);//将建json对象转换为java对象
+	}
+
+
+将java对象转换为json字符串
+
+先将java对象转换为json对象，在将json对象转换为json字符串
+
+JSONObject json = JSONObject.fromObject(obj);//将java对象转换为json对象
+
+String str = json.toString();//将json对象转换为字符串
+
+
+导包
+commons-beanutils-1.7.0.jar
+commons-collections-3.1.jar
+commons-httpclient-3.1.jar
+commons-lang-2.3.jar
+commons-logging-1.0.4.jar
+ezmorph-1.0.3.jar
+json-lib-2.4-jdk15.jar

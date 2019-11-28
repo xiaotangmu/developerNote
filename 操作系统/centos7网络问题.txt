@@ -1,0 +1,1 @@
+dhclient，可以自动获取一个IP地址，再用命令ip addr查看IP

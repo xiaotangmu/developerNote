@@ -1,0 +1,29 @@
+		//attr 获取checked 是 undefined
+		//我们这些dom原生的属性，attr获取自定义属性的值
+		//prop修改和读取dom原生属性的值
+		$("input[type=checkBox]").prop("checked");
+
+
+
+//全选/全不选
+		//全选框控制
+		$("#selectAllOrNOt").click(function(){
+			/* alert($("#selectAllOrNOt").prop("checked")); */
+			var status = $("#selectAllOrNOt").prop("checked");
+			$(".select_box").prop("checked", status);
+		});
+		//单选框控制
+		$(document).on("click", ".select_box", function(){
+			//判断是否全部勾选了
+			if($(".select_box").length == $(".select_box:checked").length){
+				$("#selectAllOrNOt").prop("checked", true);
+			}else{
+				$("#selectAllOrNOt").prop("checked", false);
+			}
+		});
+
+		
+		遍历被选中的元素,将empId 作为字符串拼接 1-2-3   
+		姓名回显 parents("tr").find("td:eq(2)").text();
+		
+		subString(0, (str.length -1))去除多余字符/选择所需的字符串字段

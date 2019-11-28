@@ -1,0 +1,9 @@
+select * from t_user limit 0, 3;
+解释：选择从第一行开始到第三行的数据，
+	limit pageNum, pageSize;
+	 //pageNum 页数从零开始，pageSize 每页的记录数
+
+	select （） from tbl_xxx 
+	where xxxx 
+	order by xxx ASC/DESC
+	limit pageNum, pageSize

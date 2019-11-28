@@ -1,0 +1,15 @@
+Maven 打包项目 
+	先备份再打包，可能会重新构建 bean 类 xml 文件
+	
+	1. 删除测试类不然在打包的时候会一直在运行
+	
+	2. 先导入依赖
+	<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
+	<dependency>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-war-plugin</artifactId>
+		<version>3.2.3</version>
+	</dependency>
+	3. 右键 pom.xml 文件 run as/ debug -> maven install -> 生成war 包（target下）
+		
+	将生成的war包复制到 tomcat webapp 下 外部打开 tomcat 运行工程

@@ -1,0 +1,7 @@
+this.change = setInterval(()=>{
+        ¡£¡£¡£
+      },3000)
+    },
+
+Í£Ö¹Ìø¶¯£º
+clearInterval(this.change)

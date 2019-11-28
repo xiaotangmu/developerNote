@@ -1,0 +1,20 @@
+//获取当前img div 的序列
+var imgSet= document.getElementsByClassName("img");
+			
+//div 重新排序序列
+var reSet = [];
+			
+//上一张: 先添加最后一张 5 再按顺序添加 0-4
+reSet.push(imgSet[5]);
+for(var i = 0; i < imgSet.length - 1; i++){
+	reSet.push(imgSet[i]);
+}
+
+//将 box3 内容清空：即将原序列的 img div 去除，再添加新排序的 div;
+var box3 = document.getElementsByClassName("box3")[0];
+box3.innerHTML = "";
+			
+for(var i = 0; i < reSet.length; i++){
+	box3.appendChild(reSet[i]);
+	reSet[i].style.display = "inline";
+}

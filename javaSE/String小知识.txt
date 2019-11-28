@@ -1,0 +1,5 @@
+判断是否为空，使用 StringUtils
+StringUtils.isEmpty(str)
+
+判断是否相等  	//不要直接 == 会出错
+str.equals("abc");

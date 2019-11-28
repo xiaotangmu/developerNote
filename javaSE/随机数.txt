@@ -1,0 +1,8 @@
+
+//1. 取得0，1 随机数
+Random rd = new Random();
+int num  = rd.nextInt(2); //nextInt(x) 表示 0 - (x-1) 的随机整数
+
+//2. 取6位长的随机字符串
+String uid = UUID.randomUUID().toString().substring(0, 5);
+

@@ -1,0 +1,27 @@
+利用生成器：
+		//delete in (1, 3, 5)
+		EmployeeExample example = new EmployeeExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andEmpIdIn(list);
+
+自己写在mapper.xml 
+   <delete id="deleteUsers">
+        delete from t_user where id in 
+        <foreach collection="userids" item="userid" open="(" close=")" separator=",">
+        #{userid}
+        </foreach>
+    </delete>
+
+其中要将userId 数组封装进Map 中不然会出错
+public boolean deleteUsers(Map<String, Object> map);
+
+前端得到id数组：
+	checkbox
+	1. 利用jquery 的$(form).serialize() 方法得到id 数组, name 属性绑定id名，value绑定id值
+		后台参数为 int [] id//id名与前端id名相同, 
+	
+	2. 不用 name 属性，直接自定义属性绑定值，attr("xx", 1), 将全部 id 用特定符号连接为字符串
+		如：1-2-3-
+	再用substring(), 剪切字符串 得到1-2-3传给后台
+	后台：利用 split 方法得到 1 2 3 字符串，
+	再用 Integer.paresInt(str); 得到整形数据，再封装进数组中
