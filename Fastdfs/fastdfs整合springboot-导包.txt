@@ -26,4 +26,14 @@ pom.xml 不再显错
 
 提示：fastdfs-client-java 从头到尾都是红色的不用理会
 
+4 在工程的resources 包下配置tracker.conf 文件 -- 其他内容自己上网
+
+tracker_server=192.168.126.130:22122
+
+# 连接超时时间，针对socket套接字函数connect，默认为30秒
+connect_timeout=30000
+
+# 网络通讯超时时间，默认是60秒
+network_timeout=60000
+
 
