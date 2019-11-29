@@ -1,0 +1,29 @@
+1 导包，但因为maven远程库中没有，所以到不进，要自己下载打包到自己maven仓库中
+		<dependency>
+			<groupId>org.csource</groupId>
+			<artifactId>fastdfs-client-java</artifactId>
+			<version>1.27-SNAPSHOT</version>
+		</dependency>
+
+
+2 通过git下载fdfs的客户端 -- idea
+https://github.com/happyfish100/fastdfs-client-java
+
+git clone https://github.com/happyfish100/fastdfs-client-java
+
+3 将克隆下来的fastdfs-client-java 拷贝到工程下，选中 file - new - Module from exist Sources...
+	-> 选中 fastdfs-client-java 
+	-> 选中 import module from external model
+		-> 选中Maven
+	-> 一直next 到最后
+
+此时打开右边框Maven Project 可以看到 fastdfs-client-java 
+	-> lifecycle
+	-> install （这步可以不做了，最好做下）
+
+
+pom.xml 不再显错
+
+提示：fastdfs-client-java 从头到尾都是红色的不用理会
+
+
