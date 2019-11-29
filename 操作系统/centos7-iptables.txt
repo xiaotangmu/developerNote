@@ -1,0 +1,41 @@
+系统升级到CentOS 7后总感觉iptables怪怪的,比如不管怎么保存重启后都被初始化一下,即便我最后发大绝招启动时候加命令:
+首先iptables-save > /etc/iptables.rules保存当前状态。
+然后再在/etc/rc.local中强制加上
+
+/etc/rc.local
+iptables-restore /etc/iptables.rules
+重启后虽然规则生效但仔细看规则还是一些被莫名添加的额外的内容，让人很是不爽。
+
+仔细一google,发现问题之所在了。RedHat在7中更改了系统软件，不再使用iptables作为系统的防火墙，而是使用了FirewallD,但是为了兼容过去的命令也可以使
+用iptables来设置防护规则，但启动的时候自搞了一套。
+
+解决方法也很简单。
+
+首先，可以考虑follow官方的想法转用FirewallD。其实查看一些官方文档也能用。
+但是，个人觉得若没有显著的提升也可以继续使用原来的iptables。若打算继续使用iptables, 可以继续做如下:
+
+备份当前规则
+来源：https://blog.csdn.net/wenwenxiong/article/details/51785258
+
+iptables-save > iptables.rules
+禁用FireWallD,安装&启用iptables-services
+
+systemctl stop firewalld
+systemctl mask firewalld
+yum install iptables-services -y
+systemctl enable iptables
+这时候检查iptables发现规则被清空了
+
+iptables -L -x -n
+将备份的规则还原
+
+iptables-restore iptables.rules
+保存当前规则
+
+/usr/libexec/iptables/iptables.init save
+若使用minimize版本的安装，可能会出现提示
+
+iptables: Saving firewall rules to /etc/sysconfig/iptables: /etc/init.d/iptables: line 274: restorecon: command not found
+
+这是因为selinux没有安装的缘故，缺少一个组件。安装policycoreutils即可。
+yum install policycoreutils -y
