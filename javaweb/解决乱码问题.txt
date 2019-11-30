@@ -22,3 +22,8 @@
 
 	数据库
 	jdbc.url=jdbc:mysql://localhost:3306/ssm_crud?useUnicode=true&characterEncoding=utf8
+
+
+解决url 请求路径参数的中文乱码
+String paramValue = parameterMap.getParameter("name");
+paramValue = URLDecoder.decode(paramValue, "UTF-8");//解决请求路径的中文乱码

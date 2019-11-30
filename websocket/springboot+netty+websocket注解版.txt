@@ -1,0 +1,30 @@
+参考：https://github.com/YeautyYE/netty-websocket-spring-boot-starter
+
+
+@ServerEndpoint
+
+    当ServerEndpointExporter类通过Spring配置进行声明并被使用，它将会去扫描带有@ServerEndpoint注解的类 被注解的类将被注册成为一个WebSocket端点 所有的配置项都在这个注解的属性中 ( 如:@ServerEndpoint("/ws") )
+
+@OnOpen
+
+    当有新的WebSocket连接进入时，对该方法进行回调 注入参数的类型:Session、HttpHeaders、ParameterMap
+
+@OnClose
+
+    当有WebSocket连接关闭时，对该方法进行回调 注入参数的类型:Session
+
+@OnError
+
+    当有WebSocket抛出异常时，对该方法进行回调 注入参数的类型:Session、Throwable
+
+@OnMessage
+
+    当接收到字符串消息时，对该方法进行回调 注入参数的类型:Session、String
+
+@OnBinary
+
+    当接收到二进制消息时，对该方法进行回调 注入参数的类型:Session、byte[]
+
+@OnEvent
+
+    当接收到Netty的事件时，对该方法进行回调 注入参数的类型:Session、Object
