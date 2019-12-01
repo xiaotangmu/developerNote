@@ -1,0 +1,9 @@
+自定义注解时注意，模仿Override retention 要修改，不然反射得不到！！！
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)//注意这里不能用这个 @Retention(RetentionPolicy.SOURCE)，反射得不到！！！
+public @interface LoginRequired {
+
+    boolean loginSuccess() default true;
+
+}
