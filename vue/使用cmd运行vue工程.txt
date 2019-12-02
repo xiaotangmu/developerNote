@@ -1,0 +1,3 @@
+前提：在电脑上安装了node.js
+
+cmd 进入vue 工程目录，直接 npm run dev 运行
