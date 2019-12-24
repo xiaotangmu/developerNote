@@ -1,0 +1,5 @@
+axios.post(url, data, {headers: {'Content-Type': 'multipart/form-data'}}).then(//multipart/form-dat ´«ËÍÎÄ¼ş
+      (res) => {
+        resolve(res)
+      }
+    )

@@ -1,0 +1,3 @@
+通用mapper 插入后自动更新主键
+roleMapper.insert(role);
+            System.out.println(role.getId());//id 已经更新

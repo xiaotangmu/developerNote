@@ -1,0 +1,5 @@
+var imgFileType = ["gif", "jpg", "jpeg", "bmp", "png", "psd"];
+            if(imgFileType.indexOf(fileType) === -1){//不包含
+                alert("请上传正确图片文件");
+                return;
+            }

@@ -1,0 +1,57 @@
+参考：https://blog.csdn.net/a164753752/article/details/89359841
+
+
+现象
+
+    Java使用Redis删除HashMap中的key时,取出对应的HashMap后通过Java中HashMap的remove方法移除key然后重新调用redis的Hmset方法将覆盖无效
+
+示例代码
+
+//通过key取出对应的HashMap
+Map<String, String> ruleMap = jedisCluster.hgetAll("HashKey");
+//通过java中移除HashMap中的Key
+ruleMap.remove("ruleA");
+//将移除后的HashMap重新存入redis的hashmap中
+jedisCluster.hmset(key, ruleMap);
+//问题来了,这里通过HashKey从redis中取出HashMap时发现ruleA的key的内容还在存在
+Map<String, String> newRuleMap = jedisCluster.hgetAll("HashKey");
+System.out.println(newRuleMap);
+
+解决方案
+
+    通过hdel命令删除指定HashMap中指定Key:
+
+        使用HDEL key field [field …]:
+        删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略
+
+示例代码
+
+//通过redis中针对hashmap移除指定key函数进行处理
+jedisCluster.hdel("HashKey", "ruleA");
+
+
+原理
+
+    redis中的散列表在进行存储值时,只会将客户端上送的hashmap中存在的key在redis中查找对应的key值进行覆盖重写,至于通过Java代码对该HashMap进行的remove操作在redis中并不会感知到,所以在通过HMSET函数进行操作时,redis只会找到key覆写,不会执行del操作,实际针对redis中的hashmap key的删除只能通过HDEL函数
+
+示例代码
+
+    我们通过Jedis包中 redis.clients.jedis.BinaryClient.hmset方法的源码来看,最终发往redis服务器执行的命令时的操作
+
+//实际上在发往redis执行命令前,会将HashMap中的转成字节数据集合
+public void hmset(byte[] key, Map<byte[], byte[]> hash) {
+    List<byte[]> params = new ArrayList();
+    params.add(key);
+    Iterator i$ = hash.entrySet().iterator();
+    while(i$.hasNext()) {
+        Entry<byte[], byte[]> entry = (Entry)i$.next();
+        params.add(entry.getKey());
+        params.add(entry.getValue());
+    }
+    this.sendCommand(Command.HMSET, (byte[][])params.toArray(new byte[params.size()][]));
+}
+
+
+    实际对应的redis命令即为:
+
+redis 127.0.0.1:6379> HSET HashKey "ruleA" "valA" "ruleB" "valB"

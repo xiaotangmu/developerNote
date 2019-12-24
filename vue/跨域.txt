@@ -1,0 +1,62 @@
+cli-3
+
+
+配置文件：
+vue.config.js
+
+//属性的设置看情况，有些是可以去除的
+
+devServer: {
+    open: true,
+    port: port,
+    host: 'localhost',
+    proxy: {
+      '/api': {
+        target: `http://127.0.0.1:8081/stores`,
+        changeOrigin: true,
+        secure: false,//是否https，默认是true
+        ws: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API]: {
+        target: `http://127.0.0.1:${port}/mock`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      }
+    }
+    // after: require('./mock/mock-server.js')
+  },
+
+...
+
+使用    参数看情况 -- 这只是其中一种表示
+  return axios({
+    method: 'post',
+    url: 'api/user/login',
+    // url: 'http:localhost:8081/stores/user/login',
+    data: data,
+    responseType: 'json'
+  })
+
+
+如果发现跳转到代理地址而是直接在原来地址上加上代理地址
+如：http://localhost:8080/dev-api/http://local....代理地址
+
+查看配置的baseUrl
+特别是拦截器设置的配置文件
+发现下面的东西，注释掉拼接baseurl
+// create an axios instance
+// const service = axios.create({
+//   // baseURL: '', // url = base url + request url
+//   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+//   // withCredentials: true, // send cookies when cross-domain requests
+//   timeout: 5000 // request timeout
+// })
+
+
+如果配好后，出现 proxy error 。。。 不能将localhost:8080 (默认地址) 代理为 localhost:8081 (代理的基础地址)
+说明远程服务器没有开，--  这个时候已经配置好了，

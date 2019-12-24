@@ -1,0 +1,36 @@
+参考：https://www.cnblogs.com/jajian/p/10051901.html
+里面还有日期等格式的转换
+
+<dependency>
+     <groupId>com.alibaba</groupId>
+     <artifactId>fastjson</artifactId>
+     <version>x.x.x</version>
+</dependency>
+
+其中x.x.x是版本号，根据需要使用特定版本，建议使用最新版本。
+
+Fastjson 主要的API
+
+Fastjson入口类是 com.alibaba.fastjson.JSON，主要的 API 是 JSON.toJSONString 和 parseObject。
+
+package com.alibaba.fastjson;
+public abstract class JSON {
+      // Java对象转换为JSON字符串
+      public static final String toJSONString(Object object);
+      //JSON字符串转换为Java对象
+      public static final <T> T parseObject(String text, Class<T> clazz, Feature... features);
+}
+
+序列化：
+
+String jsonString = JSON.toJSONString(obj);
+
+反序列化：
+
+VO vo = JSON.parseObject("...", VO.class);
+
+泛型反序列化：
+
+import com.alibaba.fastjson.TypeReference;
+
+List<VO> list = JSON.parseObject("...", new TypeReference<List<VO>>() {});

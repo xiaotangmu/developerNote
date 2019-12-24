@@ -1,0 +1,22 @@
+原文链接：https://blog.csdn.net/u011066470/article/details/85236335
+
+前台遍历：
+
+$.post("wechat_report/totalWechatData",{}, function (data, status) {
+
+    var xhotData=data.xaxisData;
+    var yhotData=data.yzxisdataMap;
+    alert(  Object.getOwnPropertyNames(yhotData).length);
+    /**  方式一
+    for(var k in yhotData){
+        alert("key名称是："+k+",key的值是："+yhotData[k]);
+    }
+     **/
+    for(var k=0;k<Object.getOwnPropertyNames(yhotData).length;k++ ){
+        alert("keys名称是："+xhotData[k]+",keys的值是："+yhotData[xhotData[k]]);
+    }
+});
+
+3.获取长度：
+
+Object.getOwnPropertyNames(yhotData).length

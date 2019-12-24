@@ -66,6 +66,20 @@ HOUR_OF_DAY 	时 	DAY_OF_WEEK 	周几 	WEEK_OF_YEAR 	一年的第多少周
     }
 
 注意：month是从0开始的，而月份是从1开始的，所以month需要加一。
-————————————————
-版权声明：本文为CSDN博主「ytasdfg」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/ytasdfg/article/details/81086118
+
+
+参考：https://blog.csdn.net/qq_38410730/article/details/87448312
+
+Calendar calendar = Calendar.getInstance();
+calendar.setTime(new Date());					//放入Date类型数据 -- SimpleDateFormat
+ 
+calendar.get(Calendar.YEAR);					//获取年份
+calendar.get(Calendar.MONTH);					//获取月份
+calendar.get(Calendar.DATE);					//获取日
+ 
+calendar.get(Calendar.HOUR);					//时（12小时制）
+calendar.get(Calendar.HOUR_OF_DAY);				//时（24小时制）
+calendar.get(Calendar.MINUTE);					//分
+calendar.get(Calendar.SECOND);					//秒
+ 
+calendar.get(Calendar.DAY_OF_WEEK);	

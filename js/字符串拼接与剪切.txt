@@ -1,3 +1,18 @@
 
+//下标从0开始算起，包头不包尾
+substring(start, end);
+substring(start);//直到最后
+
+<script type="text/javascript">
+
+var str="Hello world!"
+document.write(str.substring(3,7))
+</script>
+输出：lo w
+
 去除多余字符/选择所需的字符串字段
 str.subString(0, (str.length -1))
+
+
+截取从当前下表位置到最后字符
+var fileType = fileName.substring(fileName.lastIndexOf(".")+1);//截取文件类型

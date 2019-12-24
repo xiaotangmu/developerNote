@@ -1,0 +1,6 @@
+css:
+            text-align: center;//水平居中
+            line-height: 150px;//垂直居中，高度为整个div的高度
+
+出问题了 --  text-align失效
+-- 用center 标签替代

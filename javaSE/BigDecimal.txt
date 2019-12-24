@@ -1,7 +1,20 @@
 原文链接：https://blog.csdn.net/mz4138/article/details/82708815
 	https://blog.csdn.net/ahwr24/article/details/7048724  
 
+////////////////////////////////////////////////////////////////////
+BigDecimal 转换为int
 
+BigDecimal a=newBigDecimal(12.88);
+
+intb=a.intValue();
+///////////////////////////////////////////////////////////////////
+
+除法无限循环需要设置精度
+foo.divide(bar); --》 
+foo.divide(bar, 2, BigDecimal.ROUND_HALF_UP);
+不能直接setScale()
+参考https://www.cnblogs.com/LeoBoy/p/5897754.html
+///////////////////////////////////////////////////////////
 
 
 BigDecimal 是java小数操作的一个专有类,在电商、金融行业 存储跟金额有关的字段

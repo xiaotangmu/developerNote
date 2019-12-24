@@ -1,0 +1,26 @@
+1 拦截器拦截并设置参数
+@Component
+public class AuthInterceptor extends HandlerInterceptorAdapter {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+	...
+	request.setAttribute("userId", xxx);// memberId -- 会员id
+	request.setAttribute("userName", xxxx); //nickname -- 昵称 -- 一般放置的数据
+	...
+	}
+}
+
+2 获取参数
+//注意因为使setAttr放置的参数，所以用getAttr获取 -- 数据能够在服务器间传递，不要用getParameter -- 获取路径上的哪些参数
+
+	@GetMapping("success")
+	@LoginRequired(loginSuccess=true)
+	public String success(HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("userId: " + request.getParameter("userId") +
+				", userName: " + (String) request.getAttribute("userName"));
+		//注意因为使setAttr放置的参数，所以用getAttr获取 -- 数据能够在服务器间传递，不要用getParameter -- 获取路径上的哪些参数
+		
+		return "success";
+	}
+
+参考： https://blog.csdn.net/wz2292667460/article/details/79366493 的图片

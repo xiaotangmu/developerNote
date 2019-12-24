@@ -1,0 +1,58 @@
+参考：https://www.2cto.com/kf/201712/706399.html
+
+解决springboot druid 数据库批量更新错误问题
+报错：
+Caused by: java.sql.SQLException: sql injection violation, multi-statement not allow 。。。
+
+
+这次问题需要两处都配置了才解决
+
+1 配置类配置：
+
+	@ConfigurationProperties(prefix = "spring.datasource")
+	@Bean
+	public DataSource druid() {
+		DruidDataSource druidDataSource = new DruidDataSource();
+		List<Filter> filterList = new ArrayList<>();
+
+		filterList.add(wallFilter());
+
+		druidDataSource.setProxyFilters(filterList);
+
+		return druidDataSource;
+	}
+
+	@Bean
+	public WallFilter wallFilter() {
+
+		WallFilter wallFilter = new WallFilter();
+		wallFilter.setConfig(wallConfig());
+		return wallFilter;
+
+	}
+
+	@Bean
+	public WallConfig wallConfig() {
+		WallConfig config = new WallConfig();
+		config.setMultiStatementAllow(true);// 允许一次执行多条语句
+		config.setNoneBaseStatementAllow(true);// 允许非基本语句的其他语句
+		return config;
+
+	}
+
+
+2 application.yml 配置 
+	-- url -- allowMultiQueries=true&
+
+spring:
+  datasource:
+    username: root
+    password: 1275485428
+    url: jdbc:mysql://localhost:3307/stores_distribution?allowMultiQueries=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    schema:
+#      - classpath:department.sql
+#      - classpath:employee.sql
+#    initialization-mode: always
+
+    type: com.alibaba.druid.pool.DruidDataSource

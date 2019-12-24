@@ -1,0 +1,6 @@
+https://blog.csdn.net/weixin_34024244/article/details/78361387
+
+在BODY中添加一个属性  οndragstart="return false"
+
+
+如下<body  οndragstart="return false">这样图片就不会在被拖动时进入一个新图片页面了

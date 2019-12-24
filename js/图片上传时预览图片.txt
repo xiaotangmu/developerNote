@@ -1,0 +1,28 @@
+
+    <input type="file" id="file" name="imageFile" />
+    <img id="image" style="border: 2px solid darkgray" height="300px" src="#"/>
+
+-- script -- 
+$('#file').change(function () {
+            var filePath = $(this).val(); //获取到input的value，里面是文件的路径  -- 此时得到的路径不是电脑文件夹的路径，浏览器的重新命名不可逆，不可设置（针对用户浏览器），不要浪费时间
+            var src = window.URL.createObjectURL(this.files[0]); //转成可以在本地预览的格式
+            $('#image').attr('src', src);
+
+            //获取图片相应数据
+            var f = this.files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = e.target.result;
+                //alert(data);//data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWE...... -- base64 文件数据 -- 所以此时上传的文件不能太大
+                //加载图片获取图片真实宽度和高度
+                var image = new Image();
+                image.onload=function(){
+                    var width = image.width;//获取图片真实宽，单位px
+                    var height = image.height;//高，px
+                    var size = f.size();//获取图片真实大小，单位 B，字节，（并没有变成base64 数据的大小 -- 大原文件的1/3大小）
+                    alert(width+'======'+height+"====="+size);
+                };
+                image.src= data;
+            };
+            reader.readAsDataURL(f);
+        });

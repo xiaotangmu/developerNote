@@ -1,0 +1,11 @@
+List<Object> values = new ArrayList<>(map.values());
+
+map.values() 为Collection
+
+
+这样写更好
+List list;
+if (coll instanceof List)
+  list = (List)coll;
+else
+  list = new ArrayList(coll);

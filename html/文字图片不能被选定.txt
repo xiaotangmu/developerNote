@@ -1,0 +1,8 @@
+https://blog.csdn.net/GISuuser/article/details/77175542
+
+css
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    -khtml-user-select: none; 
+    user-select: none;

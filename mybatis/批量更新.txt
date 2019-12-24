@@ -1,0 +1,14 @@
+<update id="updateNewStock" parameterType="java.util.List">
+        <foreach collection="list" item="bean" index="index" open="" close="" separator=";">
+            UPDATE green_beans
+            <set>
+                stock=#{bean.stock}
+            </set>
+            <where>
+                beanUid = #{bean.beanUid}
+            </where>
+        </foreach>
+    </update>
+————————————————
+版权声明：本文为CSDN博主「ty0903csdn」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/ty0903csdn/article/details/81779557

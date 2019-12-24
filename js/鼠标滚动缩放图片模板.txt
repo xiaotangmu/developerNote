@@ -1,0 +1,20 @@
+<script>
+	var myimage =document.getElementById("img_origin_div");
+        if (myimage.addEventListener) {
+            // IE9, Chrome, Safari, Opera
+            myimage.addEventListener("mousewheel", MouseWheelHandler, false);
+            // Firefox
+            myimage.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+        } else {//attachEvent适用于旧的 IE浏览器，IE 6/7/8
+            myimage.attachEvent("onmousewheel", MouseWheelHandler);
+        }
+
+        function MouseWheelHandler(e) {
+            var myimage1 =document.getElementById("img_origin");
+            var e = window.event || e;
+            var delta = Math.max(-1, Math.min(1, (e.wheelDelta|| -e.detail)));
+            myimage1.style.width = Math.max(150, myimage1.width + (30 * delta)) + "px";
+            myimage1.style.height = Math.max(150, myimage1.height + (30 * delta)) + "px";//注意这里并不是按比例缩放
+            return false;
+        }
+</script>

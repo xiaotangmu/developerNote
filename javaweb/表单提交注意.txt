@@ -1,2 +1,4 @@
 不要把提交按钮写在表单里面，有时候各种原因请求不到异步，return false 都不行，
-写在外面！！！
+写在外面！！！ -- 下面这样写应该可以
+
+<input type="submit" οnclick="submitAction(); return false;" />

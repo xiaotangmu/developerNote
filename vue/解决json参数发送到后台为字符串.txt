@@ -1,0 +1,14 @@
+依赖
+import qs from 'qs'
+
+const url = 'api/user/login'
+
+axios.post(url, qs.stringify(user)).then( // user为请求参数
+      (res) => {
+        resolve(res)
+      }
+    )
+      .catch(error => {
+        reject(error)
+      })
+
