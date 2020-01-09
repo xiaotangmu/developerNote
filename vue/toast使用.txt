@@ -1,0 +1,7 @@
+npm install --save mint-ui
+
+import { Toast } from 'mint-ui'//使用什么导入什么
+
+
+
+Toast('hello');

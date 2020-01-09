@@ -1,0 +1,24 @@
+box-shadow属性
+box-shadow: h-shadow v-shadow blur spread color;
+h-shadow/v-shadow：水平/垂直方向上的位置，可以为负值；
+blur：模糊距离；
+spread：阴影的尺寸；
+color：阴影的颜色；
+
+#shadow{
+     width: 200px;
+     height: 200px;
+     box-shadow: 
+          /* 左边阴影 */
+          -10px 0px 5px -5px red,
+          /* 右边阴影 */
+          10px 0px 5px -5px blue,
+          /* 顶部阴影 */
+          0px -10px 5px -5px yellow,
+          /* 底部阴影 */
+          0px 10px 5px -5px purple;
+      margin: 20px;
+ }
+
+版权声明：本文为CSDN博主「m_2507」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/m_2507/article/details/78529839

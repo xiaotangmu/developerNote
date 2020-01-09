@@ -1,0 +1,27 @@
+在元素中添加基本内容和方向或主题 -- 见官网
+<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="right" title="
+Tooltip on right">Tooltip on right</button>
+
+$('#element').tooltip('show')  /// $('#element').popover('show')
+
+关键
+触发函数
+trigger -- data-trigger="hover"  
+
+是否使用html编辑内容 -- 自定义样式
+data-html="true"
+
+/////////////////////////////////// 注意/////////////////////////////////////////////////////////////
+//删除按钮的提示
+        $(document).on('hover', '.spu-item-delete', function(){ // 这里写hover 没效果
+          $(this).popover('show');
+        });
+
+写成mouseenter
+//删除按钮的提示
+        $(document).on('mouseenter', '.spu-item-delete', function(){
+          $(this).popover('show');
+        });
+
+
+

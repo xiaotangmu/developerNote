@@ -1,0 +1,10 @@
+-moz-box-shadow: 2px 2px 10px #909090;
+-webkit-box-shadow: 2px 2px 10px #909090;
+box-shadow:2px 2px 10px #909090;
+
+第一个参数是x轴阴影段长度
+第二个参数是y轴阴影段长度
+第三个参数是往四周阴影段长度
+第四个参数是阴影段颜色
+
+参考：https://www.cnblogs.com/yueguanguanyun/p/7651663.html

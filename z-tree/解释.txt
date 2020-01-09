@@ -1,0 +1,186 @@
+import './../plugins/zTreeStyle/zTreeStyle.css'  
+import '@/assets/js/jquery-1.4.4.min.js';
+import '@/assets/js/jquery.ztree.all.min.js';
+
+
+<ul id="treeDemo" class="ztree"></ul>
+
+
+js
+
+var setting = {
+        data: {
+          // keep : {
+          //   leaf: false,//是否锁住叶子，锁了，叶子不能再添加
+          //   parent: false,//为true 该父元素子节点全部移除
+          // },
+          key : {//设置属性/参数名 -- 注意是名不是值 -- 更方便自定义数据
+            //这些都是默认值
+            checked: "checked",
+            children: "children",
+            isParent: "isParent",//是否是父元素
+            isHidden: "isHidden",
+            name: 'name',
+            title: "",//提示信息 -- 此时与name一样
+            url: "url"
+          },
+          simpleData: {
+            enable: true,//是否使用简单数据，如果设置为 true，请务必设置 setting.data.simpleData 内的其他参数: idKey / pIdKey / rootPId，并且让数据满足父子关系。
+            idKey: "id",//也是再设置参数名
+            pIdKey: "pId",//父元素唯一标识，也是再设置参数名
+            rootPId: 0
+          }
+        },
+        async: { //异步获取数据，此时返回的数据格式应该是下列 zNodes 的格式
+          enable: true,
+          url: "${APP_PATH}/permission/loadData",
+          autoParam: ["id", "name=n", "level=lv"],
+          type: "post"
+        },
+        view: {
+          showIcon: true,//是否显示图标
+          dblClickExpand: true,//双击是否打开
+          selectedMulti: false,//是否可以多选
+          expandSpeed: "fast",//展开动画
+          fontCss : {color:"red"},//字体样式
+          showLine: true,//是否显示连线
+          txtSelectedEnable: false,//是否可以选择文本
+          addDiyDom: function(treeId, treeNode){//第一次显示/加载的时候触发 -- 出现在窗口的第一次 -- 第一次展开出现等
+	
+	// alert(treeNode.tId);//treeDemo_7 --- 树的自动排序
+               // alert(treeNode.id);//12 --- 自己定义的属性值
+
+	//更改文件图标
+            var icoObj = $("#" + treeNode.tId + "_ico"); // tId = permissionTree_1, $("#permissionTree_1_ico")
+            // alert(treeNode.sex);//调用自己定义的属性，level是默认属性，0为第一层
+            if(treeNode.level === 0){//第一层
+              icoObj.removeClass("button ico_docu ico_open").css("background","").append('<span class="glyphicon glyphicon-th" ></span>');//使用bootstrap 图标不能指定font类型
+            }else if(treeNode.level === 1){//第二层
+              icoObj.removeClass("button ico_docu ico_open").css("background","").append('<span class="glyphicon glyphicon-th-list" ></span>');//使用bootstrap 图标不能指定font类型
+            }else if(treeNode.level === 2){//第三层
+              icoObj.removeClass("button ico_docu ico_open").css("background","").append('<span class="glyphicon glyphicon-th-large" ></span>');//使用bootstrap 图标不能指定font类型
+            }
+	
+          },
+          addHoverDom: function(treeId, treeNode){//鼠标移入触发 -- mouseenter
+
+          },
+          removeHoverDom: function(treeId, treeNode){// -- mouseleave
+            // alert(treeId); //treeDemo
+          }
+        },
+        check : {
+          autoCheckTrigger: false,//是否触发before/oncheck 的回调函数
+          chkboxType: { "Y": "ps", "N": "ss" },//Y 为勾选 N 为取消勾选， p为影响父元素 s为影响子元素
+          chkStyle: "checkbox",//redio/checkbox 类型
+          enable: true,//是否显示单/复选框
+          radioType: "level",//...
+        },
+        callback: {//绑定触发事件
+          onClick:onNodeClick
+        }
+      };
+
+
+      var zNodes =[
+        { id:1, pId:0, name:"父节点1 - 展开", open:true},
+        { id:11, pId:1, name:"父节点11 - 折叠"},
+        { id:111, pId:11, name:"叶子节点111"},
+        { id:112, pId:11, name:"叶子节点112"},
+        { id:113, pId:11, name:"叶子节点113"},
+        { id:114, pId:11, name:"叶子节点114"},
+        { id:12, pId:1, name:"父节点12 - 折叠"},
+        { id:121, pId:12, name:"叶子节点121"},
+        { id:122, pId:12, name:"叶子节点122"},
+        { id:123, pId:12, name:"叶子节点123"},
+        { id:124, pId:12, name:"叶子节点124"},
+        { id:13, pId:1, name:"父节点13 - 没有子节点", isParent:true},
+        { id:2, pId:0, name:"父节点2 - 折叠"},
+        { id:21, pId:2, name:"父节点21 - 展开", open:true},
+        { id:211, pId:21, name:"叶子节点211"},
+        { id:212, pId:21, name:"叶子节点212"},
+        { id:213, pId:21, name:"叶子节点213"},
+        { id:214, pId:21, name:"叶子节点214"},
+        { id:22, pId:2, name:"父节点22 - 折叠"},
+        { id:221, pId:22, name:"叶子节点221"},
+        { id:222, pId:22, name:"叶子节点222"},
+        { id:223, pId:22, name:"叶子节点223"},
+        { id:224, pId:22, name:"叶子节点224"},
+        { id:23, pId:2, name:"父节点23 - 折叠"},
+        { id:231, pId:23, name:"叶子节点231"},
+        { id:232, pId:23, name:"叶子节点232"},
+        { id:233, pId:23, name:"叶子节点233"},
+        { id:234, pId:23, name:"叶子节点234"},
+        { id:3, pId:0, name:"父节点3 - 没有子节点", isParent:true}
+      ];
+
+      $(document).ready(function(){
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+      });
+
+
+
+单击展开事件
+function onNodeClick (e,treeID,treeNode) {
+        var zTree=$.fn.zTree.getZTreeObj("treeDemo");//单击展开
+        zTree.expandNode(treeNode);
+      };
+
+//////////////////////////////////////////////////////////////////////////////////////注意点
+
+	// alert(treeNode.tId);//treeDemo_7 --- 树的自动排序
+               // alert(treeNode.id);//12 --- 自己定义的属性值
+
+
+///////////////////////////////////////////////// treeNode 的节点属性  ///////////////////
+
+checked 		-- true/false --- 是否勾选
+children		 -- 子节点集合 -- json数据
+chkDisabled	 -- checkbox/radio 是否禁用
+click	 	-- = onclick -- 可以直接绑定操作
+getCheckStatus()	-- 获取节点半勾选状态 -- setting.check.enable = true 时有效
+getIndex()	-- 获取节点在同级节点中的位置
+getNextNode()	-- 获取与 treeNode 节点相邻的后一个节点。与 treeNode 节点相邻的后一个节点。如果 treeNode 是最后一个节点，返回 null 。
+getParentNode()	-- 获取 treeNode 节点的父节点。
+getPath()		-- 返回所有父节点加自己的集合 -- json 数据
+getPreNode()	-- 与 treeNode 节点相邻的前一个节点
+halfCheck		-- 强行设置为半勾选状态 
+
+////////////////////// 可以修改 css 样式替代下面设置
+
+icon		-- 节点自定义图标的 URL 路径
+iconClose 	-- 父节点自定义折叠时图标的 URL 路径
+iconOpen		-- 父节点自定义展开时图标的 URL 路径
+iconSkin		-- 节点自定义图标的 className --- ！！！（name） 
+
+
+isHidden		-- 是否隐藏
+isParent		-- 是否为父节点
+name		-- 节点名称 -- 如果不使用 name 属性保存节点名称，请修改 setting.data.key.name 
+nocheck		-- 是否隐藏多/单选框
+open		-- 节点的 展开 / 折叠 状态
+target		-- 设置点击节点后在何处打开 url。[treeNode.url 存在时有效]
+url		-- 节点链接的目标 URL
+
+还可以自己定义其他属性 一样的调用 -- treeNode.attr
+
+具体解释见api
+多选框
+check_Child_State -- 子节点勾选状态  ---  -1/0/1/2 
+
+////////////   true/flase   /////////////////////////
+check_Focus	-- 类似hover  --- 移入/移出 -- true/false
+checkedOld	-- 初始化时是否被勾选
+editNameFlag	-- 是否处于编辑名称状态
+isAjaxing		-- 是否在异步加载
+isFirstNode	-- 是否是同级的第一个节点
+isHover		-- 是否处在 hover 状态
+isLastNode	-- 是否是同级的最后一个节点
+
+level		-- 节点层级 根节点 level = 0，递增
+parentTId		-- treeNode 节点的父节点唯一标识 tId
+tId		-- 节点的唯一标识
+zAsync		-- 节点是否已经进行过异步加载，避免父节点反复异步加载数据
+
+
+

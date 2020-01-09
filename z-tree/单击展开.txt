@@ -1,0 +1,10 @@
+callback: {//绑定触发事件
+          onClick:onNodeClick
+        }
+
+
+单击展开事件
+function onNodeClick (e,treeID,treeNode) {
+        var zTree=$.fn.zTree.getZTreeObj("treeDemo");//单击展开
+        zTree.expandNode(treeNode);
+      };

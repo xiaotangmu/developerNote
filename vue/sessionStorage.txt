@@ -1,0 +1,52 @@
+来源：https://www.cnblogs.com/denken/p/11197612.html
+
+
+生命周期 一次会话，叉了页面数据就没有 -- 刷新还有
+
+
+直接使用
+ vue中sessionStorage的使用
+
+localStorage 和 sessionStorage 属性允许在浏览器中存储 key/value 对的数据。
+sessionStorage 用于临时保存同一窗口(或标签页)的数据，在关闭窗口或标签页之后将会删除这些数据。
+提示: 如果你想在浏览器窗口关闭后还保留数据，可以使用 localStorage 属性， 改数据对象没有过期时间，今天、下周、明年都能用，除非你手动去删除。
+1.方法
+
+sessionStorage.key(int index) //返回当前 sessionStorage 对象的第index序号的key名称。若没有返回null。
+
+sessionStorage.getItem(string key) //返回键名(key)对应的值(value)。若没有返回null。
+
+sessionStorage.setItem(string key, string value) //该方法接受一个键名(key)和值(value)作为参数，将键值对添加到存储中；如果键名存在，则更新其对应的值。
+
+sessionStorage.removeItem(string key) //将指定的键名(key)从 sessionStorage 对象中移除。
+
+sessionStorage.clear() //清除 sessionStorage 对象所有的项。
+2，存储数据
+2.1 采用setItem()方法存储
+
+sessionStorage.setItem('testKey','这是一个测试的value值'); // 存入一个值
+2.2 通过属性方式存储
+
+sessionStorage['testKey'] = '这是一个测试的value值';
+2.3 存储Json对象
+
+sessionStorage也可存储Json对象：存储时，通过JSON.stringify()将对象转换为文本格式；读取时，通过JSON.parse()将文本转换回对象。
+var userEntity = {
+name: 'tom',
+age: 22
+};
+
+// 存储值：将对象转换为Json字符串
+sessionStorage.setItem('user', JSON.stringify(userEntity));
+
+// 取值时：把获取到的Json字符串转换回对象
+var userJsonStr = sessionStorage.getItem('user');
+userEntity = JSON.parse(userJsonStr);
+console.log(userEntity.name); // => tom
+3,读取数据
+3.1 通过getItem()方法取值
+
+sessionStorage.getItem('testKey'); // => 返回testKey对应的值
+3.2 通过属性方式取值
+
+sessionStorage['testKey']; // => 这是一个测试的value值

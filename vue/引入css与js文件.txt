@@ -1,0 +1,25 @@
+在 index.html 中直接配置不起作用
+
+
+引入css文件
+<style>
+    @import "./assets/global.css";
+</style>
+
+引入js文件 -- js 里面的参数要放在 $(function(){ ... })里才会被执行，间接调用不用
+但还有问题 -- 只有在页面加载时就应用的路由的js才起作用 -- 所以不建议这样做 --直接将js 文件内容复制进mounted(){} -- 异步执行函数
+	-- 作为全局js 也不行
+	-- 但它可以被调用
+
+总的来说，普通js 用来声明函数，不要直接做异步处理 -- 通过mounted(){}
+（声明全局函数一样好用）
+
+<script>
+import'../assets/js/swiper.min.js'  
+...
+<scritp>
+
+引入全局样式
+main.js 下 添加 -- import './assets/css/main_header.css'
+
+普通js没有全局配置(可能某个版本可以)

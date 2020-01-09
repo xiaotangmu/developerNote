@@ -1,0 +1,3 @@
+1. bootstrap 的css文件夹必须与 fonts 文件夹在同一级目录
+
+2. 使用的元素中不能定义font-family --- 字体类型

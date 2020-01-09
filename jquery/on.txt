@@ -1,0 +1,6 @@
+	//1、我们是按钮创建之前就绑定了click，所以绑定不上。
+		//1）、可以在创建按钮的时候绑定。    2）、绑定点击.live()
+		//jquery新版没有live，使用on进行替代
+		$(document).on("click",".edit_btn",function(){
+			//alert("edit");
+}

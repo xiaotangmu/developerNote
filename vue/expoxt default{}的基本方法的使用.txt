@@ -1,0 +1,29 @@
+后面() 表明这是一个函数 -- 不可以声明函数了，: {} 里可以声明函数
+
+el: "#app", //声明起作用的区域
+
+components:{//需要直接引入的vue组件
+    App
+  },
+
+data:{searchName:''}, //定义参数
+
+mounted(){}, -- 用来执行异步任务 -- 定时 -- 订阅发布 ...
+
+computed:{}, -- 计算数据 -- 一般被动触发 -- z = x + y,  当x变动时，z触发变动
+
+methods:{}, -- 定义方法 
+
+深度监视：watch
+watch:{
+	deep: true,
+	handler: function(value){
+		localStorage.setItem('todo_key', JSON.stringify(value))	
+	}
+}
+
+//接收引入，如再动态添加中传过来的item index 等参数值
+props:{
+	deleteTodo: Function //函数
+	todo: Object //属性对象
+}

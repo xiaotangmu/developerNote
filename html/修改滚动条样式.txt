@@ -1,0 +1,81 @@
+参考：https://www.cnblogs.com/yclblog/p/6806496.html
+	https://www.cnblogs.com/ping228/p/scroll-plug.html
+
+
+css3:
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/  
+::-webkit-scrollbar  
+{  
+    width: 16px;  /*滚动条宽度*/
+    height: 16px;  /*滚动条高度*/
+}  
+  
+/*定义滚动条轨道 内阴影+圆角*/  
+::-webkit-scrollbar-track  
+{  
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  
+    border-radius: 10px;  /*滚动条的背景区域的圆角*/
+    background-color: red;/*滚动条的背景颜色*/  
+}  
+  
+/*定义滑块 内阴影+圆角*/  
+::-webkit-scrollbar-thumb  
+{  
+    border-radius: 10px;  /*滚动条的圆角*/
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+    background-color: green;  /*滚动条的背景颜色*/
+}
+
+////////////// 如果不是全局而是特定元素的滚动设计，如带类 inner 的元素
+.inner::::-webkit-scrollbar-thumb  {}.....
+
+
+
+///   但是直接用css3修改样式存在浏览器的兼容性问题，只支持谷歌
+
+
+火狐还不支持css3 对滚动条的修改
+
+///////  设计兼容所有浏览器的滚动条样式  ---- 参考上面链接
+下载插件 -- https://github.com/malihu/malihu-custom-scrollbar-plugin
+
+配置说明参考文章开头参考
+
+具体使用，参考下载的文件 --- example 里的实例，仿写就行了
+
+例子： 对象 .innerbox
+按照实例导入对应js css 文件
+样式
+._mCS_1 .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{
+    background: rgba(0,0,0,0.1);
+    width:3px;
+  }
+  ._mCS_1 .mCSB_scrollTools .mCSB_draggerRail{
+    background: rgba(0,0,0,0.2);
+    width:3px;
+  }
+
+具体
+vue 中使用 直接异步代码 -- 不用文档的加载了$()
+     mounted(){
+        $(".innerbox").mCustomScrollbar({ 
+          theme:"minimal" //主题，具体参考example 下的主题大全 -- scrollbar_themes_demo.html -- 可以不设置
+        });
+      }
+
+其他属性说明：https://www.cnblogs.com/ping228/p/scroll-plug.html
+
+
+
+对于一个页面多个滚动条样式设计要重新赋值 -- 不然直接按照滚动条主题样式执行
+如：
+._mCS_1 .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{ //第一个滚动条
+    /* 1st scrollbar dragger style... */
+}
+._mCS_2 .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{ //第二个滚动条
+    /* 2nd scrollbar dragger style... */
+}
+._mCS_3 .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{////第三个滚动条
+    /* 3rd scrollbar dragger style... */
+}
+

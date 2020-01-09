@@ -1,0 +1,1 @@
+$("input").attr("disabled", false); //false 不用加引号
