@@ -1,0 +1,36 @@
+offset() --- 获取匹配元素在当前视口的相对偏移 -- px
+	$("p:last").offset({ top: 10, left: 30 });
+
+
+position() -- 获取匹配元素相对父元素的偏移 -- px
+	var p = $("p:first");
+	var position = p.position();
+	$("p:last").html( "left: " + position.left + ", top: " + position.top );
+
+
+
+scrollTop / scrollLeft
+
+获取匹配元素相对滚动条顶部的偏移。
+此方法对可见和隐藏元素均有效。
+
+$("div.demo").scrollTop(300);  --- 设置相对滚动条顶部的偏移
+
+
+
+js   -- 原文链接：https://blog.csdn.net/weixin_41342585/article/details/80659736
+一、clientX、clientY
+点击位置距离当前body可视区域的x，y坐标
+
+二、pageX、pageY
+对于整个页面来说，包括了被卷去的body部分的长度
+
+三、screenX、screenY
+点击位置距离当前电脑屏幕的x，y坐标
+
+四、offsetX、offsetY
+相对于带有定位的父盒子的x，y坐标
+
+五、x、y
+和screenX、screenY一样
+

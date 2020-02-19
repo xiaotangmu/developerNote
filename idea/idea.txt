@@ -32,3 +32,5 @@ if 语句
 实时显示文档
 settings -> general -> 勾选 show quick document...
 	
+自动创建类
+alt+回车,然后选择一下,idea就会自动帮我们创建类了. 
