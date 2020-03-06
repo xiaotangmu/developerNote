@@ -296,6 +296,8 @@ ifconfig
 	mv 移动文件/目录或重命名
 		mv 旧文件名 新文件名 重命名（因为当前目录下已经有对应文件，便转为修改名字）
 		mv /xx /xxx 移动文件
+		例子：mv hello.txt /opt  -- 此时会覆盖opt目录
+			mv hello.txt /opt/ -- 此时会将文件移动的opt目录下
 		
 	cat 查看文件 只读
 		cat 文件 
