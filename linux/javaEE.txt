@@ -1,0 +1,53 @@
+JavaEE定制篇
+	搭建javaee 开发环境
+	jdk tomcat eclipse mysql
+	安装JDK
+		将安装软件拉到 /opt（连接失败 service sshd restart）
+		cd /opt/
+		ls
+		tar -zxvf jdk-... 解压jdk
+		vim /etc/profile 配置环境变量
+			在尾部G i进入插入模式
+			JAVA_HOME=/opt/jdk1.7.0_79
+			PATH=/opt/jdk1.7.0_79/bin:$PATH
+			export JAVA_HOME PATH
+			保存退出
+			注销用户，环境变量才能生效（运行3级别 ，logout ，5级别图形注销）
+			测试是否有效
+			java 与 javac 查看信息
+			vim Hello.java 编写
+				public class Hello{
+					public static void main(String[] args){
+						System.out.println("hello world!");
+					}
+				}
+			javac Hello.java 编译
+			java Hello 执行
+	安装tomcat 
+		在/opt 下解压 tar -zxvf tomcat。。。
+		cd tomcat。。。/bin/
+		查看当前目录 pwd 	显示tomcat../bin 
+		ls 查看文件
+		./startup.sh	开启tomcat
+		检查 是否已经开启，在linux 浏览器中输入 localhost：8080 出现tomcat，说明已开启
+		查看系统是否开启8080（用来与外网连接）
+			service iptables status
+		没有则重新设置防火墙开启端口
+			vim /etc/sysconfig/iptables
+			将 22端口行 yy p 复制粘贴， 将22修改为8080，保存
+		重启防火墙
+			service iptables restart
+		service iptables status 查看端口是否真的开启了
+		
+		母机：http://192.168.20.129:8080/ 出现tomcat 成功了
+			192.168.20.129 linux 系统 IP地址
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
