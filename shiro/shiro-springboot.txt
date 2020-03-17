@@ -1,0 +1,492 @@
+Springboot 整合 shiro 
+
+1. 分析Shiro 的核心 API
+Subject：用户主体（把操作交给 SecurityManager）
+SecurityManager: 安全管理器 （关联 Realm）
+Realm：Shiro 连接数据的桥梁
+
+2. 导入 shiro 与 spring 的整合依赖 -- pom.xml
+<!-- shiro 与spring 整合依赖 -->
+<dependency>
+	<groupId>org.apache.shiro</groupId>
+	<artifactId>shiro-spring</artifactId>
+	<version>1.4.0</version>
+</dependency>
+
+3. 自定义 Realm 类
+public class UserRealm extends AuthorizingRealm{
+
+	/*
+	 * 执行授权逻辑
+	 */
+	@Override
+	protected AuthorizationInfo doGetAthorizationInfo(PrincpalCollection arg0) {
+		//...
+		return null;
+	}
+	
+	/*
+	 * 执行认证逻辑
+	 */
+	@Override
+	protected AuthorizationInfo doGetAthorizationInfo(Authentication arg0) throws AuthenticationException {
+		//...
+		return null;
+	}
+}
+
+3. 编写Shiro 配置类
+/*
+ * ShiroConfig
+ */
+@Configuration
+public class ShiroConfig{
+	
+	/*
+ 	* 创建 ShiroFilterFactoryBean
+ 	*/
+    @Bean
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+
+        //设置安全管理器
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+        return shiroFilterFactoryBean;
+    }
+
+    /*
+     * 创建 DefaultWebSecrityManager
+     */
+    @Bean( name = "securityManager")
+    public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("userRealm") UserRealm userRealm){
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        //关联realm
+        securityManager.setRealm(userRealm);
+        return securityManager;
+    }
+
+    /*
+     * 创建 DefaultWebSecrityManager
+     */
+    @Bean(name = "userRealm")
+    public UserRealm getRealm(){
+        return new UserRealm();
+    }
+}
+
+使用 shiro 内置过滤器实现拦截
+准备html 页面
+ShiroConfig
+
+@Bean
+public ShiroFilterFactoryBean getShiroFilterFactoryBean(...){
+
+	ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+
+	//设置安全管理器
+	shiroFilterFactoryBean.setSecurityManger(securityManger);
+	
+	//添加 Shiro 内置过滤器
+	/**
+	 * Shiro内置过滤器，可以实现权限相关的拦截器
+	 * 	常用的过滤器：
+	 *		anon：无需认证（登录）可以访问
+	 *		authc：必须认证才可以访问
+	 *		user：如果使用rememberMe 的功能可以直接访问
+	 * 		perms： 该资源必须得到资源权限才可以访问
+	 *		role：该资源必须得到角色权限才可以访问
+	 */
+	Map<String,String> filterMap = new LinkedHashMap<String,String>();
+	filterMap.put("/add", "authc");
+	filterMap.put("/update", "authc");
+	//filterMap.put("/*", "authc");
+	
+	//无需拦截
+	filterMap.put("/hello", "anon");
+	
+	//修改调整的登录页面 -- 拦截后跳转
+	shiroFilterFactoryBean.setLoginUrl("/toLogin");
+
+	shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
+	
+	return shiroFilterFactoryBean;
+
+}
+
+3. 登录逻辑 
+/login 不用添加到shiroConfig 拦截 -- 直接认证
+当拦截所有时 -- /*  要开放 /login 
+/**
+ * 登录逻辑处理
+ */
+@RequestMapping("login")
+public String login(String name, String password, Model model){
+	
+	/*
+	 * 使用 Shiro 编写认证操作
+	 */
+	//1. 获取 Subject
+	Subject subejct = SecurityUtils.getSubject();
+	
+	//2. 封装用户数据
+	UsernamePasswordToken token = new UsernamePasswordToken(name, password);
+	
+	//3. 执行登录方法
+	try {
+		subject.login(token);
+		
+		//登录成功
+		//跳转到 test.html
+		return "redirect:/testThymeleaf";
+	} catch (UnknowAccountException e) {
+		//e.printStackTrace();
+		//登录失败：用户名不存在	
+		model.addAttribute("msg", "用户名不存在");
+		return "login";
+	} catch (IncorrectCredentialsException e) {
+		//e.printStackTrace();
+		//登录失败：密码错误
+		model.addAttribute("msg", "密码错误");
+		return "login";
+	}
+}
+
+Realm 执行认证逻辑
+@Override
+protected AuthenticationInfo doGetAuthenticationInfo (AuthenticationToken arg0) throws AuthenticationException{
+	System.out.println("执行认证逻辑");
+	
+	//假设数据库的用户名和密码
+	String name = "xiao";
+	String password = "123456";
+
+	//编写shiro 判断逻辑，判断用户名和密码
+	//1. 判断用户名
+	UsernamePasswordToken token = (UsernamePasswordToken) arg0;
+	if(!token.getUsername().equals(name)){
+		//用户名不存在
+		return null;//shiro 底层会抛出 UnKnowAccountException
+	}
+	
+	//2. 判断密码
+	return new SimpleAuthenticationInfo("", password, "");//中间参数为正确密码
+}
+
+整合MyBatis 实现登录
+导入依赖
+<!-- 导入mybatis 相关的依赖 -->
+<dependency>
+	<groupId>com.alibaba</groupId>
+	<artifactId>druid</artifactId>
+	<version>1.0.9</version>
+</dependency>
+<!-- mysql -->
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+</dependency>
+<!-- SpringBoot 的Mybatis 启动器 -->
+<dependency>
+	<groupId>org.mybatis.spring.boot</groupId>
+	<artifactId>mybatis-spring-boot-starter</artifactId>
+	<version>1.1.1</version>
+</dependency>
+
+配置 application.properties 
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/shiroTest
+spring.datasource.username=root
+spring.datasource.password=123456
+
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+
+#类别名包可以直接小写引入 user
+mybatis.type-aliases-package=com.tan.bean
+
+创建数据库和 user 表
+id name password
+
+创建 User 类 
+
+创建 UserMapper 接口 别忘了加入 @MapperScan 给启动类
+public interface UserMapper {
+}
+
+在 com.tan.mapper 下创建UserMapper.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 该文件存放CRUD 的sql 语句 -->
+<mapper namespace="com.tan.mapper.UserMapper">
+	<select id="findByName" parameterType="string" resultType="user">
+	SELECT id,
+		NAME,
+		PASSWORD
+		FROM
+		user where name = #{name}
+	</select>
+</mapper>
+
+创建UserService接口 和 UserServiceImpl
+
+
+修改 UserRealm
+UsernamePasswordToken token = （usernamePasswordToken）arg0;
+
+User user = userService.findByName(token.getUsername());
+
+if( user == null ){
+	//用户名不存在
+	return null;//shiro 底层会抛出 UnKnowAccountException
+}
+
+//2. 判断密码
+return new SimpleAuthenticationInfo("", user.getPassword(), "");
+
+
+
+SpringBoot 与 Shiro 整合实现用户授权
+使用 Shiro 内置过滤器拦截资源
+
+配置ShiroConfig
+@Bean
+public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
+	shiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+	
+	...
+
+	//授权过滤器
+	//注意：当前授权拦截后，shiro 会自动跳转到未授权页面
+	filterMap.put("/add", "perms[user:add]");
+
+	...
+	
+	//设置未授权提示页面
+	shiroFilterFactoryBean.setUnauthorzedUrl("/unAuth");
+}
+
+注意：
+要将 anon 和 授权 （perms，role）的过滤设置放在 authc 拦截所有的面前，不然直接被拦截
+
+
+完成 Shiro 的资源授权
+UserRealm
+/*
+ * 执行授权逻辑
+ */
+@Override
+protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection arg0){
+	System.out.println("执行授权逻辑");
+
+	//给资源进行授权
+	SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+	
+	//添加资源的授权字符串
+	info.addStringPermission("user:add");
+	
+	return info;
+}
+
+
+实际连接数据库
+简化数据 user表添加字段 perms
+id	name	password		perms
+1	tan	123456		user:add
+2	xiao	123456		user:update
+
+
+User
+
+UserMapper
+public User findById(Interger id);
+
+UserMapper.xml
+<select id="findById" parameterType="int" resultType="user">
+	select id,
+	name,
+	password,
+	perms
+	from
+	user where name = #{value}
+</select>
+
+
+UserService -- UserServiceImpl
+
+/update 也要拦截
+
+
+UserRealm
+
+//执行授权逻辑
+protected AuthorizationInfo ...{
+	System.out.println("执行授权逻辑");
+	
+	//给资源进行授权
+	SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+	
+	//添加资源的授权字符串
+	//info.addStringPermission("user:add");
+	
+	//到数据库查询当前登录用户的授权字符串
+	//获取当前登录用户
+	Subject subject = SecurityUtils.getSubject();
+	User user = (User)subject.getPrincipal();
+	User dbUser = userService.findById(user.getId());
+
+	info.addStringPermission(dbUser.getPerms());
+	
+	return info;
+}
+
+
+//执行认证逻辑
+@Override
+protected AuthenticationInfo do...{
+	...
+
+	//2. 判断密码
+	return new SimpleAuthenticationInfo(user, user.getPassword(),"");
+}
+
+thymeleaf 和 shiro 标签整合使用
+1 导入坐标 -- pom.xml
+<!-- thymeleaf 对 shiro 的扩展坐标 -->
+<dependency>
+	<groupId>com.github.theborakompanioni</groupId>
+	<artifactId>thymeleaf-extras-shiro</artifactId>
+	<version></version>
+</dependency>
+
+2 配置 ShiroDialect
+在 ShiroConfig 类里面添加 getShiroDialect 方法
+/**
+ * 配置 ShiroDialect，用于 thymeleaf 和 shiro 标签配合使用
+ */
+@Bean
+public ShiroDialect getShiroDialect(){
+	return new ShiroDialect();
+}
+
+页面使用
+<div shiro:hasPermission="user:add"><div>
+
+
+
+
+//////////////////////////////////////////////////////////////
+spring 版修饰
+<!-- 认证成功同意跳转到first.action, 建议不配置，shiro 认证成功自动到上一个请求路径 -->
+<property name="successUrl" value="/fisrt.action" />
+
+角色 -- role[person]
+
+退出
+LogoutFilter -- 清除session
+/logout = logout 
+/** = authc
+
+菜单加载 -- url
+权限 -- user:add
+
+散列校验 md5 + 盐 -- 有盐字段
+
+
+UserRealm 授权逻辑
+
+List<String> permissions = new ArrayList<String>();
+if(permissionList != null){
+	for(SysPermission sysPermission:permissionList){
+		//将数据库中的权限标签放入集合
+		permissions.add(sysPermission.getPercode());
+	}
+}
+
+//查询权限数据，返回授权信息（要包括上边的permissions）
+SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+//将上边查询到授权信息填充到 simpleAuthorizationInfo 对象中
+simpleAuthorizationInfo.addStringPermissions(permissions);
+
+return simpleAuthorizationInfo;
+
+
+注解方法 -- 代理
+@RequiresPermissions("item:query")
+
+开启 controller 类 aop 支持 --  springmvc
+对系统中类的方法给用户授权，建议在 controller 层进行方法授权。
+
+在springmvc.xml 中配置
+<!-- 开启 aop，对类代理 -->
+<aop:config proxy-target-class="true"></aop:config>
+<!-- 开启 shiro 注解支持 -->
+<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+	<property name="securityManager" ref="securityManager"/>
+</bean>
+
+springboot 版 -- 在 ShiroConfig 中配置
+/**
+     * 开启Shiro注解(如@RequiresRoles,@RequiresPermissions),
+     * 需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     * 配置以下两个bean(DefaultAdvisorAutoProxyCreator和AuthorizationAttributeSourceAdvisor)
+     */
+    @Bean
+    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator(){
+        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        advisorAutoProxyCreator.setProxyTargetClass(true);
+        return advisorAutoProxyCreator;
+    }
+
+    /**
+     * 开启aop注解支持
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
+
+
+问题：只要遇到注解或jsp 标签的授权，都会调用 realm 方法查询数据库，需要使用缓存解决此问题
+
+
+shiro 缓存
+退出，缓存自动清空
+
+
+sessionManager
+
+
+验证码 -- 在认证前就进行认证码校验
+
+public class CustomFormAuthenticationFilter extends Form AuthenticationFilter{
+	
+	//原 FormAuthenticationFilter 的认证方法
+	@Override
+	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throw Exception {
+
+		//在这里进行验证码的校验
+
+		//从 session 获取正确验证码
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpSession session = httpServletRequest.getSession();
+		//取出session 的验证码（正确的验证码）
+		String validateCode = (String) session.getAttribute("validateCode");
+		
+		//取出页面的验证码
+		//输入的验证和session 中的验证进行对比
+		String randomcode = httpServletRequest.getParameter("randomcode");
+		if(!randomcode.equals(validateCode)){
+			//如果检验失败，将验证码错误失败信息，通过shiroLogFailure 设置到 request 中
+			httpServletRequest.setAttribute("shiroLoginFailure", "randomCodeError");
+			//拒绝访问，不再检验账号和密码
+			return true;
+		}
+		return super.onAccessDenied(request, response);
+	}
+}
+
+
+

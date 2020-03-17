@@ -1,4 +1,6 @@
 
+可以取keymap 设置/查找自己想的快捷键 -- 直接搜索要做的内容-- 如：implement method -- Ctrl + O
+
 IDEA提示快捷键：Ctrl + Alt + 空格
 
 创建类时，输入 controller.HelloController, 会在所在包下创建包controller 

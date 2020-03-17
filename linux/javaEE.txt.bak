@@ -15,7 +15,6 @@ JavaEE定制篇
 			注销用户，环境变量才能生效（运行3级别 ，logout ，5级别图形注销）
 			（2）、执行profile文件，这样可以使配置不用重启即可立即生效。
 			[root@localhost software]# source /etc/profile
-			
 			测试是否有效
 			java 与 javac 查看信息
 			vim Hello.java 编写

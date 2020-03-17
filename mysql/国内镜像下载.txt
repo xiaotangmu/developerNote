@@ -1,0 +1,12 @@
+
+mysql国内镜像下载网址
+
+http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/
+
+http://mirrors.sohu.com/mysql/
+
+
+开源镜像站点汇总
+http://segmentfault.com/a/1190000000375848
+
+http://mirrors.ustc.edu.cn/

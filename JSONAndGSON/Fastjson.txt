@@ -34,3 +34,21 @@ VO vo = JSON.parseObject("...", VO.class);
 import com.alibaba.fastjson.TypeReference;
 
 List<VO> list = JSON.parseObject("...", new TypeReference<List<VO>>() {});
+
+
+还可以像普通json那样操作  --- JSONObject 
+        JSONObject json = new JSONObject();
+        json.put("msg","权限不足");
+        return json.toString();
+
+
+
+
+
+idea 使用java.lang.NoClassDefFoundError,com/alibaba/fastjson/JSONObject的错误
+
+
+idea引入json时，在pom.xml加入依赖后，运行报错，提示找不到类
+
+解决方案是：进入idea project structure 快捷键：Ctrl+alt+shift+s -artifacts  将包引入web
+然后自己创建文件夹lib引入fastjson包。重新编译就行 -- 重新run （不是Ctrl + F9）
