@@ -1,0 +1,139 @@
+注意 不能自己切自己 对切面方法切面 -- 无效果
+
+
+简单实例
+
+@Aspect
+@Component
+public class TestAop {
+
+//对。。。impl包下的BrandServiceImpl类的所有方法拦截，并且不拦截以 init 开头的方法
+    @Pointcut("execution(public * com.tan.warehouse.service.impl.BrandServiceImpl.*(..)) && !execution(* com.tan.warehouse.service.impl.BrandServiceImpl.init*(..))")
+    public void log(){}
+
+    @Before("log()")
+    public void initBefore(){
+        System.out.println("initBefore....");
+    }
+    @After("log()")
+    public void initAfter(){
+        System.out.println("initAfter....");
+    }
+
+}
+
+
+
+具体
+引入aop
+
+    		<!-- 使用aop的依赖 -->
+    		<dependency>
+    			<groupId>org.springframework.boot</groupId>
+    			<artifactId>spring-boot-starter-aop</artifactId>
+    		</dependency>
+
+
+创建切面处理类（可以做调用方法前校验session的处理，因为）
+
+    package com.jzy.aspect;
+     
+    import com.jzy.util.PublicUtil;
+    import org.aspectj.lang.JoinPoint;
+    import org.aspectj.lang.annotation.*;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.stereotype.Component;
+    import org.springframework.web.context.request.RequestContextHolder;
+    import org.springframework.web.context.request.ServletRequestAttributes;
+     
+    import javax.servlet.http.HttpServletRequest;
+     
+    /*
+     * Created by zzb on 2017/10/23.
+     *
+     */
+    @Aspect
+    @Component
+    public class HttpAspect {
+        private final  static Logger logger = LoggerFactory.getLogger(HttpAspect.class);
+        /*拦截对对包下面的girlList方法（不管里面是什么参数）*/
+    //    @Before("execution(public * com.imooc.controller.EmailController.toIndex(..))")
+        /*@Before("execution(public * com.imooc.controller.EmailController.*(..))")
+        public void log(){
+            System.out.println("6666666666");
+        }
+     
+        @After("execution(public * com.imooc.controller.EmailController.*(..))")
+        public void logAfter(){
+            System.out.println("7777777777777777");
+        }*/
+     
+        /*切点为controller包下面的所有类的所有方法*/
+        @Pointcut("execution(public * com.jzy.controller.*.*(..))")
+        public void log(){
+     
+        }
+     
+        /*进入方法之前执行*/
+        @Before("log()")
+        public void doBefore(JoinPoint joinPoint){
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            logger.info("@Before:"+PublicUtil.getCurrentTimestamp());
+            /*logger.info("开始拦截");
+            //url
+            logger.info("url={}",request.getRequestURL());
+            //method 类型（GET ,POST .....）
+            logger.info("method={}",request.getMethod());
+            //ip
+            logger.info("ip={}",request.getRemoteAddr());
+            //类方法
+            logger.info("class_method={}",joinPoint.getSignature().getDeclaringTypeName() +"."+ joinPoint.getSignature().getName());
+     
+            //参数
+            logger.info("args={}",joinPoint.getArgs());*/
+        }
+     
+        /*方法执行之后执行*/
+        @After("log()")
+        public void doAfter(){
+            logger.info("doAfter："+PublicUtil.getCurrentTimestamp());
+        }
+     
+        //controller中结果返回之后调用
+        @AfterReturning(returning = "object",pointcut = "log()")
+        public void doAfterReturning(Object object){
+            logger.info("doAfterReturning:"+ PublicUtil.getCurrentTimestamp());
+    //        logger.info("response={}",object.toString());//拦截到void类型的方法也会报错
+        }
+     
+    }
+
+
+更多解释 -- https://www.cnblogs.com/chenziyu/p/9547343.html
+
+二： 切面方法说明
+
+@Aspect
+
+作用是把当前类标识为一个切面供容器读取
+
+@Before
+标识一个前置增强方法，相当于BeforeAdvice的功能
+
+@AfterReturning
+
+后置增强，相当于AfterReturningAdvice，方法退出时执行
+
+@AfterThrowing
+
+异常抛出增强，相当于ThrowsAdvice
+
+@After
+
+final增强，不管是抛出异常或者正常退出都会执行
+
+@Around
+
+环绕增强，相当于MethodInterceptor
