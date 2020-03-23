@@ -1,0 +1,66 @@
+@Service
+public class BrandServiceImpl implements BrandService{
+
+    @Autowired
+    RedisUtil redisUtil;
+    @Autowired
+    RedissonClient redissonClient;
+
+    @Autowired
+    BrandMapper brandMapper;
+
+    Jedis jedis = null;
+    RLock lock = null;
+    boolean tryLock = false;
+    List<Brand> brands = null;
+
+    @Override
+    public List<Brand> getAll() {
+
+        try {
+
+            //从缓存中获取
+            jedis = redisUtil.getJedis();
+		
+            jedis.select(1);//选择数据库 -- 默认0 就算配置了yml 文件还是选0， 所以手动选择
+
+            String brandCacheStr = jedis.get("brand:all:info");
+            if (StringUtils.isNotBlank(brandCacheStr)) {//缓存中有数据
+                brands = JSON.parseObject(brandCacheStr, new TypeReference<List<Brand>>() {
+                });
+                return brands;
+            }
+
+            //缓存没有数据则查询数据库，并将数据同步到缓存
+            // 设置分布式锁
+            lock = redissonClient.getLock("brand:all:lock");// 声明锁
+            tryLock = lock.tryLock();
+            if (tryLock) {//成功上锁
+                //缓存中没有数据,从数据库中获取
+                brands = brandMapper.selectAll();
+
+                if (brands != null && brands.size() > 0) {
+                    // mysql查询结果存入redis
+                    jedis.set("brand:all:info", JSON.toJSONString(brands));
+                } else {
+                    // 数据库没有
+                    // 为了防止缓存穿透将，null或者空字符串值设置给redis
+                    jedis.setex("brand:all:info", 60 * 3, JSON.toJSONString(""));
+                }
+            } else {//有锁,自旋
+                return getAll();
+            }
+
+            return brands;
+        }  finally {
+            if (tryLock) {
+                lock.unlock();// 解锁
+            }
+            if(jedis != null){
+                jedis.close();
+            }
+        }
+    }
+
+
+}

@@ -1,0 +1,9 @@
+    @Autowired
+    RedisUtil redisUtil;
+
+    Jedis jedis = null;
+
+//从缓存中获取
+            jedis = redisUtil.getJedis();
+		
+            jedis.select(1);//选择数据库 -- 默认0 就算配置了yml 文件还是选0， 所以手动选择
