@@ -23,5 +23,16 @@ data-html="true"
           $(this).popover('show');
         });
 
+$(document).on('mouseout', '.spu-item-delete', function(){
+          $(this).popover('show');
+        });
 
+//可以多个一起配置
+
+$(document).on('mouseenter','.check-item-detail-span, .check-item-edit-span, .check-item-delete-span',function(){
+        $(this).popover('show');
+      });
+      $(document).on('mouseout','.check-item-detail-span, .check-item-edit-span, .check-item-delete-span',function(){
+        $(this).popover('hide');
+      });
 

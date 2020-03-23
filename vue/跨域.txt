@@ -60,3 +60,19 @@ devServer: {
 
 如果配好后，出现 proxy error 。。。 不能将localhost:8080 (默认地址) 代理为 localhost:8081 (代理的基础地址)
 说明远程服务器没有开，--  这个时候已经配置好了，
+
+
+cli-2
+配置 config 下的index.js
+module.exports = {
+  dev: {
+    // Paths
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/api': {
+        target: 'http://localhost:8086/',
+        changeOrigin: true,
+        pathRewrite: {'^/api': ''}
+      },
+    },

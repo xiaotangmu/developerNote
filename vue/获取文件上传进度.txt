@@ -1,0 +1,25 @@
+//进度
+          var config = {
+            onUploadProgress: progressEvent => {
+              var complete = (progressEvent.loaded / progressEvent.total * 100 | 0) + '%'
+              // console.log(complete)
+              $("#brand-logo-progress").show();
+              $("#brand-logo-progress div:first-child").width(complete);
+            }
+          }
+
+//直接提交图片 -- 提升用户体验 -- 点击添加时不需要这么长操作时间
+          const url = 'api/brand/fileUpload'
+          axios.post(url, myform, config).then( //提交参数加上config
+            response => {
+              console.log(response.data)
+
+              $("#brand-logo-progress").hide();
+              $("#brand-logo").attr('src',response.data.extend);
+              $("#brand-logo-progress div:first-child").width(0);
+
+            },
+            error => {
+
+            }
+          )
