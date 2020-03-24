@@ -1,0 +1,7 @@
+@Table(name = "bmms_brand")
+public class Brand implements Serializable {
+
+    @Id
+    @GeneratedValue(generator = "JDBC")//适合批量处理
+    //    @GeneratedValue(strategy = GenerationType.IDENTITY) //递增生成策略
+    private Integer id;

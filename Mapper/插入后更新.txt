@@ -1,3 +1,10 @@
 通用mapper 插入后自动更新主键
 roleMapper.insert(role);
             System.out.println(role.getId());//id 已经更新
+
+
+注意要配置了bean 的@Id 和@GeneratedValue
+
+@Id
+    @GeneratedValue(generator = "JDBC")
+    private Integer id;
