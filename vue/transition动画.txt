@@ -1,0 +1,90 @@
+基础版：
+例子
+<transition name="tip-alert">
+        <div v-if="tipAlertShow" id="brand-tip-alert" class="alert alert-danger tip-alert" role="alert">
+          <strong>{{tipMessage}}</strong>
+        </div>
+      </transition>
+
+css
+.tip-alert-enter-active {
+    transition: all .5s ease;
+  }
+  .tip-alert-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .tip-alert-enter, .tip-alert-leave-to
+    /* .tip-alert-leave-active 用于 2.1.8 以下版本 */ {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+
+注意显示消失 要绑定vue 数据 if="tipAlertShow" ，不能直接 show() hide(), 
+不然没有过渡效果
+
+其他版本见文档介绍 https://www.cntofu.com/book/133/transitions.md
+
+
+利用钩子程序实现过渡 -- 比较强大
+
+<transition
+    v-on:before-enter="beforeEnter"
+    v-on:enter="enter"
+    v-on:leave="leave"
+    v-bind:css="false"
+  >
+    <p v-if="show">菜鸟教程 -- 学的不仅是技术，更是梦想！！！</p>
+</transition>
+
+
+
+methods: {
+    beforeEnter: function (el) {
+      el.style.opacity = 0
+      el.style.transformOrigin = 'left'
+    },
+    enter: function (el, done) {
+      Velocity(el, { opacity: 1, fontSize: '1.4em' }, { duration: 300 })
+      Velocity(el, { fontSize: '1em' }, { complete: done })
+    },
+    leave: function (el, done) {
+      Velocity(el, { translateX: '15px', rotateZ: '50deg' }, { duration: 600 })
+      Velocity(el, { rotateZ: '100deg' }, { loop: 2 })
+      Velocity(el, {
+        rotateZ: '45deg',
+        translateY: '30px',
+        translateX: '30px',
+        opacity: 0
+      }, { complete: done })
+    }
+  }
+
+
+可以配置：
+
+beforeEnter: function (el) {
+    el.textContent = 'beforeEnter'
+  },
+  enter: function (el) {
+    el.textContent = 'enter'
+  },
+  afterEnter: function (el) {
+    el.textContent = 'afterEnter'
+  },
+  enterCancelled: function (el) {
+    // handle cancellation
+  },
+
+  beforeLeave: function (el) {
+    el.textContent = 'beforeLeave'
+  },
+  leave: function (el) {
+    el.textContent = 'leave'
+  },
+  afterLeave: function (el) {
+    el.textContent = 'afterLeave'
+  },
+  leaveCancelled: function (el) {
+    // handle cancellation
+  }

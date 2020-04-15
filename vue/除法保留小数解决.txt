@@ -1,0 +1,36 @@
+来源：https://blog.csdn.net/weixin_43885568/article/details/84775923
+
+vue关于数字的处理（四舍五入，向上取整，向下取整。。）
+
+在vue项目中可以新建一个filter.js的文件 在文件中将这些过滤全部写进去，再在页面进行引用
+
+1、时分秒的显示
+格式 00:00:00
+export const timeFilter = val => {
+function p(t) {
+return t < 10 ? ‘0’ + t: t;
+}
+var h = Math.floor(val/1000/60/60);
+var m = Math.floor(val/1000/60%60);
+var s = Math.floor(val/1000%60);
+var str = p(h) + ‘:’ + p(m) + ‘:’ + p(s);
+return str
+}
+使用：
+{{timeFilter(fileInfo.needTime) || ‘’}}
+
+2、向下取整的函数
+Math.floor();
+例如：Math.floor( 23.2222222); // 23
+
+3、向上取整
+Math.ceil();
+例如： Math.ceil(23.333333）； // 24
+
+4、四舍五入
+Math.round();
+例如：Math.round(23.33333); // 23
+
+5、四舍五入取n位小数，运算后得到的是字符串
+().toFixed(n); // 取小数点后n位
+例如：(36.36498524).toFixed(3); // 36.365

@@ -1,0 +1,15 @@
+来源：https://www.cnblogs.com/amiezhang/p/7474588.html
+
+默认情况下div无法获取焦点，无法触发focus与blur事件，
+
+给div加上tabindex属性
+
+
+<div class="box" tabindex="1"></div>  
+<script>  
+        $('.box').focus(function(){  
+            alert('div focus');  
+        });  
+        $('.box').blur(function(){  
+            alert('div blur');  
+        });  </script>  

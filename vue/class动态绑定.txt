@@ -1,0 +1,5 @@
+https://www.jianshu.com/p/45dbac5035e2
+
+:class="{ 'active': isActive }"
+
+isActive 为true时，绑定active 类

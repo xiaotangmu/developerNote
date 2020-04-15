@@ -1,0 +1,21 @@
+          ^
+expected <block end>, but found '<block mapping start>'
+ in 'reader', line 38, column 9:
+            oop:
+
+不能用tab缩近，只能用空格键
+
+
+Caused by: org.yaml.snakeyaml.parser.ParserException: while parsing MappingNode
+ in 'reader', line 1, column 1:
+    server:
+    ^
+Duplicate key: spring
+ in 'reader', line 80, column 45:
+    90
+
+有相同节点
+
+
+原文链接：https://blog.csdn.net/zdyueguanyun/article/details/79215972
+https://blog.csdn.net/No_overtime_apes/article/details/89968921

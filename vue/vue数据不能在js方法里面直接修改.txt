@@ -1,0 +1,3 @@
+vue data 中定义的数据，不能直接用js （jquery） -- mounted(){} js中定义的方法直接更改 -- 无效
+
+js方法可以用 this.method 调用在 methods 中定义的方法，建议不要vue 和js jquery 方法数据方法混合使用

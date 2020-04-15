@@ -1,0 +1,33 @@
+//声明同步方法
+async deleteItem(level,data){
+        const url = ...;
+        const data = ....;
+
+//注意要return await 才能把里面的数据返回出来，没有return 返回的是对象 不能得到数据 -- undefined
+        return await axios.post(url,qs.stringify(data)).then(	
+          response => {
+            if(response.data.code === '101'){
+              return true;
+            }else{
+              return false;
+            }
+
+	//return response.data;
+          }
+        )
+      },
+
+//接受同步方法返回数据
+remove(){
+	let data = 1;
+
+	this.deleteItem(data.level, reqData).then(function (result) {// 在内部操作，此时该方法为异步方法， 会直接执行下面的语句
+            		console.log(result);
+            		//... 
+
+		//这里可以操作外面的数据
+		console.log(data);//1
+          	});
+
+	console.log('hello');//不会等上面异步方法执行完，直接执行
+}

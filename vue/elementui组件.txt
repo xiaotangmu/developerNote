@@ -1,0 +1,25 @@
+来源：https://www.cnblogs.com/wangjianping123/p/9140237.html
+
+官方：https://element.eleme.cn/#/zh-CN/component/tree
+
+先在项目里打开cmd 输入npm i element-ui -S回车，然后在配置
+
+npm i element-ui -S
+
+在 main.js/router/index.js 中写入以下内容：
+
+import Vue from 'vue';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import App from './App.vue';
+
+Vue.use(ElementUI);
+
+//直接可以使用了
+
+
+tree 数据直接操作
+
+editNode(data){//传递的是地址
+        data.name = 'hello';
+      },

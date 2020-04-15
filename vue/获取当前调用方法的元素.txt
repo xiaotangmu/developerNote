@@ -1,0 +1,57 @@
+
+
+
+首先 vue的点击事件 是用 @click="clickfun()" 属性 在html中绑定的, 然后在点击的函数中 添加$event 参数就可以了
+复制代码
+
+<button @click = “clickfun($event)”>点击</button>   --- 记得加上 $ 符
+
+methods: {
+
+    clickfun(e) {
+
+        // e.target 是你当前点击的元素
+
+        // e.currentTarget 是你绑定事件的元素
+
+    }
+
+},
+
+复制代码
+
+ 来源： https://www.cnblogs.com/coder2020/p/12170681.html
+
+修改样式
+
+obj就是传入的$event
+
+// 鼠标放上 修改当前tr标签的背景色
+
+changeOver:function (obj) {
+
+    obj.currentTarget.style.background="rgb(244, 250, 251)";
+
+},
+
+
+// 鼠标离开
+
+changeOut:function (obj) {
+
+    obj.currentTarget.style.background="white";
+
+}
+
+
+
+2.
+
+：elHeight='getHeight(event)'
+getHeight(event){
+
+let el = event.target;
+console.log($(el));
+
+}
+$(el)就是当前元素

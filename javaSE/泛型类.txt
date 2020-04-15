@@ -1,0 +1,11 @@
+public class A<T> { // 泛型类：定义类的时候指定类型形参T，在类里面T就可以当成类型使用
+    private T a;
+
+    public T getA() {
+        return a;
+    }
+
+    public void setA(T a) {
+        this.a = a;
+    }
+}

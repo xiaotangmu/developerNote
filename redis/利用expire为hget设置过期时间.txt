@@ -1,0 +1,6 @@
+expire key 秒钟：为key设置过期时间
+
+                    // 为了防止缓存穿透将，null或者空字符串值设置给redis
+//                    jedis.hmset(CACHEALLSTR, null);//这样写报错 -- NullPointerException
+                    jedis.hset(CACHEALLSTR, "", "");
+                    jedis.expire(CACHEALLSTR, 60);

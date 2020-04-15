@@ -11,7 +11,7 @@ document.write(str.substring(3,7))
 输出：lo w
 
 去除多余字符/选择所需的字符串字段
-str.subString(0, (str.length -1))
+str.substring(0, (str.length -1))
 
 
 截取从当前下表位置到最后字符

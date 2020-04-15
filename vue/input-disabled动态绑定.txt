@@ -1,0 +1,9 @@
+<input :disabled="!flag" />  flag 为true 时disabled 生效
+
+其他来源：https://segmentfault.com/a/1190000015383927
+
+<el-input v-model="dataForm.name" placeholder="配置项" v-bind:disabled="dataForm.id"></el-input>
+
+主要是通过 v-bind:disabled 绑定 dataForm.id 的值来动态判断是否添加 disabled 属性，
+而 dataForm.id 的默认初始值为0，新增时不会添加此属性；当点击修改时，dataForm.id 的值就是当前所要修改的数据记录的id，
+此时id不为0，因此 disabled 属性值就被设为 disabled，输入框也就无法修改

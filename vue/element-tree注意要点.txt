@@ -1,0 +1,62 @@
+传递的是地址
+
+this.hello = data.list;
+this.hello = [];
+此时会把data.list 也清空
+
+应该遍历赋值
+let list = [];
+data.list.forEach(item => {
+	list.push(item);
+})
+this.hello = list;
+
+
+ 数值 在data 中也是 字符型，不能与数值直接比较
+
+num ===  parseInt(data.id);    	// num + '' === data.id;
+
+data.list 	/children 	若数据中 list 为null，
+	此时不能直接用 data.list.push(item)
+	应该: data.list = []; 
+	再：	data.list.push(item);
+
+
+node 也可以得到数据 -- node.data
+
+修改节点数据 -- 直接操作 data./node.data.
+
+移除 -- node.remove // 通过node.parent.list.splice(index,1);//删除从index 开始的 1 个元素
+
+	当删除多个节点时，不能直接遍历 + remove
+	
+	错误： 此时只会删除一个节点便退出遍历
+		node.childNodes.forEach(item => {
+         	 		if(item.checked === true){
+           	 			item.remove();
+         	 		}
+        		});
+
+	正确：
+		let list = []
+		node.childNodes.forEach(item => {
+         	 		if(item.checked === true){
+           	 			list.push(item);
+         	 		}
+        		});
+		
+		list.forEach(item => {
+			item.remove();
+		})
+
+
+
+添加 data.list.push(item) -- 前提 list !== null
+
+
+判断是否 展开/ 勾选 操作 node
+node.childNodes.forEach(item => {
+          if(item.checked === true){}
+})
+
+

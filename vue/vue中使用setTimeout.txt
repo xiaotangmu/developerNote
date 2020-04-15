@@ -1,0 +1,18 @@
+js -- setTimeout
+setTimeout(function(){}, 2000);
+
+在 vue 中使用时，上面写法可以执行{} 内容，但如果页面绑定数据改变了，此时页面也不会改变数据
+如 v-if="show" 若{ this.show = false }, 此时该绑定的元素依然显示，
+
+所以
+btnClickAlert(){
+          // $("#brand-tip-alert").show();
+          this.tipAlertShow = true;
+          setTimeout(this.closeAlert, 2000);
+        },
+        closeAlert(){
+          this.tipAlertShow = false;
+          alert()
+        },
+
+注意setTimeout 中的方法是 this.xx   不然调用不到方法
