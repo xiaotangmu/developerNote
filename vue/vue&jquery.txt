@@ -1,3 +1,22 @@
-如果直接在mounted 里写jquery 不能用到 vuex 的数据，也调用不到methods 的方法
-建议不要混着使用 调用元素时可以使用
-或者使用其他必须框架时也可以使用
+在jquery 中使用 this 会直接指向该元素
+
+应该现在外面声明 this --- let that = this; -- 用that 来操作vue 的数据
+
+实例
+data(){
+	return{
+		flag: true,
+	}
+},
+mounted(){
+	let that = this;
+	$(document).on('click', '.btn', function(){
+		alert(that.flag);
+		that.flag = false;
+	})
+},
+methods{
+	test(){
+		console.log(this.flag);
+	}
+}
