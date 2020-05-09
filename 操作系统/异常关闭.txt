@@ -1,0 +1,10 @@
+win + r   --  msgconfig -- 服务 --隐藏所有~ -- 全部禁用
+		-- 启动 -- 详细信息 -- 结束 vmxxxx （可能不能结束） -- 重启
+
+
+连不上网
+ win + r -- services.msc -- 启动 vm 禁用的连网程序
+	别忘把mysql 这些禁用也启动了
+
+如果vm 联网都启动了，systemctl start network 还 fail -- dhclient
+

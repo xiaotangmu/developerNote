@@ -1,0 +1,11 @@
+this.cityList.forEach(item => {
+          item.cities.forEach(item2 => {
+            if(item2.name.includes(name)){
+              this.arr.push(item2.name);
+            }
+          })
+        });
+
+
+
+item2.name.includes(name)

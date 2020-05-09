@@ -1,0 +1,3 @@
+
+win+r ->services.msc -> 开启/关闭需要的 vm程序
+

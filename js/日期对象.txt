@@ -1,0 +1,64 @@
+来源： https://www.cnblogs.com/cjjjj/p/9999484.html
+
+ Js 日期比较方法
+
+var curTime = new Date();
+//把字符串格式转化为日期类
+var starttime = new Date(Date.parse(begintime));
+var endtime = new Date(Date.pares(endtime));
+//进行比较
+return (curTime>=starttime && cutTime<=endtime);
+
+function compareDate(s1,s2){
+  return ((new Date(s1.replace(/-/g,"\/")))>(new Date(s2.replace(/-/g,"\/"))));
+}
+
+
+
+//日期信息获取
+myDate.getYear(); //获取当前年份(2位)
+myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+myDate.getMonth(); //获取当前月份(0-11,0代表1月)
+myDate.getDate(); //获取当前日(1-31)
+myDate.getDay(); //获取当前星期X(0-6,0代表星期天)
+myDate.getTime(); //获取当前时间(从1970.1.1开始的毫秒数)
+myDate.getHours(); //获取当前小时数(0-23)
+myDate.getMinutes(); //获取当前分钟数(0-59)
+myDate.getSeconds(); //获取当前秒数(0-59)
+myDate.getMilliseconds(); //获取当前毫秒数(0-999) 
+myDate.toLocaleDateString(); //获取当前日期    2020/4/15
+var mytime=myDate.toLocaleTimeString(); //获取当前时间
+myDate.toLocaleString( ); //获取日期与时间
+
+
+JavaScript 获取当前时间戳：
+第一种方法：
+
+1 var timestamp =Date.parse(new Date());
+
+得到的结果：1280977330000 注意：这里得到的结果将后三位（毫秒）转换成了000显示，使用时可能会出现问题。例如动态添加页面元素id的时候，不建议使用。
+
+
+第二种方法：
+
+1 var timestamp =(new Date()).valueOf();
+
+结果：1280977330748
+
+第三种方法：
+
+var timestamp=new Date().getTime()；
+
+结果：1280977330748
+
+ 
+
+js中单独调用new Date()，例如document.write(new Date());
+
+显示的结果是：Mar 31 10:10:43 UTC+0800 2012 这种格式的时间
+
+ 
+
+但是用new Date() 参与计算会自动转换为从1970.1.1开始的毫秒数。
+
+

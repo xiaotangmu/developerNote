@@ -1,0 +1,3 @@
+限于带有数值属性的数组 -- 先排序在比较
+
+JSON.stringify(baseAttrs2.sort()) === JSON.stringify(attrsTemp.sort())

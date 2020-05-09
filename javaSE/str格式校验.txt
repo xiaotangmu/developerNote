@@ -1,0 +1,24 @@
+    // 判断数字    
+    public static boolean isNumberic(String s) {    
+        return Pattern.compile("([1-9]+|0)\\.*[0-9]+").matcher(s).matches();    
+    }    
+      
+    // 判断邮箱    
+    public static boolean isEmail(String s) {    
+        return Pattern.compile("\\w+@{1}\\w+\\.{1}\\w+").matcher(s).matches();    
+    }    
+      
+    // 包含某个字符    
+    public static boolean contains(String s, String c) {    
+        return Pattern.compile(".*" + c + "+.*").matcher(s).matches();    
+    }    
+      
+    // 以某个字符串开头    
+    public static boolean startWith(String s, String c) {    
+        return Pattern.compile("^" + c + "\\w*").matcher(s).matches();    
+    }    
+      
+    // 以某个字符串结尾    
+    public static boolean endWith(String s, String c) {    
+        return Pattern.compile("\\w*" + c + "$").matcher(s).matches();    
+    }    

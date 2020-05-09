@@ -17,3 +17,19 @@
 			String uid = UUID.randomUUID().toString().substring(0, 5) + i;
 			mapper.insertSelective(new Employee(null, uid, num+"", uid + "@tan.com", num+1, null));
 		}
+
+
+
+<insert id="insertForeach" parameterType="java.util.List" useGeneratedKeys="false">
+    			insert into fund
+    			( id,fund_name,fund_code)
+    			values
+    			<foreach collection="list" item="item" index="index" separator=",">
+    				(
+    					#{item.id},
+    					#{item.fundName},
+    					#{item.fundCode},
+
+    				)
+    		     </foreach>		
+    </insert>    

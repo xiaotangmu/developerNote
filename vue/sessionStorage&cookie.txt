@@ -1,0 +1,109 @@
+sessionStorage 数据存在服务端 -- 前后段分离 -- 不同服务器 get不到信息
+
+使用cookie 操作浏览器数据
+vue使用cookie  --- https://www.jianshu.com/p/60c13168cc8f
+
+
+安装vue-cookies
+npm install vue-cookies --save
+3.引入vue-cookies
+
+安装完毕后，我们需要在vue项目中明确引入vue-cookies。
+main.js
+import Vue from 'vue'
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
+4.API
+
+
+
+在index.js 中调用cookie 不能直接 this 
+const tokenStr = window.$cookies.get('token');//在这里不用this.$cookies
+
+
+
+-设置全局配置，设置cookie过期时间和url
+this.$cookies.config(expireTimes[,path])  // default: expireTimes = 1d , path=/
+
+-设置一个cookie
+this.$cookies.set(keyName, value[, expireTimes[, path[, domain[, secure]]]])   //return this
+
+-获取一个cookie
+this.$cookies.get(keyName)       // return value   
+
+-删除一个cookie
+this.$cookies.remove(keyName [, path [, domain]])   // return this
+
+-检查某个 cookie name是否存在
+this.$cookies.isKey(keyName)        // return false or true
+
+-获取所有 cookie name，以数组形式返回
+this.$cookies.keys()  // return a array
+5.设置cookie过期时间
+5.1全局设置
+// 30天后过期
+this.$cookies.config('30d')
+
+this.$cookies.config(new Date(2019,03,13).toUTCString())
+
+this.$cookies.config(60 * 60 * 24 * 30,'');
+
+// window object
+window.$cookies.config('30d')
+5.2单个name设置
+//不写过期时间，默认为1天过期
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX")
+
+// 1天过期，忽略大小写
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX","1d")
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX","1D")
+
+// 以秒为单位，设置1天过去
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX",60 * 60 * 24)
+
+// 填写Date对象，明确指定过期时间
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX", new Date(2017, 03, 12))
+
+// 填写一个时间字符串，指定过期时间
+this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX", "Sat, 13 Mar 2017 12:25:57 GMT")
+
+//浏览器会话结束时过期
+this.$cookies.set("default_unit_second","input_value","0");
+ 
+//永不过期
+this.$cookies.set("default_unit_second","input_value",-1); 
+5.3字符串单位形式设置
+
+设置过期时间，输入字符串类型(字符均忽略大小写)：
+Unit 	full name
+y 	year
+m 	month
+d 	day
+h 	hour
+min 	minute
+s 	second
+this.$cookies.set("token","GH1.1.1689020474.1484362313","60s");  // 60秒后过去
+
+this.$cookies.set("token","GH1.1.1689020474.1484362313","30MIN");  // 30分钟后过去
+
+this.$cookies.set("token","GH1.1.1689020474.1484362313","24d");  // 24天后过期
+
+this.$cookies.set("token","GH1.1.1689020474.1484362313","4m");  // 4个月后过期
+
+this.$cookies.set("token","GH1.1.1689020474.1484362313","16h");  // 16小时后过期
+
+this.$cookies.set("token","GH1.1.1689020474.1484362313","3y");  // 3年后过期
+6.其他操作
+// set path
+this.$cookies.set("use_path_argument","value","1d","/app");  
+
+// set domain
+this.$cookies.set("use_path_argument","value",null, null, "domain.com");  
+
+// set secure
+this.$cookies.set("use_path_argument","value",null, null, null,true);
+
+作者：i_木木木木木
+链接：https://www.jianshu.com/p/60c13168cc8f
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

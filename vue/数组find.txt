@@ -1,0 +1,7 @@
+判断数组是否有某个对象
+
+const data = list.find(item => item.id === id);//返回item
+
+const index =list.findIndex(item => item.id === id);//返回下标
+
+没有返回 undefined

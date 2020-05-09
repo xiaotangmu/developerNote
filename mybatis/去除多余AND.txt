@@ -1,0 +1,53 @@
+https://blog.csdn.net/weixin_33755554/article/details/92611359
+https://blog.csdn.net/guyue35/article/details/90411045?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.nonecase
+
+1.
+
+    <select id="findActiveBlogLike" resultType="Blog">
+        SELECT * FROM BLOG
+        <where>
+            <if test="state != null">
+                state = #{state}
+            </if>
+            <if test="title != null">
+                AND title like #{title}
+            </if>
+            <if test="author != null and author.name != null">
+                AND author_name like #{author.name}
+            </if>
+        </where>
+    </select>
+
+
+2. 
+　　select * from user 
+
+　　<trim prefix="WHERE" prefixoverride="AND |OR">
+
+　　　　<if test="name != null and name.length()>0"> AND name=#{name}</if>
+
+　　　　<if test="gender != null and gender.length()>0"> AND gender=#{gender}</if>
+
+　　</trim>
+
+
+3、
+
+　　update user
+
+　　<trim prefix="set" suffixoverride="," suffix=" where id = #{id} ">
+
+　　　　<if test="name != null and name.length()>0"> name=#{name} , </if>
+
+　　　　<if test="gender != null and gender.length()>0"> gender=#{gender} ,  </if>
+
+　　</trim>
+
+
+假如说name和gender的值都不为null的话打印的SQL为：update user set name='xx' , gender='xx'     where id='x'
+
+　　在红色标记的地方不存在逗号，而且自动加了一个set前缀和where后缀，上面三个属性的意义如下，其中prefix意义如上：
+
+　　suffixoverride：去掉最后一个逗号（也可以是其他的标记，就像是上面前缀中的and一样）
+
+　　suffix：后缀

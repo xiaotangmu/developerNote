@@ -1,0 +1,41 @@
+具体：https://www.jianshu.com/p/91a409bc59f2
+
+案例：
+el-cascader组件中的this
+
+我们可以在lozyLoad函数中输出this，来查看为什么加载数据的方法initData不存在。
+     data: 'hello',
+      props: {
+        lazy:true,
+        lazyLoad(node,resolve){
+          console.log(this.data)	//undefined
+         // this.initData(node,resolve)	//外部方法调用不了
+        }
+      }
+
+
+分析 - 解决：
+	由于vue在实例初始化的时候，data和methods等作为选项对象传入，而data是一个函数，
+所以我们可以在函数return之前将当前vue实例this保存到that中，然后在lazyLoad函数中，通过that调用initData方法。
+
+
+ data() {
+    let that=this;
+    return {
+      props:{
+        lazy:true,
+        lazyLoad(node,resolve){
+          
+          console.log(that,'that')
+          that.initData(node,resolve)
+        }
+      }
+    }
+  },
+method: {
+
+	initData(node,resolve){
+		console.log(this.data); // 正常打印 hello
+		resolve(list);//成功加载
+	}
+}

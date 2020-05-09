@@ -1,0 +1,387 @@
+1. 导入坐标
+<!-- shiro 和 spring 整合 -->
+<dependency>
+    <groupId>org.apache.shiro</groupId>
+    <artifactId>shiro-spring</artifactId>
+    <version>1.4.0</version>
+</dependency>
+
+<!-- shiro 核心包 -->
+<dependency>
+    <groupId>org.apache.shiro</groupId>
+    <artifactId>shiro-core</artifactId>
+    <version>1.4.0</version>
+</dependency>
+
+<!-- shiro 与 redis 整合-->
+<dependency>
+    <groupId>org.crazycake</groupId>
+    <artifactId>shiro-redis</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+2. 创建自定义realm
+
+public class CustomRealm extends AuthorizingRealm {
+	public void setName(String name){
+		super.setName("customRealm");
+	}
+
+	/*
+	 * 执行授权逻辑
+	 */
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        System.out.println("执行授权逻辑");
+
+				//1. 获取已认证的用户数据
+				User user = (User) principalCollection.getPrimaryPrincipal();//得到唯一的安全数据
+
+        //2. 根据用户数据获取用户的权限信息（所有角色，所有权限）
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+				Set<String> roles = new HashSet<>();//所有角色
+				Set<String> perms = new HashSet<>();//所有权限
+				for (Role role : user.getRoles()){
+					roles.add(role.getName());
+					for (Permisssion perm : role.getPermissions()){
+						perms.addd(perms.getCode());
+					}
+				}
+				info.setStringPermission(Perms);
+				info.setRoles(roles);
+				return info;
+
+    }
+
+	/*
+	 * 执行认证逻辑
+	 */
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        System.out.println("执行认证逻辑");
+
+        //1. 获取登录的用户名密码（token）
+        UsernamePasswordToken token = (UsernamePasswordToken)authenticationToken;
+
+        //数据库的用户名和密码
+        User user = userService.getUserByName(token.getUsername());
+
+        //3. 判断用户是否存在
+        if( user == null ){
+            //用户名不存在
+            return null;//shiro 底层会抛出 UnKnowAccountException
+        }
+
+        //4. 判断密码
+        //如果一致返回安全数据 
+        //构造方法：安全数据，密码，realm域名 -- 密码不对 报错 -- IncorrectCredentialsException
+        return new SimpleAuthenticationInfo(user, user.getPassword(), this.getName());
+
+    }
+}
+
+
+3. 配饰 shiro
+ShiroConfig
+
+
+	//1. 创建realm
+	@Bean
+	public CustomRealm getRealm(){
+		return new CustomRealm();
+	}
+
+	//2. 创建安全管理器
+	@Bean
+	public SecurityManager getSecurityManager(CustomRealm realm){
+		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+		securityManager.setRealm(realm);
+		return securityManager;
+	}
+	
+	
+	
+	/**
+	* 使用过滤器与注解的区别
+	*	1. 过滤器：如果权限信息不匹配 setUnauthorizedUrl 地址
+	*	2. 注解：如果权限信息不匹配，抛出异常 --- @RequiresPermissions(value = "user:add")
+	*/
+	//3. 配置shiro 的过滤器工厂
+	@Bean
+	public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager){
+		//1. 创建过滤器工厂
+		ShiroFilterFactoryBean filterFactory = new ShiroFilterFactoryBean();
+		//2. 设置安全管理器
+		filterFactory.setSetcurityManager(securityManager);
+		//3. 通过配置 （跳转登录页面，为授权跳转的页面）
+		filterFactory.setLoginUrl("/login.html");//跳转url地址
+		filterFactory.setUnauthorizedUrl("/auth");//为授权的url
+		
+		/**
+		* 设置所有的过滤器，有顺序map
+		*		key = 拦截的url 地址
+		*		value = 过滤器类型
+		*
+		*/
+		Map<String,String> filterMap = new LinkedHashMap<>();
+		filterMap.put("/user/home", "anon");//当前请求地址可以匿名访问
+		//需要角色
+		filterMap.put("/user/name", "roles[系统管理员]]");
+		filterMap.put("/user/**", "authc");
+		//...
+		
+		
+		filterFactory.setFilterChainDefinitionMap(filterMap);
+		
+		return filterFactory;
+	}
+	
+	// 开启对shiro 注解的支持
+	@Bean 
+	public AuthorizationAttributeSourceAdvisor authorizationAttrbuteSourceAdvisor(SecurityManager securityManager){
+		AuthorizationAttrbuteSourceAdvisor advisor = new AuthorizationAttributeSourceAdisor();
+		advisor.setSecurityManager(securityManager);
+		return advisor;
+	}
+	
+	
+	
+	
+//构造sessionManager
+CustomSessionManager
+public class CustomSessionManager extends DefaultWebSessionManager{
+
+	/**
+	*	头信息中具有 sessionid
+	*		请求头：Authorization：sessionid
+	*	指定sessionId 的获取方式
+	*
+	*/
+	protected Serializable getSessionId(ServletRequest request, ServletResponse response){
+		
+		//获取请求头Authorization 中的数据
+		String id = WebUtils.toHttp(request).getHeader("Authorization");
+		if(StringUtils.isEmpty(id)){
+			//如果没有携带，生成新的sessionId -- 登录
+			return super.getSessionId(request,response);
+		}else{
+			//请求头信息：bearer sessionid
+			id = id.replaceAll("Bearer ", "");
+			//返回sessionId
+			request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, "header");
+			request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID,id);
+			request.setAttrbute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
+			return id;
+		}
+	}
+	
+}
+
+//公共reelm：获取安全数据，构造权限信息
+public class IhrmRealm extends AuthorizingRealm{
+
+	public void setName(String name){ super.setName("ihrmRealm"); }
+
+
+	//授权方法
+	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection){
+		//1.获取安全数据
+		ProfileResult result = (ProfileResult)principalCollection.getPrimaryPrincipal();
+		//2.获取权限信息
+		Set<String> apisPerms = (Set<String>) result.getRoles().get("apis");
+		//3.构造权限数据，返回值
+		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+		info.setStringPermissions(apisPerms);
+		return info;
+	}
+	
+	//认证方法
+	
+	
+}
+
+//独用realm UserRealm
+public class UserRealm extends IhrmRealm{
+
+	@Autowired
+  UserService userService;
+
+	//认证方法
+	protected AuthentiationInof doetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException{
+		//1. 获取用户的手机号和密码
+		UsernamePasswordToken upToken = (UsernamePasswordToken) authenticationToken;
+		String name = upToken.getUsername();
+		Stirng password = new String( upToken.getPassword());
+		//2.根据name 查询用户
+		User user = userService.findByName();
+		//3. 判断用户是否存在，用户密码是否和输入密码一致
+		if(user != null && user.getPassword().equals(password)){
+			//4. 构造安全数据并返回 （安全数据：用户基本数据，权限信息 profileResult)
+			ProfileResult result = null;
+			if("user".equals(user.getLevel())){
+				result = new ProfileResult(user);
+			}else{
+				Map map = new HashMap();
+				if("coAdmin".equals(user.getLevel())){
+					map.put("enVisible", "1");
+				}
+				List<Permission> list = permissionService.findAll(map);
+				result = new ProfileResult(user,list);
+			}
+			//构造方法： 
+			SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.getPassword(), this.getName());
+			return info;
+		}
+		return null;
+	}
+	
+}
+
+//ProfileResult -- 返回的user数据包装类 -- 有个人信息 权限
+public class ProfileResult implements Serializable, AuthCachePrincipal{
+
+	//...
+	
+	@Override
+	public String getAuthCacheKey(){
+		return null;
+	}
+
+}
+
+
+
+//登录 --/login
+@RequestMapping(value="/login", method = RequestMethod.POST)
+public Result login(@RequestBody Map<String,String> loginMap){
+
+	String name = loginMap.get("name");
+	String password = loginMap.get("password");
+	try{
+		//1. 构造登录令牌 UesrNamePasswordToken
+		//加密密码
+		password = new Md5Hash(password,name,3).toString();//1.密码，salt，加密次数
+		UsernamePasswordToken upToken = new UsernamePasswordToken(name,password);
+		//2.获取subject
+		Subject subject = SecurityUtils.getSubject();
+		//3.调用login 方法，进入realm 完成认证
+		subject.login(upToken);
+		//4. 获取sessionId
+		String sessionId = (String)subject.getSession().getId();
+		//5.构造返回结果
+		return new Result(ResultCode.SUCCESS,sessionId);
+	}catch(Exception e){
+		return new Result(ResultCode.NAMEPASSWORDERROR);
+	}
+}
+
+
+//ShiroConfig
+	
+	
+	
+	//1. 创建realm
+	@Bean
+	public IhrmRealm getRealm(){
+		return new UserRealm();
+	}
+
+	//2. 创建安全管理器
+	@Bean
+	public SecurityManager getSecurityManager(IhrmRealm realm){
+		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+		securityManager.setRealm(realm);
+		return securityManager;
+	}
+	
+	
+	
+	/**
+	* 使用过滤器与注解的区别
+	*	1. 过滤器：如果权限信息不匹配 setUnauthorizedUrl 地址
+	*	2. 注解：如果权限信息不匹配，抛出异常 --- @RequiresPermissions(value = "user:add")
+	*/
+	//3. 配置shiro 的过滤器工厂
+	@Bean
+	public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager){
+		//1. 创建过滤器工厂
+		ShiroFilterFactoryBean filterFactory = new ShiroFilterFactoryBean();
+		//2. 设置安全管理器
+		filterFactory.setSetcurityManager(securityManager);
+		//3. 通过配置 （跳转登录页面，为授权跳转的页面）
+		filterFactory.setLoginUrl("/login.html");//跳转url地址
+		filterFactory.setUnauthorizedUrl("/auth");//为授权的url
+		
+		/**
+		* 设置所有的过滤器，有顺序map
+		*		key = 拦截的url 地址
+		*		value = 过滤器类型
+		*
+		*/
+		Map<String,String> filterMap = new LinkedHashMap<>();
+		filterMap.put("/user/home", "anon");//当前请求地址可以匿名访问
+		//需要角色
+		filterMap.put("/user/name", "roles[系统管理员]]");
+		filterMap.put("/user/**", "authc");
+		//...
+		
+		
+		filterFactory.setFilterChainDefinitionMap(filterMap);
+		
+		return filterFactory;
+	}
+	
+	// 开启对shiro 注解的支持
+	@Bean 
+	public AuthorizationAttributeSourceAdvisor authorizationAttrbuteSourceAdvisor(SecurityManager securityManager){
+		AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+		advisor.setSecurityManager(securityManager);
+		return advisor;
+	}
+	
+	
+	@Value("${spring.redis.host}")
+	private String host;
+	@Value("${spring.redis.port}")
+	private int port;
+	
+	/**
+	*	1. reids 的控制器，操作redis
+	*/
+	public RedisManage redisManager(){
+		RedisManager redisManager = new RedisManager();
+		redisManager.setHost(host);
+		redisManager.setPort(port);
+		return redisManager;
+	}
+	
+	/**
+	*	2. sessionDao
+	*/
+	public RedisSessionDAO redisSessionDAO(){
+		RedisSessionDAO sessionDAO = new RedisSessionDAO();
+		sessionDAO.setRedisManager(redisManager());
+		return sessionDAO;
+	}
+	
+	/**
+	*	3. 会话管理器
+	*/
+	public DefaultWebSessinManager sessionManager(){
+		CustomSessionManager sessionManager = new CustomSessionManager();
+		sessionManager.setSessionDAO(reidsSessionDAO());
+		//禁用cookie
+		//sessionManager.setSessionIdCookieEnabled(false);
+		//禁用url重写 url;jsessionid=id
+		//sessionManager.setSessionIdUrlRewritingEnabled(false);
+		return sessionManager;
+	}
+	
+	/**
+	*	4. 缓存管理器
+	*/
+	public RedisCacheManager cacheManager(){
+		RedisCacheManager redisCacheManager = new RedisCacheManager();
+		redisCacheManager.setRedisManager(redisManager());
+		return redisCacheManager;
+	}
+	
+	

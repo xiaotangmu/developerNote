@@ -1,0 +1,84 @@
+解决定时任务@Autowired 注入为null
+
+参考：（主要）https://blog.csdn.net/xiaobuding007/article/details/80455187?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3
+	或者 https://blog.csdn.net/qq_32405565/article/details/81455238?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1
+
+
+// 解决SpringBoot不能再Quartz中注入Bean的问题
+//    Spring容器可以管理Bean，但是Quartz的job是自己管理的，如果在Job中注入Spring管理的Bean，
+// 需要先把Quartz的Job也让Spring管理起来，因此，我们需要重写JobFactory，否则会出现@Autowired空指针Null问题
+// 即依赖注入的属性为null
+@Component		//不用配置componentScan springboot 自动装配
+public class JobFactory extends AdaptableJobFactory {
+
+    /**
+     * AutowireCapableBeanFactory接口是BeanFactory的子类
+     * 可以连接和填充那些生命周期不被Spring管理的已存在的bean实例
+     */
+    private AutowireCapableBeanFactory factory;
+
+    public JobFactory(AutowireCapableBeanFactory factory) {
+        this.factory = factory;
+    }
+
+    /**
+     * 创建Job实例
+     */
+    @Override
+    protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
+
+        // 实例化对象
+        Object job = super.createJobInstance(bundle);
+        // 进行注入（Spring管理该Bean）
+        factory.autowireBean(job);
+        //返回对象
+        return job;
+    }
+}
+
+
+
+@Configuration
+public class QuartzConfigration {
+
+    private JobFactory jobFactory;
+
+    public QuartzConfigration(JobFactory jobFactory){
+        this.jobFactory = jobFactory;
+    }
+
+    /**
+     * 配置SchedulerFactoryBean
+     *
+     * 将一个方法产生为Bean并交给Spring容器管理
+     */
+//    @Bean
+//    public SchedulerFactoryBean schedulerFactoryBean() {
+//        // Spring提供SchedulerFactoryBean为Scheduler提供配置信息,并被Spring容器管理其生命周期
+//        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+//        // 设置自定义Job Factory，用于Spring管理Job bean
+//        factory.setJobFactory(jobFactory);
+//        return factory;
+//    }
+
+    @Bean(name = "scheduler")
+    public Scheduler scheduler() {
+        return schedulerFactoryBean().getScheduler();
+    }
+
+
+    //多任务时的Scheduler，动态设置Trigger。一个SchedulerFactoryBean可能会有多个Trigger
+    @Bean(name = "multitaskScheduler")
+    public SchedulerFactoryBean schedulerFactoryBean(){
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        //启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了
+        factory.setOverwriteExistingJobs(true);
+        // 延时启动(秒)
+        factory.setStartupDelay(5);
+        factory.setJobFactory(jobFactory);
+        return factory;
+    }
+
+
+    
+}

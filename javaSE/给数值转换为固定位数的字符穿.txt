@@ -1,0 +1,7 @@
+
+https://blog.csdn.net/baiofchao/article/details/100131388
+
+Java字符串前面补上占位符
+
+String format = String.format("%05d", 0);
+        System.out.println(m + format);

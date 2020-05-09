@@ -1,0 +1,3 @@
+mybatis传单个String类型,可以不用@param注解,前提是xml中不含有条件表达式(when,if..标签中没有引用到该参数)
+
+所以对象的属性可以通过getter 而不用 param 注解 直接 #{属性}

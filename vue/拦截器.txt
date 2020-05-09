@@ -1,0 +1,176 @@
+路由跳转拦截
+
+import Vue from 'vue'
+import Router from 'vue-router'
+import Index from '@/components/Index'
+。。。。
+
+Vue.use(Router);
+
+const router = new Router({
+  routes: [
+    {
+      path: '/login',
+      component: Login
+    },
+    {
+      path: '/register',
+      component: Register
+    },
+    {
+      path: '/mainBox',
+      component: MainBox,
+      children: [
+      {
+        path: '/mainBox/personCenter',
+        component: PersonCenter,
+        children: [
+        {
+          path: '/mainBox/personCenter/basicInfo',
+          component: BasicInfo
+        },
+        {
+          path: '/mainBox/personCenter/passwordChange',
+          component: PasswordChange
+        },
+        {
+          path: '/mainBox/personCenter/photoChange',
+        component: PhotoChange
+      },
+      {
+        path: '',
+        redirect: '/mainBox/personCenter/basicInfo'
+      }
+          ]
+        },
+        {
+          path: '/mainBox/catalog',
+          component: Catalog
+        },
+        {
+          path: '/mainBox/spu',
+          component: Spu,
+        },
+        {
+          path: '/mainBox/sku',
+          component: Sku,
+        },
+        {
+          path: '/mainBox/baseAttr',
+          component: BaseAttr
+        },
+        {
+          path: '/mainBox/brand',
+          component: Brand
+        },
+        {
+          path: '/mainBox/supplier',
+          component: Supplier
+        },
+        {
+          path: '/mainBox/client',
+          component: Client
+        },
+        {
+          path: '/mainBox/warehouse',
+          component: Warehouse
+        },
+        {
+          path: '/mainBox/check',
+          component: Check
+        },
+        {
+          path: '/mainBox/delivery',
+          component: Delivery
+        },
+        {
+          path: '/index/mainBox/entry',
+          component: Entry
+        },
+        {
+          path: '/mainBox/out',
+          component: Out
+        },
+        {
+          path: '/index/mainBox/shelf',
+          component: Shelf
+        },
+        {
+          path: '',
+          redirect: '/mainBox/check'
+        },
+      ]
+      },
+      {
+        path: '/',
+        redirect: '/login'
+      }]
+});
+
+// 全局路由守卫
+router.beforeEach((to,from,next) => {
+// to: Route: 即将要进入的目标 路由对象
+  // from: Route: 当前导航正要离开的路由
+  // next: Function: 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
+  //next() -- 放行   next('/login') -- 强制跳转
+
+  if(to.path === '/login') return next();
+  if(to.path === '/register') return next();
+
+  //获取token
+  // const tokenStr = window.sessionStorage.getItem('token');
+  const tokenStr = this.$cookies.get('token');
+  if(!tokenStr) next('login');//不存在强制跳转
+  next();
+});
+
+export default router;
+
+
+
+请求拦截
+main.js
+import axios from 'axios';
+
+// http request 拦截器
+axios.interceptors.request.use(
+  //在请求之前做点什么 比如加入token
+  config => {
+    console.log(config);
+    //设置请求头
+    config.headers['Authorization'] = 'Bearer ' + window.$cookies.get('token');
+    //在最后必须返回config
+    return config;
+  },
+  err => {
+    return Promise.reject(err);
+  });
+
+
+响应拦截
+App.vue 中配置
+
+mounted(){
+    // 超时时间
+    // axios.defaults.timeout = 5000
+// http请求拦截器在这里配置会失效
+
+    // http响应拦截
+    axios.interceptors.response.use(
+      response => {
+        // console.log('响应拦截' + response.data );
+        if(response.data.code !== '101'){
+          this.tipAlert(response.data.message, 0);
+        }
+        // if(response.data.code !== '101' && response.data.code !== '102'){
+        //   return;//不返回信息了
+        // }
+        return response;
+      },
+      error => {
+        this.tipAlert("服务器出错了！", 0);
+      }
+    );
+  },
+
+

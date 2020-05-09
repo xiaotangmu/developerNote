@@ -1,0 +1,525 @@
+1. 导入坐标
+<!-- shiro 和 spring 整合 -->
+<dependency>
+    <groupId>org.apache.shiro</groupId>
+    <artifactId>shiro-spring</artifactId>
+    <version>1.4.0</version>
+</dependency>
+
+<!-- shiro 核心包 -->
+<dependency>
+    <groupId>org.apache.shiro</groupId>
+    <artifactId>shiro-core</artifactId>
+    <version>1.4.0</version>
+</dependency>
+
+<!-- shiro 与 redis 整合-->
+<dependency>
+    <groupId>org.crazycake</groupId>
+    <artifactId>shiro-redis</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+
+2. 自定义realm
+//公共reelm：获取安全数据，构造权限信息
+public class IhrmRealm extends AuthorizingRealm {
+
+    public void setName(String name){ super.setName("ihrmRealm"); }
+
+
+    //授权方法
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection){
+        //1.获取安全数据
+        ProfileResult result = (ProfileResult)principalCollection.getPrimaryPrincipal();
+        //2.获取权限信息
+        Set<String> authNames = result.getAuthNames();
+//        Set<String> apisPerms = (Set<String>) result.getRoles().get("apis");
+        //3.构造权限数据，返回值
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.setStringPermissions(authNames);
+        return info;
+    }
+
+    //认证方法
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        System.out.println("hello" );
+        return null;
+    }
+
+}
+
+//独用realm UserRealm
+public class UserRealm extends IhrmRealm {
+
+    @Autowired
+    UserService userService;
+
+    //认证方法
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException{
+        //1.获取用户的手机号和密码
+        System.out.println("hello");
+        UsernamePasswordToken upToken = (UsernamePasswordToken) authenticationToken;
+        String name = upToken.getUsername();
+        String password = new String( upToken.getPassword());
+        //2.根据name查询用户
+        ActiveUser user = userService.getUserByName(name);
+        //3.判断用户是否存在，用户密码是否和输入密码一致
+        if(user != null) {
+            //4.构造安全数据并返回（安全数据：用户基本数据，权限信息 profileResult）
+            ProfileResult result = new ProfileResult(user);
+            User user2 = userService.getUserRoleAndAuthorityByName(name);
+            List<Role> roles = user2.getRoles();
+            if(roles != null || roles.size() > 0){
+                Set<String> roleNames = new HashSet<>();
+                Set<String> authNames = new HashSet<>();
+                for (Role role : roles) {
+                    roleNames.add(role.getRoleName());
+                    List<Authority> authorities = role.getAuthorities();
+                    Set<Authority> set = new HashSet<>();
+                    set.addAll(authorities);
+                    if(set.size() > 0){
+                        for (Authority a : set) {
+                            if(StringUtils.isNotBlank(a.getResource())){
+                                authNames.add(a.getResource());
+                            }
+                        }
+                    }
+                }
+                result.setAuthNames(authNames);
+                result.setRoleNames(roleNames);
+            }
+//            if("user".equals(user.getLevel())) {
+//                result = new ProfileResult(user);
+//            }else {
+//                Map map = new HashMap();
+//                if("coAdmin".equals(user.getLevel())) {
+//                    map.put("enVisible","1");
+//                }
+//                List<Permission> list = permissionService.findAll(map);
+//                result = new ProfileResult(user,list);
+//            }
+//            if(!user.getPassword().equals(password)){
+//
+//            }
+            //构造方法：安全数据，密码，realm域名
+            return new SimpleAuthenticationInfo(result,user.getPassword(),this.getName());
+        }
+        //返回null，会抛出异常，标识用户名和密码不匹配
+        return null;
+    }
+
+}
+
+3. 封装对象 ProfileResult
+//ProfileResult -- 返回的user数据包装类 -- 有个人信息 权限
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProfileResult implements Serializable,AuthCachePrincipal {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3207880482640325843L;
+
+//    private String mobile;
+//    private String username;
+//    private String company;
+//    private String companyId;
+
+    private String name;
+
+    private Set<String> roleNames;
+    private Set<String> authNames;
+//    private Map<String,Object> roles = new HashMap<>();
+
+    public ProfileResult(ActiveUser user) {
+        this.name = user.getName();
+    }
+
+    /**
+     *
+     * @param user
+     */
+//    public ProfileResult(User user, List<Permission> list) {
+//        this.mobile = user.getMobile();
+//        this.username = user.getUsername();
+//        this.company = user.getCompanyName();
+//        this.companyId = user.getCompanyId();
+//        Set<String> menus = new HashSet<>();
+//        Set<String> points = new HashSet<>();
+//        Set<String> apis = new HashSet<>();
+//
+//        for (Permission perm : list) {
+//            String code = perm.getCode();
+//            if(perm.getType() == 1) {
+//                menus.add(code);
+//            }else if(perm.getType() == 2) {
+//                points.add(code);
+//            }else {
+//                apis.add(code);
+//            }
+//        }
+//        this.roles.put("menus",menus);
+//        this.roles.put("points",points);
+//        this.roles.put("apis",apis);
+//    }
+//
+//
+//    public ProfileResult(User user) {
+//        this.mobile = user.getMobile();
+//        this.username = user.getUsername();
+//        this.company = user.getCompanyName();
+//        this.companyId = user.getCompanyId();
+//        Set<Role> roles = user.getRoles();
+//        Set<String> menus = new HashSet<>();
+//        Set<String> points = new HashSet<>();
+//        Set<String> apis = new HashSet<>();
+//        for (Role role : roles) {
+//            Set<Permission> perms = role.getPermissions();
+//            for (Permission perm : perms) {
+//                String code = perm.getCode();
+//                if(perm.getType() == 1) {
+//                    menus.add(code);
+//                }else if(perm.getType() == 2) {
+//                    points.add(code);
+//                }else {
+//                    apis.add(code);
+//                }
+//            }
+//        }
+//
+//        this.roles.put("menus",menus);
+//        this.roles.put("points",points);
+//        this.roles.put("apis",apis);
+//    }
+
+    @Override
+    public String getAuthCacheKey() {
+        return null;
+    }
+}
+
+
+4. shiroconfig
+@Configuration
+public class ShiroConfig {
+
+
+/////////////////////////////////////////// 注意 这个配置不要开启不然报错 /////////////////////////////////////
+    /**
+     * 开启Shiro注解(如@RequiresRoles,@RequiresPermissions),
+     * 需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证
+     * 配置以下两个bean(DefaultAdvisorAutoProxyCreator和AuthorizationAttributeSourceAdvisor)
+     */
+//    @Bean
+//    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator(){
+//        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+//        advisorAutoProxyCreator.setProxyTargetClass(true);
+//        return advisorAutoProxyCreator;
+//    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /*
+ 	* 创建 ShiroFilterFactoryBean
+ 	*/
+    @Bean
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultWebSecurityManager securityManager){
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+
+        //设置安全管理器
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+        //添加 Shiro 内置过滤器
+        /**
+         * Shiro内置过滤器，可以实现权限相关的拦截器
+         * 	常用的过滤器：
+         *		anon：无需认证（登录）可以访问
+         *		authc：必须认证才可以访问
+         *		user：如果使用rememberMe 的功能可以直接访问
+         * 		perms： 该资源必须得到资源权限才可以访问
+         *		role：该资源必须得到角色权限才可以访问
+         *
+         *      logout： 退出 清除 session 数据
+         */
+        Map<String,String> filterMap = new LinkedHashMap<String,String>();
+//        filterMap.put("/add", "authc");
+//        filterMap.put("/update", "authc");
+
+        //无需拦截
+        filterMap.put("/register", "anon");
+        filterMap.put("/login", "anon");
+        filterMap.put("/validateCode", "anon");
+        filterMap.put("/unLogin", "anon");//直接跳转到自己的路径再返回数据前端处理 -- 不用处理跨域问题
+
+        //授权过滤器
+//        filterMap.put("/add", "perms[user:add]");
+//        filterMap.put("/update", "perms[user:update]");
+
+        filterMap.put("/**", "authc");
+
+        //修改调整的登录页面 -- 拦截后跳转
+        shiroFilterFactoryBean.setLoginUrl("/unLogin");
+        //设置未授权跳转页面
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/unAuth");
+
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
+        System.out.println("shiroConfig");
+
+        return shiroFilterFactoryBean;
+    }
+
+
+    //1.创建realm
+    @Bean
+    public UserRealm userRealm() {
+        return new UserRealm();
+    }
+
+//    //2.创建安全管理器
+    @Bean
+    public SecurityManager securityManager(UserRealm realm) {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+//        securityManager.setRealm(realm);
+        securityManager.setRealm(userRealm());
+
+        //将自定义的会话管理器注册到安全管理器中
+        securityManager.setSessionManager(sessionManager());
+        //将自定义的redis缓存管理器注册到安全管理器中
+//        securityManager.setCacheManager(cacheManager());
+
+        return securityManager;
+    }
+
+    @Bean
+    public SimpleCookie cookie() {
+        //  cookie的name,对应的默认是 JSESSIONID
+        SimpleCookie cookie = new SimpleCookie("SHAREJSESSIONID");
+        cookie.setHttpOnly(true);
+        //  path为 / 用于多个系统共享JSESSIONID
+        cookie.setPath("/");
+        return cookie;
+    }
+////    //自定义sessionManager
+////    @Bean
+////    public SessionManager sessionManager() {
+////        CustomSessionManager sessionManager = new CustomSessionManager();
+//////        mySessionManager.setSessionDAO(redisSessionDAO());
+//////        //将修改的cookie放入sessionManager中
+//////        mySessionManager.setSessionIdCookie(cookieDAO());
+////
+////
+////        // 设置session超时
+////        sessionManager.setGlobalSessionTimeout(60*60 * 1000);
+////        // 删除无效session
+////        sessionManager.setDeleteInvalidSessions(true);
+////        // 设置JSESSIONID
+////        sessionManager.setSessionIdCookie(cookie());
+////        // 设置sessionDAO
+////        sessionManager.setSessionDAO(redisSessionDAO());
+////        return sessionManager;
+////    }
+//
+//
+//    @Value("${spring.redis.host}")
+//    private String host;
+//    @Value("${spring.redis.port}")
+//    private int port;
+//
+//    /**
+//     * 1.redis的控制器，操作redis
+//     */
+////    public RedisManager redisManager() {
+////        RedisManager redisManager = new RedisManager();
+////        redisManager.setHost(host);
+////        redisManager.setPort(port);
+////        redisManager.setDatabase(1);// 配置缓存过期时间
+////        return redisManager;
+////    }
+//
+//    /**
+//     * 2.sessionDao
+//     */
+////    public RedisSessionDAO redisSessionDAO() {
+////        RedisSessionDAO sessionDAO = new RedisSessionDAO();
+////        sessionDAO.setRedisManager(redisManager());
+////        return sessionDAO;
+////    }
+//
+//    /**
+//     * 3.会话管理器
+//     */
+    public DefaultWebSessionManager sessionManager() {
+        CustomSessionManager sessionManager = new CustomSessionManager();
+
+
+
+///////////////////////////////// 这里用redis缓存 能存，取不出来 直接用Enter 。。。 替换
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        sessionManager.setSessionDAO(redisSessionDAO());
+        sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+        sessionManager.setGlobalSessionTimeout(1800000);
+        sessionManager.setDeleteInvalidSessions(true);
+        sessionManager.setSessionValidationSchedulerEnabled(true);
+//        sessionManager.setSessionValidationScheduler(sessionValidationScheduler);
+        //禁用cookie
+//        sessionManager.setSessionIdCookieEnabled(false);
+        sessionManager.setSessionIdCookieEnabled(true);
+        //禁用url重写   url;jsessionid=id
+//        sessionManager.setSessionIdUrlRewritingEnabled(false);
+        sessionManager.setSessionIdCookie(cookie());
+        return sessionManager;
+    }
+//
+//    /**
+//     * 4.缓存管理器
+//     */
+//    public RedisCacheManager cacheManager() {
+//        RedisCacheManager redisCacheManager = new RedisCacheManager();
+//        redisCacheManager.setRedisManager(redisManager());
+//        return redisCacheManager;
+//    }
+
+    //开启aop注解
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager);
+        return advisor;
+    }
+}
+
+
+5. 登录
+@ResponseBody
+/**
+     * 登录逻辑处理
+     */
+    @PostMapping("/login")
+    public Object login(String validateCode, String name, String password, HttpServletRequest request, HttpServletResponse response){
+        System.out.println("login");
+
+        //判断是否有验证码
+        if (StringUtils.isBlank(validateCode)) {
+            return Msg.noCondition("请先通过滑动验证");
+        }else {//判断验证码是否正确
+            boolean flag = userService.getValidateCode(validateCode);
+            if (!flag) {
+                return Msg.noCondition("请先通过滑动验证");
+            }
+        }
+
+        //判断提交的数据格式是否正确
+        String nameFormat = "^[\\w-]{3,16}$";//[A-Za-z0-9_] 3-16位
+        String passwordFormat = "^[a-zA-Z0-9_\\-!\\?\\.]{6,18}$";//密码格式
+        Pattern r = Pattern.compile(nameFormat);
+        Pattern r3 = Pattern.compile(passwordFormat);
+
+        //判断数据格式 -- 跳过页面 直接访问
+        if(!r.matcher(name).matches()){//name 只包含 英文字符和数字_ 8 -16 位
+            return Msg.noCondition("name 格式不正确");
+        }
+        if(!r3.matcher(password).matches()){
+            return Msg.noCondition("password 格式不正确");
+        }
+
+        try{
+            //1. 构造登录令牌 UesrNamePasswordToken
+            //加密密码
+//            password = new Md5Hash(password,name,3).toString();//1.密码，salt，加密次数
+            UsernamePasswordToken upToken = new UsernamePasswordToken(name,password);
+            //2.获取subject
+            Subject subject = SecurityUtils.getSubject();
+            //3.调用login 方法，进入realm 完成认证
+            subject.login(upToken);
+            //4. 获取sessionId
+            String sessionId = (String)subject.getSession().getId();
+            //5.构造返回结果
+
+//    /*
+//	 * 使用 Shiro 编写认证操作
+//	 */
+//        //1. 获取 Subject
+//        Subject subject = SecurityUtils.getSubject();
+//
+//        //2. 封装用户数据
+//        //... 一系列加密&解密
+//        UsernamePasswordToken token = new UsernamePasswordToken(name, password);
+//
+//        //3. 执行登录方法
+//        try {
+//            subject.login(token);
+//
+//            //登录成功
+//            String ip = request.getHeader("x-forwarded-for");// 通过nginx转发的客户端ip
+//            if (StringUtils.isBlank(ip)) {
+//                ip = request.getRemoteAddr();// 从request中获取ip
+//                if (StringUtils.isBlank(ip)) {
+//                    ip = "127.0.0.1";//都没有，出错，这里直接给了
+//                }
+//            }
+//
+//            Map<String, Object> userMap = new HashMap<>();
+//            userMap.put("name", name);
+//            userMap.put("password", password);
+//            // 按照设计的算法对参数进行加密后，生成token
+//            String tokenStr = JwtUtil.encode("warehouse22020", userMap, ip);
+//            CookieUtil.setCookie(request,response,"token", tokenStr,60*60*3,true);//有效时间3个钟
+//             //... 一系列加密解密
+//            return Msg.success(tokenStr);
+            CookieUtil.setCookie(request,response,"token", sessionId,60*60*3,true);//有效时间3个钟
+            //... 一系列加密解密
+            return Msg.success(sessionId);
+        } catch (UnknownAccountException e) {
+//            model.addAttribute("msg", "用户名不存在");
+            return Msg.noCondition("用户不存在");
+        } catch (IncorrectCredentialsException e) {
+            //登录失败：密码错误
+            return Msg.noCondition("密码错误");
+        }
+    }
+
+
+
+6. aop 错误处理 和 unLogin 返回
+
+@ControllerAdvice
+public class ExceptionControllerAdive {
+
+    @ResponseBody
+    @ExceptionHandler(UnauthorizedException.class)
+    public Object handleShiroException(HttpServletRequest req, Exception ex) {
+        return Msg.failError("权限不足！");
+    }
+    @ResponseBody
+    @ExceptionHandler(AuthorizationException.class)
+    public Object AuthorizationException(HttpServletRequest req, Exception ex) {
+        return Msg.failError("权限认证失败！");
+    }
+
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
+    public Object ThrowException(HttpServletRequest req, Exception ex) {
+        ex.printStackTrace();
+        return Msg.failError("服务器异常！");
+    }
+
+
+}
+
+/unLogin
+    @ResponseBody
+    @GetMapping("/unLogin")
+    public Object unLogin(HttpServletRequest request,  HttpServletResponse response){
+        CookieUtil cookieUtil = new CookieUtil();
+        cookieUtil.deleteCookie(request, response, "token");
+        return Msg.unLogin();
+    }

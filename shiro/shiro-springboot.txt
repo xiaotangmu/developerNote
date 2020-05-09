@@ -100,7 +100,7 @@ public ShiroFilterFactoryBean getShiroFilterFactoryBean(...){
 	Map<String,String> filterMap = new LinkedHashMap<String,String>();
 	filterMap.put("/add", "authc");
 	filterMap.put("/update", "authc");
-	//filterMap.put("/*", "authc");
+	//filterMap.put("/**", "authc");//拦截所有
 	
 	//无需拦截
 	filterMap.put("/hello", "anon");

@@ -1,0 +1,36 @@
+来源：https://www.cnblogs.com/shaofl/p/10521660.html
+
+ Array.from的三种用法
+Array.from可以接受三种类型的参数：
+1，Array.from (obj, mapFn)
+obj指的是数组对象、类似数组对象或者是set对象，map指的是对数组中的元素进行处理的方法。
+ 
+	
+//将数组中布尔值为false的成员指为0
+Array.from([1, ,2,3,3], x => x || 0) //[1,0,2,3,3]
+ 
+//将一个类似数组的对象转为一个数组，并在原来的基础上乘以2倍
+let arrayLike = { '0': '2', '1': '4', '2': '5', length: 3 }
+Array.from(arrayLike, x => x*2) //[4,8,10]
+ 
+//将一个set对象转为数组，并在原来的基础上乘以2倍
+Array.from(new Set([1,2,3,4]), x => x*2) //[2,4,6,8]
+
+　　
+2，Array.from ({length:n}, Fn)
+第一个参数指定了第二个参数执行的次数。可以将各种值转化为真正的数组。
+ 
+	
+Array.from({length:3}, () => 'jack') //["jack", "jack", "jack"]
+ 
+Array.from({length:3}, item => (item = {'name':'shao','age':18})) //[{'name':'shao','age':18}, {'name':'shao','age':18}, {'name':'shao','age':18}]
+ 
+Array.from({length: 2}, (v, i) => item = {index:i});//生成一个index从0到4的数组对象[{index: 0},{index: 1}]
+
+　　
+ 
+3，Array.from(string)　
+接受一个字符串
+ 
+	
+Array.from('abc') //['a','b','c']

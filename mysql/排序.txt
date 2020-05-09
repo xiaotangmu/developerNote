@@ -1,0 +1,14 @@
+mysql多个字段排序：
+
+select * from table order by id desc,name desc;
+
+多字字段排序只需要添加多个排序条件，并且每个排序的条件之前用逗号分开。
+
+表示先按照id降序排序，再按照name降序排序。
+
+
+
+1 SELECT * FROM students st ORDER BY st.sAge DESC, st.sGrade DESC;
+
+
+SELECT * FROM students st ORDER BY st.sAge ASC, st.sGrade DESC, st.sStuId DESC;
