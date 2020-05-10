@@ -1,0 +1,75 @@
+<!--List<Entry> getEntryByConditionForm(@Param("entry") Entry entry, @Param("limit") String limit);-->
+    <select id="getEntryByConditionForm" resultType="Entry">
+        SELECT * FROM sms_entry
+        <where>
+            <if test="warehouseId != null and warehouseId > 0">
+                warehouse_Id = #{entry.warehouseId}
+            </if>
+            <if test="supplierId != null and supplierId > 0">
+                AND supplier_Id = #{entry.supplierId}
+            </if>
+            <if test="entryDate != null and entryDate != '' and (limit == null or limit == '')">
+                AND entry_date = #{entry.entryDate}
+            </if>
+            <if test="limit != null and limit == '本月份'">
+                AND date_format(STR_TO_DATE( `entry_date`,'%Y/%m/%d'), '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y %m')
+            </if>
+            <if test="limit != null and limit == '上一个月份'">
+                AND date_format(STR_TO_DATE( `entry_date`,'%Y/%m/%d'), '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m')
+            </if>
+            <if test="limit != null and limit == '上第二个月份'">
+                AND date_format(STR_TO_DATE( `entry_date`,'%Y/%m/%d'), '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 2 MONTH),'%Y %m')
+            </if>
+            <if test="limit != null and limit == '上第三个月份'">
+                AND date_format(STR_TO_DATE( `entry_date`,'%Y/%m/%d'), '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 3 MONTH),'%Y %m')
+            </if>
+            <if test="limit != null and limit == '上三个月份'">
+                AND date_format(STR_TO_DATE( `entry_date`,'%Y/%m/%d'), '%Y %m')
+                in
+                (
+                date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m'),
+                date_format(DATE_SUB(curdate(), INTERVAL 2 MONTH),'%Y %m'),
+                date_format(DATE_SUB(curdate(), INTERVAL 2 MONTH),'%Y %m')
+                )
+            </if>
+            <if test="limit != null and limit == '一个月内'">
+                AND STR_TO_DATE( `entry_date`,'%Y/%m/%d') > DATE_SUB(CURDATE(), INTERVAL 1 MONTH )
+            </if>
+            <if test="limit != null and limit == '三个月内'">
+                AND STR_TO_DATE( `entry_date`,'%Y/%m/%d') > DATE_SUB(CURDATE(), INTERVAL 3 MONTH )
+            </if>
+            <if test="limit != null and limit == '半年内'">
+                AND STR_TO_DATE( `entry_date`,'%Y/%m/%d') > DATE_SUB(CURDATE(), INTERVAL 6 MONTH )
+            </if>
+            <if test="limit != null and limit == '一年内'">
+                AND STR_TO_DATE( `entry_date`,'%Y/%m/%d') > DATE_SUB(CURDATE(), INTERVAL 1 YEAR )
+            </if>
+            <if test="limit != null and limit == '两年内'">
+                AND STR_TO_DATE( `entry_date`,'%Y/%m/%d') > DATE_SUB(CURDATE(), INTERVAL 2 YEAR )
+            </if>
+        </where>
+        ORDER BY STR_TO_DATE( `entry_date`,'%Y/%m/%d') DESC, id DESC
+    </select>
+
+
+<!--void deleteByLimit(@Param("limit") String limit);-->
+    <delete id="deleteByLimit" parameterType="String">
+        DELETE FROM sms_entry
+        <where>
+            <if test="limit != null and limit == '一个月前'">
+                DATE_SUB(CURDATE(), INTERVAL 1 MONTH) > STR_TO_DATE( `entry_date`,'%Y/%m/%d')
+            </if>
+            <if test="limit != null and limit == '三个月前'">
+                AND DATE_SUB(CURDATE(), INTERVAL 3 MONTH) > STR_TO_DATE( `entry_date`,'%Y/%m/%d')
+            </if>
+            <if test="limit != null and limit == '半年前'">
+                AND DATE_SUB(CURDATE(), INTERVAL 6 MONTH) > STR_TO_DATE( `entry_date`,'%Y/%m/%d')
+            </if>
+            <if test="limit != null and limit == '一年前'">
+                AND DATE_SUB(CURDATE(), INTERVAL 1 YEAR ) > STR_TO_DATE( `entry_date`,'%Y/%m/%d')
+            </if>
+            <if test="limit != null and limit == '两年前'">
+                AND DATE_SUB(CURDATE(), INTERVAL 2 YEAR ) > STR_TO_DATE( `entry_date`,'%Y/%m/%d')
+            </if>
+        </where>
+    </delete>
