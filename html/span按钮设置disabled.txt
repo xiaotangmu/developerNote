@@ -1,0 +1,28 @@
+来源： https://blog.csdn.net/tianxingyun/article/details/103477402span按钮disabled属性无效
+
+
+span标签使用disabled属性没有效果，标签仍然可以被点击。
+
+解决方案：
+
+使用css属性pointer-events ,设置为none可以禁止点击事件：
+
+    span{
+        pointer-events:none;
+    }
+
+恢复点击事件：
+
+    span{
+        pointer-events:auto;
+    }
+
+pointer-events属性介绍
+
+1、阻止用户的点击动作产生任何效果
+
+2、阻止缺省鼠标指针的显示
+
+3、阻止CSS里的 hover 和 active 状态的变化触发事件
+
+4、阻止JavaScript点击动作触发的事件

@@ -1,0 +1,38 @@
+先安装jquery 看vue笔记下的jquery 安装
+      cnpm install bootstrap --save-dev
+      cnpm install jquery --save-dev
+      cnpm install popper.js --save-dev
+
+在main.js 引入依赖
+// import 'bootstrap' 注意这样引入bootstrap 不生效
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import $ from 'jquery'
+
+
+然后在页面vue中引入
+
+（全局可以在App.vue 中引入）
+
+<script>
+   	window.$ = window.jQuery = require('jquery');
+	// require('bootstrap'); 不用引入也行
+
+  export default {
+
+  }
+</script>
+
+
+主要原因 与eletron 起冲突
+
+
+
+如果还不行，（测试不用也行），就要像引入element ui 那样在 webpack.renderer.config.js   在.electron-vue 下
+添加
+let whiteListedModules = ['vue', 'vuex', 'element-ui', 'jquery', 'bootstrap']
+
+
+
+效果：都生效 boostrap 有色差

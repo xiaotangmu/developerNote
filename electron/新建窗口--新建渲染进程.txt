@@ -1,0 +1,39 @@
+1. 新建窗口的vue 文件，如New.vue
+添加好路由
+
+2. 在主进程（启动新窗口的页面元素）函数中添加
+
+const { ipcRenderer } = require('electron')
+
+//...
+
+
+ipcRenderer.send('openCalendarWindow') ; //调用主进程创建新窗口的方法
+
+如：
+        openCalendarWindow () {
+          alert('hello');
+            ipcRenderer.send('openCalendarWindow')
+        }
+
+3. 在主进程中添加创建新进程的方法 main.js/  src/main/index.js
+
+//定义新窗口
+// 定义calendar窗体
+let calendarWin
+// 创建calendar窗口方法
+function openCalendarWindow () {
+    calendarWin = new BrowserWindow({
+        width: 400,
+        height: 550,
+        parent: mainWindow, // win是主窗口
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+    calendarWin.loadURL(winURL + '#/New')     //New是新窗口路由 New.vue
+    calendarWin.on('closed', () => { calendarWin = null })
+}
+ipcMain.on('openCalendarWindow', e =>
+    openCalendarWindow()
+)

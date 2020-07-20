@@ -1,0 +1,9 @@
+先将 confing/index.js
+build{
+
+	assetsPublicPath: './',//将/ 改为 ./
+}
+
+npm run build
+
+还要解决图标、字体找不到问题 -- 看vue 打包找不到element ui 字体笔记

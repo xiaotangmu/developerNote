@@ -1,0 +1,23 @@
+
+修改 main.js 或者src/main/index.js
+
+添加 fram属性，具体如下
+
+
+
+
+let mainWindow
+const winURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080`
+  : `file://${__dirname}/index.html`
+
+function createWindow () {
+  /**
+   * Initial window options
+   */
+  mainWindow = new BrowserWindow({
+    height: 563,
+    useContentSize: true,
+    width: 1000,
+      frame: false,/*去除边框，包括全屏，缩小，关闭 ，要重写*/ ----------------------------------------------------
+  })

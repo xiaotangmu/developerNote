@@ -1,0 +1,82 @@
+https://www.cnblogs.com/sisimi/p/7693226.html
+
+
+1.查看安装中文包：
+
+查看系统是否安装中文语言包 （列出所有可用的公共语言环境的名称，包含有zh_CN）
+
+# locale -a |grep "zh_CN"
+
+没有输出，说明没有安装，输入下面的命令安装：
+
+# yum groupinstall "fonts" -y
+
+安装完成，查看安了哪些中文语言包
+
+# locale -a |grep "zh_CN"
+zh_CN
+zh_CN.gb18030
+zh_CN.gb2312
+zh_CN.gbk
+zh_CN.utf8
+
+说明系统已安装中文语言包，无需再安装。重要提示，如果按照下面的步骤你的系统仍然无法使用中文，那么请一个一个尝试上面的编码方式。比如把LANG="zh_CN"修改为LANG="zh_CN.gb18030"。
+2.修改配置文件：
+
+在修改配置文件之前，我们先看看当前系统语言环境：
+
+# echo $LANG
+en_US.UTF-8
+
+# locale
+LANG=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=
+
+虽然安装了中文语言包但本机的语言环境并不是中文，需要修改locale.conf配置文件：
+
+# vim /etc/locale.conf
+LANG="zh_CN"
+# source   /etc/locale.conf
+
+也可以使用命令修改locale.conf配置文件：
+
+#  localectl set-locale LANG=zh_CN
+
+之后查看当前语言环境：
+
+# echo $LANG
+zh_CN
+
+# locale
+LANG=zh_CN
+LC_CTYPE="zh_CN"
+LC_NUMERIC="zh_CN"
+LC_TIME="zh_CN"
+LC_COLLATE="zh_CN"
+LC_MONETARY="zh_CN"
+LC_MESSAGES="zh_CN"
+LC_PAPER="zh_CN"
+LC_NAME="zh_CN"
+LC_ADDRESS="zh_CN"
+LC_TELEPHONE="zh_CN"
+LC_MEASUREMENT="zh_CN"
+LC_IDENTIFICATION="zh_CN"
+LC_ALL=
+
+3. 验证是否成功：
+
+[root@node2 ~]# date
+2017年 10月 16日 星期一 16:30:24 CST
+

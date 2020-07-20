@@ -1,0 +1,31 @@
+https://blog.csdn.net/xianSky2015/article/details/51674997
+
+注意：在本机上通过nginx配置127.0.0.1:port的反向代理时候，若是在部署在tomcat上的java EE
+项目中设置cooKies时候，若是不配置特定的nginx属性，那么该cookie将无法保存在本地。
+
+主要原因是：在nginx反向代理时候，默认情况下，nginx将不会将代理的域名信息携带到tomcat
+应用服务器中，以至于在tomcat容器中通过域名设置cookie值的时候，会设置失败。
+
+
+    server {
+            listen       80;
+            server_name  blog.xiansky.com;
+     
+            #charset koi8-r;
+     
+            #access_log  logs/host.access.log  main;
+    		
+    		proxy_set_header X-Forwarded-Server $host;
+    		proxy_set_header X-Forwarded-Server $proxy_add_x_forwarded_for;
+     
+    		#反向代理时候，设置nginx将域名携带到tomcat服务器
+    		proxy_set_header Host $host;
+            location / {
+                #root   html;
+                #index  index.html index.htm;
+    	    proxy_pass http://localhost:8887;
+    	    proxy_connect_timeout 600;
+    	    proxy_read_timeout 600;
+    	
+            }
+    		}

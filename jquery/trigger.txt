@@ -1,0 +1,7 @@
+$('.el-tabs__item').eq(0).trigger('click');
+
+
+$(function(){
+
+	$('.el-tabs__item').eq(0).trigger('click');//直接触发点击事件
+})

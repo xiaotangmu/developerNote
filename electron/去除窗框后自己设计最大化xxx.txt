@@ -1,0 +1,50 @@
+第一步： 在特定页面 vue中
+
+const { ipcRenderer } = require('electron')
+    // let ipcRenderer = require('electron').ipcRenderer;
+   
+ export default {
+        
+        methods: {//方法调用
+            //最大
+            // maxsize(){
+            //     //发送最大化命令
+            //     ipcRenderer.send('window-max');
+            // },
+
+            minimize () {
+                alert('hello')
+                // ipcRenderer.send('minimize')
+                //发送最小化命令
+                ipcRenderer.send('window-min');
+            },
+            close () {
+                // ipcRenderer.send('close')
+                //发送关闭命令
+                ipcRenderer.send('window-close');
+            },
+}
+
+第二步：在main.js / src/main/index.js 中添加
+
+let ipcMain = require('electron').ipcMain;
+//接收最小化命令
+ipcMain.on('window-min', function() {
+    mainWindow.minimize();
+})
+//接收最大化命令
+ipcMain.on('window-max', function() {
+    if (mainWindow.isMaximized()) {
+        mainWindow.restore();
+    } else {
+        mainWindow.maximize();
+    }
+})
+//接收关闭命令
+ipcMain.on('window-close', function() {
+    mainWindow.close();
+})
+
+
+
+https://blog.csdn.net/fukaiit/article/details/91351448

@@ -1,0 +1,13 @@
+解决用navicate远程连接数据库出现1045 access denied for user 'root'@'localhost
+
+在MySQL命令行中输入：
+
+SET PASSWORD FOR 'root'@'%'=PASSWORD('123456');
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'IDENTIFIED BY'123456';
+
+FLUSH PRIVILEGES;
+
+连接成功。
+
+原文链接：https://blog.csdn.net/qq_16093323/article/details/82684115

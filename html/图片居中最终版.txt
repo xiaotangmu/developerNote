@@ -1,0 +1,21 @@
+<div class="" style="display: table;border: 2px solid #87947D;text-align: center;
+                              vertical-align: middle;height: 270px;width: 395px;
+                                align-items: center;">
+
+
+                                  <div style="display:table-cell;vertical-align: middle;text-align: center">
+                                      
+			<el-image
+                                              style="width: 221px; height: 216px;"
+                                              :src="url"
+                                              :fit="fits[0]"></el-image>
+
+                                  </div>
+
+    </div>
+
+1. 用div 包裹图片 img，将div 设置为table-cell， 添加属性 verical-align: middle; text-align: center
+2. 包裹div 父元素设置为 table
+
+
+来源：http://www.divcss5.com/jiqiao/j52666.shtml

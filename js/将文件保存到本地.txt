@@ -1,0 +1,10 @@
+//将文件保存到本地
+					    var oA = document.createElement("a");
+						oA.download = 'hello.png';// 设置下载的文件名，默认是'下载'，设置文件名后会失去下载类型，可以把后缀名写上
+						oA.href = data;
+						document.body.appendChild(oA);
+						oA.click();
+						oA.remove(); // 下载之后把创建的元素删除
+
+
+来源：https://www.cnblogs.com/qiantao/p/12083453.html

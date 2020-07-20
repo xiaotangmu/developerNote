@@ -1,0 +1,3 @@
+先禁用wlan 再启用
+
+网络和Internet -> 以太网 -> WLAN

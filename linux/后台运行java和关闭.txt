@@ -1,0 +1,27 @@
+后台进程进行项目
+
+Linux 终端下（windows cmd下同理）
+
+      [root@izwz9e7 opt]# nohup java -jar spring-boot-10-bill-0.0.1-SNAPSHOT.jar --server.port=80 &
+
+或者 nohup  java     -jar    projectName.jar    & 
+来源：https://www.cnblogs.com/hejunnuo/p/11465843.html
+
+ 
+停止运行项目
+
+ 
+
+      [root@izwz9e7 opt]# ps -ef|grep java
+
+      root    4903  4876 23 19:35 pts/1   00:00:13 java -jar spring-boot-10-bill-0.0.1-SNAPSHOT.jar
+
+      root    4939  4876  0 19:36 pts/1   00:00:00 grep --color=auto java
+
+ 
+
+      结束进程 （输入对应的进程码）
+
+      [root@izwz9e7 opt]# kill -9 4903
+
+原文链接：https://blog.csdn.net/weixin_40516924/article/details/106462683

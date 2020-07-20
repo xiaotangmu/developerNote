@@ -1,0 +1,11 @@
+先安装好element-ui，并引入，根据官网
+cnpm i element-ui -S
+
+main.js:
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
+Vue.use(ElementUI);
+
+关键要在.electron-vue/webpack.renderer.config.js 中引入
+let whiteListedModules = ['vue', 'vuex', 'element-ui']

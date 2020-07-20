@@ -11,4 +11,21 @@ npm install bootstrap
     "vue-router": "^3.1.3"
   },
 
+
+    1.安装依赖包：
+
+      cnpm install bootstrap --save-dev
+      cnpm install jquery --save-dev
+      cnpm install popper.js --save-dev
+
+    2.将bootstrap全局引入。
+    在项目中根目录西main.js中添加如下代码：
+
+import 'bootstrap'
+
+引入jquery同理,可在main.js添加下面一行：
+
+import $ from 'jquery'
+
+
 具体：https://www.cnblogs.com/freephp/p/11671521.html

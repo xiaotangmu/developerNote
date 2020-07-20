@@ -1,0 +1,63 @@
+来源：https://www.cnblogs.com/simonchen/articles/2251966.html
+
+
+CSS3按钮状态
+
+按钮样式
+
+下面的代码是.button类的一般样式，padding和border-radius使用em单位，可以使按钮根据font-size伸缩。要调整按钮大小，改变border-radius、font-size、padding值即可。例如：可以痛缩小字号（font-size）和内边距（padding）创建稍小的按钮（查看演示）。
+
+关于border-radius、text-shadow、box-shadow更多详情，请查看CSS 3 基础。
+.button {
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font: 14px/100% Arial, Helvetica, sans-serif;
+    padding: .5em 2em .55em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);
+    -webkit-border-radius: .5em;
+    -moz-border-radius: .5em;
+    border-radius: .5em;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.button:hover {
+    text-decoration: none;
+}
+.button:active {
+    position: relative;
+    top: 1px;
+}
+
+
+CCS3按钮通用样式
+渐变色样式
+
+下面是橙色按钮的样式代码。第一个背景设置是为不支持CSS 3的浏览器预留的退路，第二个针对Webkit浏览器，第三个针对Firefox，最后一个是仅能被IE识别的渐变滤镜。
+
+关于CSS渐变的更多详情，请查看CSS渐变跨浏览器实现一文。
+.orange {
+    color: #fef4e9;
+    border: solid 1px #da7c0c;
+    background: #f78d1d;
+    background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+    background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a', endColorstr='#f47a20');
+}
+.orange:hover {
+    background: #f47c20;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
+    background: -moz-linear-gradient(top,  #f88e11,  #f06015);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f88e11', endColorstr='#f06015');
+}
+.orange:active {
+    color: #fcd3a5;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+    background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
+}
+
+

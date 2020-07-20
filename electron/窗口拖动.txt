@@ -1,0 +1,10 @@
+html{
+        -webkit-app-region: drag;
+        -webkit-user-select: none;
+    }
+
+在需要的元素设置可拖动和不可拖动
+-webkit-app-region: no-drag;
+
+
+注意可拖动的元素不能对他进行操作

@@ -1,0 +1,13 @@
+[warn]: could not build theproxy_headers_hash, you should increase either proxy_headers_hash_max_size:
+ 512or proxy_headers_hash_bucket_size: 64
+
+
+修改nginx.conf，在http段中加如下面2行：
+
+http{
+   ......
+   proxy_headers_hash_max_size 51200;
+   proxy_headers_hash_bucket_size 6400;
+   ....
+}
+

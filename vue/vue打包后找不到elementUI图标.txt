@@ -1,0 +1,22 @@
+
+解决找不到图标 字体等；（bootstrap的，element ui的，自己包的）
+
+
+build/utils.js下找到
+
+if (options.extract) {
+   return ExtractTextPlugin.extract({
+     use: loaders,
+     fallback: 'vue-style-loader',
+     publicPath: '../../'
+   })
+ } else {
+   return ['vue-style-loader'].concat(loaders)
+ }
+
+ 
+
+加上
+
+publicPath: '../../'
+

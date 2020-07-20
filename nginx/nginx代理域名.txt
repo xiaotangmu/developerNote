@@ -1,0 +1,10 @@
+先在host 文件写上自己想要的域名
+
+(host ：c:/windows/System32/drivers/etc/)
+
+通过修改本地 host 文件，将 www.123.com 映射到 127.0.0.1
+
+127.0.0.1 www.123.com
+
+
+不能直接代理域名

@@ -1,0 +1,17 @@
+原因信了网上的鸡巴把 package.json 里面的build 下 的 files 改为了 ./**/*
+
+改回来"files": [
+      "dist/electron/**/*"
+    ],
+
+
+
+注意每次修改要更新dist 文件
+即 npm run build (失败) 
+/ cnpm run build -- 报错但也更新了dist 
+
+npm run package -- 打包
+
+
+
+2. 先将node-moduler 删除 yarn build ->  npm run package
