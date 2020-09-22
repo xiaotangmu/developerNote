@@ -1,0 +1,2 @@
+1. 快速整理代码：选中代码：Ctrl + A，Ctrl + K, Ctrl + D
+ 

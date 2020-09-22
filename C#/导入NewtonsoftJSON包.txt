@@ -1,0 +1,21 @@
+https://docs.microsoft.com/zh-cn/nuget/quickstart/install-and-use-a-package-in-visual-studio
+1. 在解决方案中找到相应项目 
+2. 右键 依赖项（references）-> NuGet 程序包管理器 
+3. 选择“浏览”(Brower), 选项卡并搜索“Newtonsoft.Json”，在列表中选择该包，然后选择“安装”  
+
+程序包管理器控制台
+
+    选择“工具” > “NuGet 包管理器” > “包管理器控制台”菜单命令 。
+
+    控制台打开后，检查 “默认项目”下拉列表中是否显示在程序包中要安装的项目。 如果在解决方案中有一个项目，则它已被选中。
+
+    定位 Newtonsoft.Json 包
+
+    输入命令 Install-Package Newtonsoft.Json（请参阅 Install-Package）。 控制台窗口会显示该命令的输出。 错误通常指示程序包与项目的目标框架不兼容。
+
+    若要了解有关包管理器控制台的详细信息，请参阅使用包管理器控制台安装和管理包。	
+
+
+
+使用：
+	string json = JsonConvert.SerializeObject(account, Formatting.Indented);

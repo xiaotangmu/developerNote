@@ -1,0 +1,2 @@
+var o = new { name: "tan", pwd: "123456"};
+

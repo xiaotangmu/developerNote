@@ -1,0 +1,38 @@
+注意.NetCode单元测试与.Net Framework 测试项目不一样
+
+1. 右键 解决方案 -> 添加项目 -> 搜索 单元测试 并找到 .NetCode 的单元测试（不要通用和其他）
+2. 右键 测试项目 -> 添加 -> 项目引用 -> 在项目项选择要测试的项目
+3. 在 测试类的TestMethod 方法中，添加测试代码，如：
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplication1.Controllers;
+using System;
+
+namespace UnitTestWebApp1_3
+{
+    [TestClass]
+    public class UnitTest1
+    {
+        [TestMethod]
+        public void TestMethod1()
+        {
+            var userController = new UserController();
+            var result = userController.Get();
+            Console.WriteLine(result);	// 暂时没找到哪里打印输出
+            // Assert.AreEqual(3,result);		
+        }
+    }
+}
+4. 运行：在软件最上栏找到 测试 -> 运行所有测试项目
+
+5. 输出结果：
+
+1>------ 已启动生成: 项目: WebApplication1, 配置: Debug Any CPU ------
+1>F:\vsDeveloper\WebTest1\WebApplication1\WebApplication1.csproj : warning NU1701: 已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8”而不是项目目标框架“.NETCoreApp,Version=v3.1”还原包“Microsoft.AspNet.WebApi.Core 5.2.7”。此包可能与项目不完全兼容。
+1>WebApplication1 -> F:\vsDeveloper\WebTest1\WebApplication1\bin\Debug\netcoreapp3.1\WebApplication1.dll
+1>已完成生成项目“WebApplication1.csproj”的操作。
+2>------ 已启动生成: 项目: UnitTestWebApp1-3, 配置: Debug Any CPU ------
+2>F:\vsDeveloper\WebTest1\UnitTestWebApp1-3\UnitTestWebApp1-3.csproj : warning NU1701: 已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8”而不是项目目标框架“.NETCoreApp,Version=v3.1”还原包“Microsoft.AspNet.WebApi.Core 5.2.7”。此包可能与项目不完全兼容。
+2>UnitTestWebApp1-3 -> F:\vsDeveloper\WebTest1\UnitTestWebApp1-3\bin\Debug\netcoreapp3.1\UnitTestWebApp1-3.dll
+2>已完成生成项目“UnitTestWebApp1-3.csproj”的操作。
+========== 生成: 成功 2 个，失败 0 个，最新 0 个，跳过 0 个 ==========
