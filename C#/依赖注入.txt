@@ -1,0 +1,35 @@
+ 配置 Startup 类
+
+public class Startup
+    {
+        /// <summary>
+        /// 服务集合
+        /// </summary>
+        private IServiceCollection _services;
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        /// <summary>
+        /// 配置服务，在运行时被调用
+        /// <para>
+        /// 在此方法内添加或配置服务
+        /// </para>
+        /// </summary>
+        /// <param name="services">服务集合</param>
+        public void ConfigureServices(IServiceCollection services)
+        {
+
+	// 添加自动注入类型
+            services.AddSingleton(Configuration);
+            services.AddScoped<UserService, UserServiceImpl>();
+
+            services.AddHttpClient();
+            services.AddControllersWithViews();
+            _services = services;
+        }
+    }

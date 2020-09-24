@@ -76,3 +76,22 @@ module.exports = {
         pathRewrite: {'^/api': ''}
       },
     },
+
+
+解决https 跨域问题
+  dev: {
+
+    // Paths
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/api': {
+        target: 'https://localhost:5001/api/',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {'^/api': ''},
+        headers: {
+          Referer: 'https://localhost:5001/api/'
+        }
+      },
+    },
