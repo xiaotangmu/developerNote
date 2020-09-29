@@ -1,0 +1,20 @@
+用 Body  带参
+注意 FromBody 接收的是JSON 字符串 ，不是JSON对象
+{
+    "id": 2,
+    "username": "jifeng",
+    "pwd": "taobao"
+}
+
+
+postman 传递Body JSON 也是JSON字符串
+
+还要注意，如果使用了FromBody  前端还要设置请求头 Content-Type: application/json
+如：vue axios
+await axios.post('api/user/post', jsonStr, {headers:{'Content-Type':'application/json'}})
+        .then(response => (
+          console.log(response)
+        ))
+        .catch(function (error) { // 请求失败处理
+          console.log(error);
+        });

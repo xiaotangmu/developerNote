@@ -1,0 +1,28 @@
+https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.1
+
+/// <summary>
+    /// 读取配置文件信息
+    /// </summary>
+    public class PropertiesConfig
+    {
+        public static IConfiguration Configuration { get; set; }
+        static PropertiesConfig()
+        {
+            //ReloadOnChange = true 当appsettings.json被修改时重新加载            
+            Configuration = new ConfigurationBuilder()
+            .Add(new JsonConfigurationSource { Path = "appsettings.json", ReloadOnChange = true })
+            .Build();
+        }
+    }
+
+
+调用
+Dictionary<string, string> dbType = PropertiesConfig.Configuration.GetSection("ConnectionStrings")
+                .Get<Dictionary<string, string>>();
+
+DbConnType/string dbConnType = Configuration.GetSection("ConnectionStrings").Get<DbConnType>();
+接收类型自己编写 string
+
+
+
+var configSection = _config.GetSection("section2:subsection0");

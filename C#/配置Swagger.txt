@@ -1,0 +1,56 @@
+https://www.cnblogs.com/1439107348s/p/10070631.html
+
+
+1. 引入
+Swashbuckle.AspNetCore 不要高版本 没有Info 类 使用 3.0.0
+Microsoft.Extensions.PlatformAbstractions
+
+2. 设置 api 文档 右键项目 -> 属性 -> 生成 -> 输出路径 & xml
+配置路径错误，文件消失
+解决： -- 路径问题
+配置如下：
+输出路径：bin\Debug\WebApp1\
+XML 文档文件：bin\Debug\WebApp1\WebApp1.xml
+
+3. 配置 Startup.cs
+public void ConfigureServices(IServiceCollection services)
+        {
+	//...
+	#region Swagger Api文档
+            //注入实现ISwaggerProvider使用默认设置
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1.1.0",
+                    Title = "Ray WebAPI",
+                    Description = "框架集合",
+                    //TermsOfService = "None",
+                    //Contact = new Swashbuckle.AspNetCore.Swagger.Contact { Name = "RayWang", Email = "2271272653@qq.com", Url = "http://www.cnblogs.com/RayWang" }
+                });
+                //获取应用程序根路径 （跨平台） 
+                var basePath = Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "WebApp.xml");//此处为生成xml文档
+                c.IncludeXmlComments(xmlPath);
+            });
+            #endregion
+
+	//...
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+	// ...
+	//使用中间件服务生成Swagger作为JSON端点
+            app.UseSwagger();
+            //使用中间件服务Swagger-ui assets（HTML、javascript、CSS等）
+            //app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "RMS API V1");
+                c.DocumentTitle = "API文档";
+                c.RoutePrefix = "api/doc";
+            });
+
+	// ...
+}

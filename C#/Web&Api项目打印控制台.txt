@@ -1,0 +1,18 @@
+private readonly ILogger<string> _logger;
+
+ public UserController(UserService userService, ILogger<string> logger)
+        {
+            _userService = userService;
+            _logger = logger;
+        }
+
+public List<User> GetAll()
+        {
+            _logger.LogError("#########################");
+            int i = 1;
+            List<User> list = _userService.getAll();
+            return list;
+        }
+
+打印：
+string: Error: #########################

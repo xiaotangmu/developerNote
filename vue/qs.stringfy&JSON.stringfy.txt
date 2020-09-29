@@ -1,0 +1,9 @@
+1. qs.stringfy(data) 是将对象序列化，类似于jq 的 $("form").serialize()
+qs.stringfy(JSONData);	// Username=dfsd&Pwd=123
+
+这是后台直接接受的数据	-- params
+
+2. JSON.stringfy(data) 是将json 对象转为json 字符串
+console.log(JSON.stringify(data));  // {"Username":"dfsd","Pwd":"123"}
+
+这是后台从body 接收的数据 -- （Postman: body json）/ (C# FromBody )

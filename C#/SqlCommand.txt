@@ -1,0 +1,44 @@
+https://blog.csdn.net/feiduan1211/article/details/81541477
+
+
+string strSQL = @"intsert into tb_users （id,username,password ） values ('1','system','123456')";
+SqlCommand cmd = new SqlCommand(strSQL , conn);
+int i =  Convert.ToInt32(cmd.ExecuteNonQuery());
+ExecuteNonQuery() 方法执行update 语句。
+
+ 
+string strSQL= @"update tb_users set password='654321' where username='system'";
+SqlCommand cmd = new SqlCommand(strSQL);
+cmd.Connection = conn;
+int i =  Convert.ToInt32(cmd.ExecuteNonQuery());
+ExecuteNonQuery() 方法执行delete 语句。
+
+ 
+string strSQL= @"delete from tb_users  where username='system'";
+SqlCommand cmd = new SqlCommand(strSQL);
+cmd.Connection = conn;
+int i =  Convert.ToInt32(cmd.ExecuteNonQuery());
+然后就是最常用的select 查询语句，
+
+ExecuteReader（）方法可以执行查找语句，它返回的是一个结果集，一般的我们可以用一个叫做SqlDataReader的对象来接收这个结果集，
+比如说想要查找所有的users ，下面的语句执行后，在data里面就得到了所有的tb_users 表里的信息了。
+
+SqlCommand cmd = new SqlCommand("select * from tb_users", conn);
+SqlDataReader data= cmd.ExecuteReader();
+还有就是ExecuteScalar() 方法，它返回一个单一的结果，比如说上一篇文章中就用到的是这个方法。
+
+             string sqlStr = "SELECT count(1) FROM tb_Users WHERE username='" + username +"' and password='"+password+"' ";
+            Console.WriteLine(sqlStr);
+ 
+            conn = new SqlConnection(strSQLconn);
+            conn.Open();
+ 
+            SqlCommand comm = new SqlCommand(sqlStr,conn);
+            int i = Convert.ToInt32(comm.ExecuteScalar().ToString());
+            if(i>=1)
+            {
+                conn.Close();
+                return true;
+            }
+            conn.Close();
+            return false;

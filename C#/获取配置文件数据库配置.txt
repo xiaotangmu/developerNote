@@ -1,0 +1,102 @@
+文件 appsettings.json
+
+1. 配置数据库类型存储类 -- 用于 Configuration 启动配置
+public class DbConnTypeTypeStorage
+    {
+        public static string defaultDbConnString;
+        private static Dictionary<string, string> dbConnType;
+
+        /// <summary>
+        /// 保存数据库链接配置
+        /// </summary>
+        /// <param name="_dbConnType">数据库连接配置</param>
+        /// <param name="setDefaultDbConntStr_key">默认数据库连接</param>
+        public static void setDbConnType(Dictionary<string,string> _dbConnType, string setDefaultDbConntStr_key)
+        {
+            if (dbConnType == null)
+            {
+                dbConnType = _dbConnType;
+                defaultDbConnString = dbConnType[setDefaultDbConntStr_key];
+            }
+        }
+
+        public static string getDbConnString(string dbconn_key)
+        {
+            if (dbconn_key == null)
+            {
+                throw new ArgumentNullException(nameof(dbconn_key));
+            }
+
+            return dbConnType[dbconn_key];
+        }
+    }
+
+2. 枚举类型
+/// <summary>
+    /// 数据类型
+    /// </summary>
+    public enum DbTypeEnum
+    {
+        [Description("SqlServerConnection")]
+        SqlServer=1,
+
+        [Description("OracleConnection")]
+        Oracle=2,
+
+        [Description("MySqlConnection")]
+        MySql = 3,
+
+        [Description("SqlLiteConnection")]
+        SqlLite = 4
+    }
+
+3. 反射获取枚举类描述
+/// <summary>
+    /// 枚举扩展类
+    /// </summary>
+    public static class EnumExtension
+    {
+        /// <summary>
+        /// 获取枚举的描述，需要DescriptionAttribute属性
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static string GetDescription(this Enum e)
+        {
+            //获取枚举的Type类型对象
+            var type = e.GetType();
+            //获取枚举的所有字段
+            var fields = type.GetFields();
+
+            //遍历所有枚举的所有字段
+            foreach (var field in fields)
+            {
+                if (field.Name != e.ToString())
+                {
+                    continue;
+                }
+                //第二个参数true表示查找EnumDisplayNameAttribute的继承链
+
+                if (field.IsDefined(typeof(DescriptionAttribute), true))
+                {
+                    var attr = field.GetCustomAttribute(typeof(DescriptionAttribute), false) as DescriptionAttribute;
+                    if (attr != null)
+                    {
+                        return attr.Description;
+                    }
+                }
+            }
+
+            //如果没有找到自定义属性，直接返回属性项的名称
+            return e.ToString();
+        }
+
+    }
+
+4. 调用获取配置文件 -- 在 Startup.cs 中配置（其他地方一样）
+// 获得配置文件中的数据库 （ConnectionStrings 节点） 配置信息
+            Dictionary<string, string> dbType = Configuration.GetSection("ConnectionStrings")
+                .Get<Dictionary<string, string>>();
+            //DbConnType dbConnType = Configuration.GetSection("ConnectionStrings").Get<DbConnType>();
+            DbConnTypeTypeStorage.setDbConnType(dbType, DbTypeEnum.SqlServer.GetDescription());
+

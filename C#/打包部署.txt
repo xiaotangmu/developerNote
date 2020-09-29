@@ -1,0 +1,5 @@
+看开发文档
+https://docs.microsoft.com/zh-cn/aspnet/core/tutorials/publish-to-azure-webapp-using-vs?view=aspnetcore-2.1
+
+
+右键项目 打包 -> 发布 -> 文件 -> exe 可以直接运行

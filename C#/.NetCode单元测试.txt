@@ -1,3 +1,6 @@
+https://docs.microsoft.com/zh-cn/dotnet/core/testing/?pivots=mstest
+
+
 注意.NetCode单元测试与.Net Framework 测试项目不一样
 
 1. 右键 解决方案 -> 添加项目 -> 搜索 单元测试 并找到 .NetCode 的单元测试（不要通用和其他）
