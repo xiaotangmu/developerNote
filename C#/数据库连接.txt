@@ -1,0 +1,82 @@
+基础：
+SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = "Server=localhost;uid=sa;pwd=123456;database=Test;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=false;";
+            SqlCommand sqlCommand = conn.CreateCommand();
+            sqlCommand.CommandType = CommandType.Text;
+            string sqlStr = "select * from t_user";
+            sqlCommand.CommandText = sqlStr;
+            conn.Open();
+
+            object users = sqlCommand.ExecuteScalar();  // "" 只拿第一行第一列单个数据
+
+            conn.Close();   // 关闭，可再次连接
+            conn.Dispose(); // 释放，需要重新配置
+
+1. SqlConnection	-- 连接
+（1） 
+      ConnectionString 　　  获取或设置用于打开 SQL Server 数据库的字符串。 （重写 DbConnection.ConnectionString。）
+　　ConnectionTimeout 　  获取在尝试建立连接时终止尝试并生成错误之前所等待的时间。 
+　　Database 　　　　　　  获取当前数据库或连接打开后要使用的数据库的名称。 
+　　DataSource 　　　　　 获取要连接的 SQL Server 实例的名称。 
+　　PacketSize 　　　　　　用来与 SQL Server 的实例进行通信的网络数据包的大小，以字节为单位。
+　　ServerVersion 　　　　获取包含客户端连接的 SQL Server 实例的版本的字符串。 
+　　State 　　　　　　　　 指示最近在连接上执行网络操作时， SqlConnection 的状态。 
+　　StatisticsEnabled 　　 如果设置为 true，则对当前连接启用统计信息收集。
+　　WorkstationId 　　　　获取标识数据库客户端的一个字符串。
+（2）
+       Open()　　　　打开连接
+　　 Close()　　　　关闭连接
+　　 CreateCommand()　　创建SqlCommand对象
+　　 GetSchema()　获取数据库架构信息
+（3）
+       conn.Close(); //关闭连接
+       conn.Dispose();	// 释放资源
+       SqlConnection.ClearPool(conn); //清空conn连接池
+       SqlConnection.ClearAllPools(); //清空连接池
+
+2. SqlCommand 	-- 操作 	https://www.cnblogs.com/groler/archive/2011/08/25/2153408.html
+（1）SqlCommand 常见的属性
+
+　　Sqlcommand属性为执行命令做准备。
+
+　　（1）CommandText属性：执行的SQL语句；
+
+　　（2）CommandType属性：解析CommandText的值；
+
+　　（3）Connection属性：解析CommandText的值；
+
+　　（4）CommandTimeout属性：设置需要执行多久停止
+
+　　（5）Parameters属性：设置参数
+
+ （2）SqlCommand 类构造函数
+	// 见源码
+
+（3）SqlCommand 常见方法
+a. ExecuteReader() 方法：它主要执行Select语句。将结果返回到SqlDataReader对象。
+　　如：
+　　　　SqlCommand cmd=new SqlCommand("select * from table where id='123' ", conn);
+　　　　conn.Open();
+
+　　　　SqlDataReader rd=cmd.ExecuteReader();
+　　　　rd.Read();
+
+　　　　lable.text=rd["ccc"].ToString();	// 根据属性名直接读取值
+
+　　　　rd.Close();
+
+　　　　conn.Close();
+
+b. ExecuteNonQuery()方法:此方法主要执行Insert、Update、Delete语句。
+返回值为该命令所影响的行数。
+
+c. ExecuteScalar()方法：返回获得的聚合值（共有多少行数据）。
+// 其实该方法实质设定获取查询的第一个属性值，所以当查询其他时，返回结果是第一行第一列数据。
+
+d. ExecuteXmlReader()方法：该方法用于执行返回数据源中某个XML数据流的
+FOR XML SELECT语句。ExecuteXMLReader命令只与SQL Server2000及更高版本兼容。
+
+
+二、 （忽略）Insql 尝试下就好了，模仿mybatis 简单连接，配置公用接口失败（暂时没找到，建议不要再尝试）
+
+

@@ -1,0 +1,68 @@
+https://www.bilibili.com/video/BV1u7411g7Bn?p=4
+
+
+https://www.mockaroo.com
+生成数据库数据
+
+Dapper Nut 安装
+
+1.  在App.config 配置数据库连接str
+
+2. 自定义DBHelper 类
+public class DBHelper{
+
+	public static string ConnStrings{
+		get {
+			return ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+		}
+	}	
+}
+
+注意这里使用ConfigurationManager 需要引入 System.Configuration
+
+3. 查询
+// IDbConnection  实际操作类
+public List<Person> FindListByLastName(string lastname)
+{
+	using (IDbConnection db=new SqlConnection(DBHelper.ConnStrings))
+	{
+	
+		// 1. string sql = "select * from Person where LastName = 'xxx'";
+		
+		// 2. 字符串拼接
+		// string sql = "select * from Person where Lastname = '" + lastname + "'";
+		
+		// 3. Format 格式化
+		// string sql = string.Format("select * from Person where LastName='{0}'", lastname);
+		
+		// 4. C#6 语法$
+		// string sql = $"select * from Person where LastName = '{lastname}'";
+		
+		// IEnumerable<Person> lst  = db.Query<Person>(sql);	// Query 为db 对象扩展方法，返回值类型
+		
+		// 上面方法存在 SQL 注入问题
+		
+		// 5. 解决 SQL　注入问题
+		string　sql = $"select * from Person where LastName = @LastName";	// 用@作为参数
+		
+		IEnumerable<Person> lst = db.Query<Person>(sql, new { LastName = lastname});	 // 
+		return lst.ToList();	// 转换为List 的类型返回
+	}
+}
+
+4. 插入
+public bool InsertData(Person person) 
+{
+	using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+	{
+		// 准备插入的SQL 语句
+		string sql = "insert into Person(FirstName, LastName, EmailAddress, CreateOn) values" + 
+			"(@FirstName, @LastName, @EmailAddress, @CreateOn)";
+			
+		// 调用Dapper 中的 IDbConnection 扩展方法Excute() 来执行插入操作
+		int result = db.Execute(sql, person);	// 第一个参数 SQL 语句 第二个参数Person 对象 
+		
+		// 简化条件判断返回
+		return result > 0;	
+	}
+}

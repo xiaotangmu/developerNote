@@ -1,0 +1,33 @@
+https://blog.csdn.net/loongsking/article/details/79964352
+
+asp.net core中AddTransient，AddScope和AddSingleton有什么不同？
+
+1.  Transient创建的对象总是不同的，每一个服务和每个控制器都创建一个不同的实例。
+
+2.  Scoped创建的对象在同一个请求会话时是相同的，每一个不同的会话创建一个不同的实例。
+
+3.  Singleton创建的对象在所有的地方所有的请求会话创建的都相同的。
+
+例子：
+services.AddSingleton(Configuration);
+services.AddTransient<IOperationTransient, Operation>();
+services.AddScoped<IOperationScoped, Operation>();
+services.AddSingleton<IOperationSingleton, Operation>();
+
+
+
+或者
+services.AddScoped(typeof(IUserService), typeof(UserService));
+
+services.AddScoped<IUserService, UserService>();
+
+
+解决：
+InvalidOperationException: Error while validating the service descriptor 'ServiceType: BLL.UserService Lifetime: Scoped ImplementationType: BLL.Impl.UserServiceImpl': 
+Unable to resolve service for type 'DAL.UserDao' while attempting to activate 'BLL.Impl.UserServiceImpl'.
+
+
+由于只注入了UserService 和 UserServiceImpl ，而 impl 调用 dao ，dao 没有注入，造成报错
+解决：把dao 也注入进入
+
+services.AddScoped(typeof(DAL.UserDao));
