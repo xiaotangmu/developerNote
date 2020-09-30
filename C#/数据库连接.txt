@@ -79,4 +79,7 @@ FOR XML SELECT语句。ExecuteXMLReader命令只与SQL Server2000及更高版本
 
 二、 （忽略）Insql 尝试下就好了，模仿mybatis 简单连接，配置公用接口失败（暂时没找到，建议不要再尝试）
 
+三、Dapper 
+具体看 Dapper 使用笔记
+
 

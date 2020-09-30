@@ -4,11 +4,20 @@ https://www.bilibili.com/video/BV1u7411g7Bn?p=4
 https://www.mockaroo.com
 生成数据库数据
 
-Dapper Nut 安装
+备注：
+1. .NetCode项目没有App.config 文件也没有 引用 包，
+App.config 可以创建 应用程序配置文件 
+ConfigurationManager 可以在 NuGet 安装
+直接这样操作解决失败，这是用在 Framework 项目的，正确方法： https://www.bbsmax.com/A/E35p4vkK5v/
+.NetCode 读取 appsettings.json 
 
-1.  在App.config 配置数据库连接str
+2. Dapper 安装项目不能与Dapper 同名
 
-2. 自定义DBHelper 类
+Dapper, Data.Client NuGet 安装
+
+1.  在(应用程序配置文件)App.config 配置数据库连接str 
+
+2. 自定义DBHelper 类 -- framework 中使用
 public class DBHelper{
 
 	public static string ConnStrings{
@@ -19,6 +28,13 @@ public class DBHelper{
 }
 
 注意这里使用ConfigurationManager 需要引入 System.Configuration
+
+
+下面操作需要引入：
+using System.Data;
+using System.Data.Client;
+using Dapper;
+using System.Linq;	// toList
 
 3. 查询
 // IDbConnection  实际操作类
@@ -66,3 +82,239 @@ public bool InsertData(Person person)
 		return result > 0;	
 	}
 }
+
+5. 更新
+public bool UpdateData(Person person)
+{
+	using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+	{
+		// 准备更新语句
+		string sql = "update Person set FirstName = @FirstName, LastName = @LastName where id = @id";
+		
+		// 执行更新语句
+		int result = db.Execute(sql, person);
+		
+		return result > 0;
+	}
+}
+
+6. 删除
+public bool DeleteData(int id)
+{
+	// 下面是根据id 执行删除
+	using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+	{
+		// 准备 sql 语句
+		string sql = "delete from Person where id = @ID";
+		
+		// 执行删除
+		int result = db.Execute(sql, new {ID = id});	// 匿名对象
+		
+		return result > 0;
+	}
+}
+
+https://www.bilibili.com/video/BV1b7411J7Q6?p=3
+Dapper 高级
+1. Dapper 执行存储过程
+存储过程是一组预编译的 SQL 语句
+优点：
+（1）允许模块化程序设计，就是说只需要创建一次过程，以后在程序中就可以调用该过程任意次。
+（2）允许更快执行，如果某操作需要执行大量SQL 语句或重复执行，存储过程比 SQL 语句执行的要快。
+（3）减少网络流量，例如一个需要数百行的SQL 代码的操作有一条执行语句完成，不需要在网络发送数百行代码。
+（4）更好的安全机制，对于没有权限执行存储过程的用户，也可授权他们执行存储过程。
+
+SQL 创建和执行存储过程
+(1) -- 存储过程的创建：未通过考试的学生名单
+	if exists(select * from sysobjects where name = 'P_stuMarkInfo')
+	drop proc P_stuMarkInfo
+	go
+	create proc P_stuMarkInfo
+	as
+	select * from stuinfo where stuNo not in
+	(
+		select stuNo from stumark where writtenExam >= 60 and labExam >- 60
+	)
+	go
+	
+	-- 执行存储 
+	exec P_stuMarkInfo
+	
+	-- 方法（先创建存储过程 - 上面）
+	public List<StuInfo> findStuInfoList()
+	{
+		List<StuInfo> students = new List<StuInfo>();
+		using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			studnets = db.Query<StuInfo>("dbo.P_stuMarkInfo",	// 存储过程的名称
+				null,	// 存储过程的参数
+				null,	// 事务对象
+				true,	// 是否缓存
+				null,	// 获取或设置在终止执行命令的尝试并生成错误之间的等待时间
+				CommanndType.StoreProcedure	// 指定的SQL 语句为存储过程的类型
+			).ToList();	// 结果转化为List 类型
+		}
+		return students;
+	}
+
+(2) -- 存储过程的创建；带参数的：笔试和机试的及格线由用指定，并且统计出未通过考试的人数
+	if exists(select * from sysobjects where name = 'P_stuMarkInfo')
+	drop proc P_stuMarkInfo
+	go
+	create proc P_stuMarkInfo
+	@w int, -- 输入参数 笔试及格线
+	@l int, -- 机试及格线 输入参数
+	@countNum int output -- 输出参数 用来统计不及格的人数，相当于方法的返回值
+	as
+	select @countNum = count(*) from stuinfo where stuNo not in
+	(
+		select stuNo form stumark where writtenExam >= @w and labExam >= @l
+	)
+	go
+	
+	-- 执行带有输入参数和输出参数的存储过程
+	declare @countNum int
+	exec P_stuMarkInfo1 60, 60, @countNum output
+	print '未通过考试的人数为： ' + convert(varchar(20), @countNum)
+	
+	-- 方法 
+	public int countQualifyNum(int w, int l)
+	{
+		// 准备存储过程的三个参数：两个是输入参数，一个是输出参数
+		
+		var p = new DynamicParqameters();	// 动态参数类
+		p.Add("@w", w);	// 存储过程的输入参数赋值 笔试及格线
+		p.Add("@l", l);	// 机试及格线
+		p.Add("@countNum", 0, DbTyp.Int32, ParamterDirection.Output);	// 标注为输出参数
+		
+		using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			// 执行存储过程
+			db.Execute("dbo.P_stuMarkInfo1", p, null, null, CommanndType.StoreProcedure);
+			
+			// 如何得到存储过程的返回值
+			int num = p.Get<int>("@countNum");
+			return num;
+		}
+	}
+	
+2. Dapper 执行事务
+特性：ACID
+
+	public void delete(int ID)
+	{
+		using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			db.Open();	// 打开连接
+			IDbTransaction trans = db.BeginTransaction();	// 开始数据库事务
+			try
+			{
+				// 创建事务对象
+				
+				// 根据用户输入的学号ID 进行删除的操作：先删除从表，再删除主表的信息
+				string query1 = "delete from stuinfo where stuNo = @stuNo";
+				string query2 = "delete from stumark where stuNo = @stuNo";
+				
+				// 执行删除操作
+				db.Execute(query1, new {stuNO = ID}, trans, null, null);	// 主表
+				db.Execute(query2, new (stuNo = ID), trans, null, null);	// 从表
+				
+				// 提交事务
+				trans.Commit();
+				
+			}
+			catch (Exception ex)
+			{
+				// 出现异常，事务回滚
+				trans.Rollback();
+				db.Close();
+			}
+		}
+	}
+	
+3. Dapper 实现多表查询
+(1) public void getSome()
+	{
+		using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			var sql = "select * from stuinfo inner join stumark on stuinfo .stuNo = stumark.stuNo";
+			
+			// 执行查询：多表Query( 类型一，类型二，返回值)
+			var list = db.Query<StuInfo, StuMark, StuInfo>(
+				sql, 
+				(students, scores) => { return students;}, 	// 变量 students 对应的 StuInfo 类型 scores 对应的 StuMark 类型
+				null,	// 存储过程的参数无
+				null,	// 事务无
+				true,
+				splitOn: "stuNo"	// 该参数是用来划分查询中的字段是属于哪个类的 splitOn 可省略
+			);
+			
+			/* 
+			SplitOn: stuNo 划分查询中的字段是属于哪个表的 也就是查询结构映射到哪个实体，上边的sql 运行时：会从查询结果所有
+			字段列表的最后一个字段进行匹配，一直找到stuNo 这个字段（大小写不计），找到的第一个 stuNo 字段匹配 StuInfo 类的 stuNo 属性
+			那么从 stuNo 到最后一个字段都属于 StuInfo, StuNo 以前的字段都映射到StuMark 表
+			通过(T, P)=> (return T) 把两个类的实例解析出来 */
+			
+		}
+	}
+	
+(2) public User(){
+		new List<Role>();
+	}
+	/// 多表查询操作一
+	public void OneToMany1()
+	{
+		List<Customer> userlist = new List<Customer>();
+		using(IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			string sql = @"select c.*, r.* from UserInfo c
+							inner join UserRole cr ON cr.UserId = c.UserId
+							inner join Role r ON r.RoleId = cr.RoleId";
+			userlist = db.Query<Customer, Role, Customer>(	// 第三个参数是返回值类型
+				sql,
+				(user, role) => { user.Role = role; return user; },
+				null,
+				null,
+				true,
+				"RoleId"
+			).ToList();
+		}
+		
+		if(userlist.Count > 0) 
+		{
+			userlist.ForEach((item) => Console.WriteLine(
+				"UserName: " + item.UserName + 
+				"----------PassWord: " + item.PassWord
+			));
+		}
+	}
+	
+	/// 多表查询操作二
+	public void OneToMany2()
+	{
+		List<User> userList = new LIst<User>();
+		using (IDbConnection db = new SqlConnection(DBHelper.ConnStrings))
+		{
+			string sql = @"select c.UserId, c.Username, c.Password, r.RoleId, r.RoleName\
+						from UserInfo c
+						left join UserRole cr on cr.UserId = c.UserId 
+						left join Role r on r.RoleId = cr.RoleId";
+			var lookup = new Dictionary<int, User>();
+			userList = db.Query<User, Role, User>(
+				sql,
+				(user, role) =>
+				{
+					User u;
+					// 如果根据id 获取不到
+					if (!lookup.TryGetValue(user.UserId, out u))	// TryGetValue 获取与指定的键相关联的值User
+					{
+						lookup.Add(user.UserId, u = user);
+					}
+					u.Role.Add(role);
+					return user;
+				}, null, null, true, "RoleId", null, null	// 后面的两个 null 可选
+			)).ToList();
+			// 获取集合中的值
+			var result = lookup.Values; // 值的集合
+		}
+	}

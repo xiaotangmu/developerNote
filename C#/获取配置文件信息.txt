@@ -1,3 +1,8 @@
+建议先看：https://www.bbsmax.com/A/E35p4vkK5v/ 
+明白framwork 与 .net code 的配置文件
+
+
+
 https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.1
 
 /// <summary>
