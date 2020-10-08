@@ -1,0 +1,30 @@
+官方文档：https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/websockets?view=aspnetcore-3.0
+
+一、SignalR
+1. 创建空项目
+2. 添加SignalR Hub Class 类
+
+public class MsgHub: Hub
+{
+	// 在 hub 中编写的方法，都是要被客户端调用的方法
+	public void Hello()
+	{
+		// 服务器主动调用客户端的方法
+		Clients.All.hello();
+	}
+}
+
+
+3. 创建Startup.cs
+public class Startup
+{
+	public void Configuration(IAppBuilder app)
+	{
+		// 
+		app.MapSignalR();
+	}
+}
+
+运行 测试 路径/signalr/hubs
+查看是否有数据产生
+

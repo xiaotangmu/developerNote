@@ -1,0 +1,450 @@
+官方：https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data?view=aspnetcore-3.1
+
+https://www.bilibili.com/video/BV1ZK411n7KT?p=4
+
+[Authorize]
+[AllowAnonymous]
+[PermissionCheck (Id ="user1", Operation=2)] 
+[Authorize(Roles = "admin")]
+[Authorize(Policy = "RequireAdministratorRole")]
+
+
+一、
+1. 配置Startup.cs
+(1)修改Configure 方法下
+app.UseEndpoints(endpoints =>
+{
+	endpoints.MapDefaultControllerRoute();	//映射控制器
+})
+(2) 配置ConfigureServices 方法
+services.AddControllersWithViews();
+
+2.  创建测试 Controller
+public class HOmeContoller : Controller
+{
+	public IActionResult Index(){
+		return Vies();
+	}
+	
+	[Authorize]
+	public IActionResult Secret()
+	{
+		return View();
+	}
+	
+	public IActionResult Authenticate()
+	{
+		return RedirectionToAction("Index");
+	}
+}
+
+3. 设置中间件位置，配置Startup.cs
+配置 Configure 方法
+app.UserRoute();	// 注意这个在上面
+app.UseAuthorization();
+
+注入服务 配置ConfigureServices	-- 这时一个Cookie 程序
+services.AddAuthentication("CookieAuth")
+	.AddCookie("CookieAuth", config => {
+	
+		config.Cookie.Name = "Grandmas.Cookie";
+		config.LoginPath = "/Home/Autheenticate";
+	})
+
+4. HomeController 
+public IActionResult Authenticate()
+{
+	var grandmaClaims = new List<Claim>()
+	{
+		new Claim(ClaimTypes.Name, "Bob"),
+		new Claim(ClaimTypes.Email, "Bob@famil.com"),
+		new Claim("Grandma.Says", "Very nice boi."),
+		
+	};
+	
+	var licenseClaims = new List<Clain> ()
+	{
+		new Claim(ClaimTypes.Name, "Bob K Foo"),
+		new Claim("DrivingLicense", "A+"),
+	}
+	
+	var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
+	var licenseIdentity = new ClaimsIdentity(licenseClaims, "Government");
+	
+	var userPrincipal = new ClaimsPrincipal(new[] {grandmaIdentity, licenseIdentity });
+	
+	HttpContext.SignInAsync(userPrincipal);
+	
+	return RedirectToAction("Index");
+}	
+
+5. Startup.cs
+
+Configure
+app.UseRouting();
+
+// who are you?
+app.UseAuthentication();
+
+// are you allowed?
+app.UseAuthorization();
+	
+	
+二、
+导包
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.InMemory
+ Identity 包 -- 
+Micorsoft.AspNetCore.Identity.EntityFrameworkCore
+
+1. Startup.cs 注入服务
+public void ConfigureServices(IServiceCollection services)
+        {
+
+            services.AddDbContext<AppDbContext>(config =>
+            {
+                config.UseInMemoryDatabase("Memory");
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(config =>
+            {
+                config.Password.RequiredLength = 4;
+                config.Password.RequireDigit = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireLowercase = false;   // 是否一定要小写字母
+            })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.Cookie.Name = "Identity.Cookie";
+                config.LoginPath = "/Home/Login";
+            });
+
+            //services.AddControllersWithViews();
+            services.AddControllers();
+        }
+
+注入认证 授权
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+//////////////////////////////////////////////////////////////////////////////////////////
+            app.UseRouting();
+
+            // who are you?
+            app.UseAuthentication();    // 没有, 登录了, 也会拦截
+
+            // are you allowed?
+            app.UseAuthorization();
+//////////////////////////////////////////////////////////////////////////////////////////////
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+
+2. 创建AppDbContext 数据库连接类
+public class AppDbContext : IdentityDbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+
+        }
+    }
+
+3. 配置Controller
+[Route("[controller]/[action]")]
+    public class HomeController : Controller
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+
+        public HomeController(UserManager<IdentityUser> userManager, 
+            SignInManager<IdentityUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+
+        public string Index()
+        {
+            return "I'm Index Page!";
+        }
+
+        [Authorize] // 登录后请求还是被拦截 -- 没有添加 app.UseAuthentication(); 
+        [HttpGet]
+        public string Test()
+        {
+            return "test";
+        }
+
+        [HttpGet]   // 不加会自动拦截
+        public string Login()
+        {
+            return "Hello I'm Login Page!";
+        }
+
+
+        //[HttpGet] // 用来跳转的页面不指定请求类型,不然重定向要对应请求类型,但不能直接请求(加了认证后)
+        public string Login2()  // 登录失败过来的，以便测试方便
+        {
+            return "Hello I'm Login2 Page!";
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            // login functionality
+            var user = await _userManager.FindByNameAsync(username);
+            if (user != null)
+            {
+                // sign in
+                var signInResult = await _signInManager.PasswordSignInAsync(user, password, false, false);
+
+                if (signInResult.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                } else
+                {
+                    // return "密码错误";
+                    return RedirectToAction("Login2");
+                }
+            }
+            // 当前用户不存在
+            return RedirectToAction("Login2");   // 直接返回会重定向到 post 的 login 请求, 就算不同名也不行, 若该login2 没有显示声明请求类型可以跳转
+        }
+
+        [HttpGet]
+        public string Register()
+        {
+            return "Hello, I'm register page!";
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(string username, string password)
+        {
+
+            // register functionality
+            var user = new IdentityUser
+            {
+                UserName = username,
+                Email = "",
+            };
+        
+
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                // sign user here
+                var signInResult = await _signInManager.PasswordSignInAsync(user, password, false, false);
+
+                if (signInResult.Succeeded)
+                {
+
+                    // generation of the email token
+                    //var code = await _userManager.GenerateemailConfirmationTokenAsync(user);
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index");
+        }
+}
+
+
+给请求都加上 httpGet HttpPost ... 除了跳转请求
+
+
+三、邮箱认证	在 （二） 上操作
+1. Service 服务 AddIdentity 下添加
+config.SignIn.RequireConfirmedEmail = true;
+
+2. 导包 NETCore.MailKit
+Startup.cs
+private IConfiguration _config;
+
+public Startup(IConfiguration config)
+{
+	_config = config;
+}
+
+添加服务
+services.AddMailKit(config => config.UseMailKit(_config.GetSection("Email").Get<MailKitOptions>()));
+
+配置文件 appsettings.json
+"Email": {
+	"Server": "127.0.0.1",
+	"Port": 25,
+	"SenderName": "Anton",
+	"SenderEmail": "Testo@Testo.com"
+
+}
+
+3. Controller
+private readonly IEmailService _emailService;
+
+public HomeController(..., IEmailService emailService)
+{
+	_emailService = emailService;
+}
+
+修改 register 方法
+if (result.Succeeded)
+{
+	var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+	var link = Url.Action(nameof(VerifyEmail), "Home", new { userId = user.Id, code}
+	, Request.Scheme, Request.Host.ToString());
+
+	await _emailService.SendAsync("test@test.com", "email verify", $"<a href=\"{link}\">Verify Email</a>", true);
+	
+	return RedirectToAction("EmailVerification");
+}
+
+创建
+public async Task<IActionResult> VerifyEmail(string userId, string code)
+{
+	var user = await _userManager.FindByIdAsync(userId);
+	
+	if (user == null) return BadRequest();
+
+	var result = await _userManager.ConfirmEmailAsync(user, code);
+
+	if (result.Succeeded)
+	{
+		return View();
+	}
+	
+	return BadRequest();
+}
+
+
+四、Policy Role
+在（一）基础上操作
+1.
+services.AddAu....CookieAuth....
+
+services.AddAuthorization(config =>
+{
+	// var defaultAuthBuilder = new AuthorizationPolicyBuilder();
+	// var defaultAuthPolicy = defaultAuthBuilder
+	//	.RequireAuthenticatedUser()
+	//	.RequireClaim(ClaimTypes.DateOfBirth)
+	//	.Build();
+	// config.DefaultPolicy = defaultAuthPolicy;
+});
+
+2. 
+创建 CustomRequireClaim 
+public class CustomRequireClaim : IAuthorizationRequirement
+{
+	public CustomRequireClaim(string claimType)
+	{
+		ClaimType = claimType;
+	}
+	
+	public string ClaimType { get; }
+}
+( 同一类下 )
+public class CustomRequireClaimHandler: AuthorizationHandler<CustomRequireClaim>
+{
+	// public CustomRequireClaimHandler()
+	// {
+	// 	
+	// }
+
+	protected override Task HandleRequirementAsync(
+		AuthorizationHandlerContext context,
+		CustomRequireClaim requirement)
+	{
+		var hasClaim = context.User.Claims.Any(x => x.Type == requirement.ClaimType);
+		if (hasClaim)
+		{
+			context.Succeed(requirement);
+		}
+		return Task.CompletedTask;
+	}
+}
+(同一类下)
+public static class AuthorizationPolicyBuilderExtensions
+{
+	public static AuthorizationPolicyBuilder RequireCustomClaim(
+		this AuthorizationPolicyBuilder builder,
+		string claimType)
+	{
+		builder.AddRequirements(new CustomeRequireClaim(claimType));
+		return builder;
+	}
+}
+
+3.
+services.AddAuthorization(config =>
+{
+	// var defaultAuthBuilder = new AuthorizationPolicyBuilder();
+	// var defaultAuthPolicy = defaultAuthBuilder
+	//	.RequireAuthenticatedUser()
+	//	.RequireClaim(ClaimTypes.DateOfBirth)
+	//	.Build();
+	// config.DefaultPolicy = defaultAuthPolicy;
+
+	// config.AddPolicy("Claim.DoB", policyBuilder => 
+	// {
+	// 	policyBuilder.RequireClaim(ClaimTypes.DateOfBirth);
+	// });
+
+	config.AddPolicy("Claim.DoB", policyBuilder =>
+	{
+		policyBuilder.RequireCustomeClaim(ClaimTypes.DateOfBirth);
+	}
+});
+
+services.AddScoped<IAuthorizationHandler, CustomRequireClaimHandler>():
+
+
+4，Controller
+[Authorize(Policy = "Claim.DoB")]
+public IActionResult SecretPolicy()
+{
+	return View("Secret");
+}
+
+[Authorize(Roles = "Admin")]
+public IActionResult SecretRole()
+{
+	return View("Secret");
+}
+
+public IActionResult Authenticate()
+{
+	var grandmaClaims = new List<Claim> ()
+	{	
+		...
+		添加
+		new Claim(ClaimTypes.DateOfBirth, "11/11/2020");
+		new Claim(ClaimTypes.Role, "Admin"),
+		new Claim("Grandma.Says", "Very nice boi."),
+	}
+}
+
+6. Startup.cs Services 方法下 
+config.AddPolicy("Admin", policyBuilder => policyBuilder.RequireClaim(ClaimTypes.Role, "Admin"));
+
+config.AddPolicy("Claim.Dob", policyBuilder => {
+	policyBuilder.RequireCustomClaim(ClaimTypes.DateOfBirth);
+});

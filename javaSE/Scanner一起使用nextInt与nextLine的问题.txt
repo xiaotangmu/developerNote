@@ -1,0 +1,7 @@
+https://blog.csdn.net/syl2850246/article/details/81610135
+
+.nextInt() 不读取到回车，会把回车留到流里面
+
+所以 后面的.nextLine()会读取到一个空行，从而导致出现问题！
+
+解决加一个nextLine 再重新读

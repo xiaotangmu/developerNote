@@ -11,6 +11,8 @@ ConfigurationManager 可以在 NuGet 安装
 直接这样操作解决失败，这是用在 Framework 项目的，正确方法： https://www.bbsmax.com/A/E35p4vkK5v/
 .NetCode 读取 appsettings.json 
 
+bind 添加 Microsoft.Extensions.Configuration.Binder 包
+
 2. Dapper 安装项目不能与Dapper 同名
 
 Dapper, Data.Client NuGet 安装
@@ -313,8 +315,168 @@ SQL 创建和执行存储过程
 					u.Role.Add(role);
 					return user;
 				}, null, null, true, "RoleId", null, null	// 后面的两个 null 可选
-			)).ToList();
+			).ToList();
 			// 获取集合中的值
 			var result = lookup.Values; // 值的集合
 		}
 	}
+	
+	
+	
+	https://blog.csdn.net/wyljz/article/details/68926745
+	角色：
+
+class Group
+{
+    public string ID{get;set;}
+    public string Name{get;set;}
+    public List<Rights> RightsList{get;set;}
+}
+
+    1
+    2
+    3
+    4
+    5
+    6
+
+权限：
+
+class Rights
+{
+    public string ID{get;set;}
+    public string Name{get;set;}
+}
+
+角色-权限关系表：
+
+CREATE TABLE `t_group_right` (
+  `rightId` varchar(50) NOT NULL,
+  `groupId` varchar(50) NOT NULL,
+  KEY `FK_group_rights_id` (`rightId`),
+  KEY `FK_rights_group_id` (`groupId`),
+  CONSTRAINT `FK_group_rights_id` FOREIGN KEY (`rightId`) REFERENCES `t_rights` (`id`),
+  CONSTRAINT `FK_rights_group_id` FOREIGN KEY (`groupId`) REFERENCES `t_group` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+查询角色列表:
+
+ public List<Group> GetAll()
+        {
+            string sql = "SELECT a.*,c.* FROM t_group  a left join t_group_right b on a.id = b.groupid left join t_rights c on c.id=b.rightid ";
+            using (MySqlConnection conn = DapperFactory.CrateMySqlConnection())
+            {
+                var lookup = new Dictionary<string, Group>();
+                var list = conn.Query<Group, Rights, Group>(sql, (g, r) =>
+                {
+                    Group tmp;
+                    if (!lookup.TryGetValue(g.ID, out tmp))
+                    {
+                        tmp = g;
+                        lookup.Add(g.ID, tmp);
+                    }
+
+                    tmp.RightsList.Add(r);
+
+                    return g;
+                }
+                , splitOn: "id").ToList();
+                return lookup.Values.ToList();
+            }
+
+        }
+
+
+splitOn参数：用来指定列为分隔列，之前的列为前一对象，之后的列为后一对象。
+lookup 用来保存中间处理结果，可以理解为将结果归组出Group对象，并为其RightsList添加内容，
+注意：lookup中添加的是临时定义的Group对象，并在循环中将此对象从lookup中取出，为其RightsList添加Rights
+
+Operator对象：
+
+class Operator{
+    public string ID{get;set;}
+    public string Name{get;set;}
+    [NoWrite]
+    public List<Group> GroupList { get; set; }
+    [NoWrite]
+    public List<Rights> RightsList { get; set; }
+}
+
+
+查询一个Operator对象：
+
+ public Operator Get(string id)
+        {
+            using (MySqlConnection conn = DapperFactory.CrateMySqlConnection())
+            {
+                string sql = "SELECT a.*,c.*,e.* FROM t_operator a left join t_operator_group b on a.id = b.operatorid left join t_group c on c.id=b.groupid " +
+                        "left join t_operator_rights d on a.id = d.operatorid left join t_rights e on e.id = d.rightid where a.id=@id";
+                Operator lookup = null;
+                conn.Query<Operator, Group, Rights, Operator>(sql, (o, g, r) =>
+                {
+                    if (lookup == null)
+                    {
+                        lookup = o;
+                    }
+                    Group tmp = lookup.GroupList.Find(f => f.ID == g.ID);
+                    if (tmp == null)
+                    {
+                        tmp = g;
+                        lookup.GroupList.Add(tmp);
+                    }
+                    tmp.RightsList.Add(r);
+                    lookup.RightsList.Add(r);
+                    return o;
+                },
+                param: new { id = id },
+                splitOn: "id");
+                return lookup;
+            }
+
+        }
+
+
+获取Operator列表：
+
+ public List<Operator> GetAll()
+        {
+            using (MySqlConnection conn = DapperFactory.CrateMySqlConnection())
+            {
+                string sql = "SELECT a.*,c.*,e.* FROM t_operator a left join t_operator_group b on a.id = b.operatorid left join t_group c on c.id=b.groupid " +
+                        "left join t_operator_rights d on a.id = d.operatorid left join t_rights e on e.id = d.rightid";
+                var lookup = new Dictionary<string,Operator>();
+                conn.Query<Operator, Group, Rights, Operator>(sql, (o, g, r) =>
+                {
+                    Operator tmp;
+                    if (!lookup.TryGetValue(o.ID,out tmp))
+                    {
+                        tmp = o;
+                        lookup.Add(o.ID,tmp);
+                    }
+                    Group tmpG = tmp.GroupList.Find(f => f.ID == g.ID);
+                    if (tmpG == null)
+                    {
+                        tmpG = g;
+                        tmp.GroupList.Add(tmpG);
+                    }
+                    //角色权限列表
+                    Rights tmpR = tmpG.RightsList.Find(f => f.ID == r.ID);
+                    if (tmpR == null)
+                    {
+                        tmpG.RightsList.Add(r);
+                    }
+                    //用户权限列表
+                    tmpR = tmp.RightsList.Find(f => f.ID == r.ID);
+                    if (tmpR == null)
+                    {
+                        tmp.RightsList.Add(r);
+                    }
+
+                    return o;
+                },
+                splitOn: "id");
+                return lookup.Values.ToList();
+            }
+        }
+	

@@ -1,0 +1,242 @@
+https://www.cnblogs.com/owenzh/p/11022238.html
+
+ C# 对象与JSON字符串互相转换的三种方式
+C# 对象与JSON字符串互相转换的三种方式
+
+JSON(JavaScript Object Notation, JS 对象标记) 是一种轻量级的数据交换格式。
+
+　　关于内存对象和JSON字符串的相互转换，在实际项目中应比较广泛，经过一番搜索，找到如下三种方法来解决此问题
+
+分别是使用 Newtonsoft.Json.dll、DataContractJsonSerializer、 JavaScriptSerializer。 
+方法一： Newtonsoft.Json.dll 
+
+Newtonsoft.Json.dll在.net2.0之后的版本可以支持 我的版本.net framework4.0
+添加Newtonsoft.json的引用
+
+对象与json字符串转换类设计
+复制代码
+复制代码
+
+ 1     class JsonNewtonsoft
+ 2     {
+ 3         /// <summary>
+ 4         /// 把对象转换为JSON字符串
+ 5         /// </summary>
+ 6         /// <param name="o">对象</param>
+ 7         /// <returns>JSON字符串</returns>
+ 8         public static string ToJSON(this object o)
+ 9         {
+10             if (o == null)
+11             {
+12                 return null;
+13             }
+14             return JsonConvert.SerializeObject(o);
+15         }
+16         /// <summary>
+17         /// 把Json文本转为实体
+18         /// </summary>
+19         /// <typeparam name="T"></typeparam>
+20         /// <param name="input"></param>
+21         /// <returns></returns>
+22         public static T FromJSON<T>(this string input)
+23         {
+24             try
+25             {
+26                 return JsonConvert.DeserializeObject<T>(input);
+27             }
+28             catch (Exception ex)
+29             {
+30                 return default(T);
+31             }
+32         }
+33     }
+
+复制代码
+复制代码
+方法二：DataContractJsonSerializer
+
+ 使用这种 需要引用 System.Runtime.Serialization.dll
+类设计
+复制代码
+复制代码
+
+ 1 class JsonDataContractJsonSerializer
+ 2     {
+ 3         /// <summary>
+ 4         /// 内存对象转换为json字符串
+ 5         /// </summary>
+ 6         /// <param name="obj"></param>
+ 7         /// <returns></returns>
+ 8         public static string ObjectToJson(object obj)
+ 9         {
+10            DataContractJsonSerializer serializer = new DataContractJsonSerializer(obj.GetType());
+11            MemoryStream stream = new MemoryStream();
+12            serializer.WriteObject(stream, obj);
+13            byte[] dataBytes = new byte[stream.Length];
+14            stream.Position = 0;
+15            stream.Read(dataBytes, 0, (int)stream.Length);
+16            return Encoding.UTF8.GetString(dataBytes);
+17         }
+18        /// <summary>
+19        /// Json字符串转内存对象
+20        /// </summary>
+21        /// <param name="jsonString"></param>
+22        /// <param name="obj"></param>
+23        /// <returns></returns>
+24         public static object JsonToObject(string jsonString, object obj)
+25         {
+26            DataContractJsonSerializer serializer = new DataContractJsonSerializer(obj.GetType());
+27            MemoryStream mStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+28            return serializer.ReadObject(mStream);
+29         }
+30     }
+
+复制代码
+复制代码
+方法三：JavaScriptSerializer
+
+需要引用：System.Web.Extensions.dll
+类设计
+复制代码
+复制代码
+
+ 1     public static class JsonJavaScriptSerializer
+ 2     {
+ 3         /// <summary>
+ 4         /// 内存对象转换为json字符串
+ 5         /// </summary>
+ 6         /// <param name="obj"></param>
+ 7         /// <returns></returns>
+ 8         public static string ToJSON(object obj)
+ 9         {
+10             StringBuilder sb = new StringBuilder();
+11             JavaScriptSerializer json = new JavaScriptSerializer();
+12             json.Serialize(obj, sb);
+13             return sb.ToString();
+14         }
+15         /// <summary>
+16         /// Json字符串转内存对象
+17         /// </summary>
+18         /// <param name="jsonString"></param>
+19         /// <param name="obj"></param>
+20         /// <returns></returns>
+21         public static T FromJSON<T>(string jsonString)
+22         {
+23             JavaScriptSerializer json = new JavaScriptSerializer();
+24             return json.Deserialize<T>(jsonString);
+25         }
+26 
+27     }
+
+复制代码
+复制代码
+程序测试：
+新建一个测试对象类Student.cs
+复制代码
+复制代码
+
+ 1     public enum Sex
+ 2     {
+ 3         男=0,
+ 4         女=1
+ 5     }
+ 6     [Serializable()]
+ 7     class Student
+ 8     {
+ 9         private string _name;
+10 
+11         public string Name
+12         {
+13             get { return _name; }
+14             set { _name = value; }
+15         }
+16 
+17         private int _age;
+18 
+19         public int Age
+20         {
+21             get { return _age; }
+22             set { _age = value; }
+23         }
+24 
+25         private Sex _sex = Sex.男;
+26 
+27         public Sex Sex
+28         {
+29             get { return _sex; }
+30             set { _sex = value; }
+31         }
+32         public Student()
+33         { }
+34         public Student(string name,int age,Sex sex)
+35         {
+36             this._name = name;
+37             this._age = age;
+38             this._sex = sex;
+39         }
+40     }
+
+复制代码
+复制代码
+测试程序
+复制代码
+复制代码
+
+ 1         static void Main(string[] args)
+ 2         {
+ 3             Student st = new Student("笨男孩",22,Sex.男);
+ 4 
+ 5             Console.WriteLine("============方法一============================================");
+ 6             //方法一
+ 7 
+ 8             Console.WriteLine("方法一对象转Json字符串");
+ 9             string jsonStr = JsonNewtonsoft.ToJSON(st);
+10             Console.WriteLine(jsonStr);
+11             Console.WriteLine("方法一Json字符串转对象");
+12             Student stobj = (Student)JsonNewtonsoft.FromJSON<Student>(jsonStr);
+13             Console.WriteLine("姓名:{0} 年龄:{1} 性别:{2}",stobj.Name,stobj.Age,stobj.Sex);
+14 
+15 
+16             Console.WriteLine("============方法二============================================");
+17             //方法二
+18             Console.WriteLine("方法二对象转Json字符串");
+19             string jsonStr2 = JsonDataContractJsonSerializer.ToJSON(st);
+20             Console.WriteLine(jsonStr2);
+21             Console.WriteLine("方法二Json字符串转对象");
+22             Student stobj2 = (Student)JsonDataContractJsonSerializer.FromJSON(jsonStr2, st);
+23             Console.WriteLine("姓名:{0} 年龄:{1} 性别:{2}", stobj2.Name, stobj2.Age, stobj2.Sex);
+24 
+25 
+26             Console.WriteLine("============方法三============================================");
+27             //方法二
+28             Console.WriteLine("方法三对象转Json字符串");
+29             string jsonStr3 = JsonJavaScriptSerializer.ToJSON(st);
+30             Console.WriteLine(jsonStr3);
+31             Console.WriteLine("方法三Json字符串转对象");
+32             Student stobj3 = (Student)JsonJavaScriptSerializer.FromJSON<Student>(jsonStr3);
+33             Console.WriteLine("姓名:{0} 年龄:{1} 性别:{2}", stobj3.Name, stobj3.Age, stobj3.Sex);
+34 
+35             Console.ReadKey();
+36         }
+
+复制代码
+复制代码
+程序运行结果：
+
+运行结果：
+
+ 程序工程源文件下载
+功能对比：
+
+ 
+性能对比：
+
+综上所述，一般采用Json.NET方法一比较好！
+
+参考：
+
+JavaScriptSerializer 类介绍 https://msdn.microsoft.com/zh-cn/library/system.web.script.serialization.javascriptserializer(v=vs.110).aspx
+
+DataContractJsonSerializer类介绍 https://msdn.microsoft.com/zh-cn/library/system.runtime.serialization.json.datacontractjsonserializer(v=vs.110).aspx
+
+https://blog.csdn.net/testcs_dn/article/details/78150046?locationNum=6&fps=1

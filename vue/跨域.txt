@@ -90,7 +90,7 @@ module.exports = {
         changeOrigin: true,
         secure: false,
         pathRewrite: {'^/api': ''},
-        headers: {
+        headers: {			// 别忘了配置这个 不然请求头设置传不过去，还会发送两次请求
           Referer: 'https://localhost:5001/api/'
         }
       },

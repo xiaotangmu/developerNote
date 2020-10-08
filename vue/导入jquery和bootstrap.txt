@@ -29,3 +29,18 @@ import $ from 'jquery'
 
 
 ¾ßÌå£ºhttps://www.cnblogs.com/freephp/p/11671521.html
+
+
+webpack.base.conf.js
+
+module.exports = {
+plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      'root.jQuery': 'jquery',
+    }),
+  ],
+}
+

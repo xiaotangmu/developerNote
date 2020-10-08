@@ -1,5 +1,60 @@
+1. 文件传输
 axios.post(url, data, {headers: {'Content-Type': 'multipart/form-data'}}).then(//multipart/form-dat 传送文件
       (res) => {
         resolve(res)
       }
     )
+
+
+https://www.jb51.net/article/152178.htm
+
+2. 在axios向后端传参时需要设置请求头，确保请求参数的格式为JSON字符串（此时用JSON.stringify(obj)无效时)
+	
+this.$axios({
+   method:'',
+   url:'',
+   headers: {
+     'Content-Type': 'application/json',//设置请求头请求格式为JSON
+     'access_token': this.token //设置token 其中K名要和后端协调好
+   },
+   params:{}
+}).then((response)=>{})
+
+3.
+axios设置请求头中的Authorization 和 cookie 信息：
+
+GET请求
+	
+axios.get(urlString, 
+  {
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      "Cookie" : 'sessionId=' + sessionId + '; recId=' + recId,
+      ...
+    },
+    params: {
+      param1: string,
+      param2: string
+    },
+    ...
+  }
+)
+.then(res => fn)
+.catch(e => fn)
+
+POST请求	
+axios.post(urlString, 
+  {
+    data: data,
+    ...
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      "Cookie" : 'sessionId=' + sessionId + '; recId=' + recId,
+      ...
+    }
+  }
+)
+.then(res => fn)
+.catch(e => fn)

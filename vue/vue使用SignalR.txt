@@ -1,0 +1,101 @@
+后端：参考官网：（分前后端注意配置跨域）
+https://docs.microsoft.com/zh-cn/aspnet/core/tutorials/signalr?view=aspnetcore-3.0&tabs=visual-studio
+https://docs.microsoft.com/zh-cn/aspnet/core/signalr/javascript-client?view=aspnetcore-3.1
+跨域：
+services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://example.com")	// 前端服务器地址，注意前后端分离，一定要将signal 客户端放到服务器上
+                        .AllowCredentials();
+                });
+            });
+
+
+app.UseCors();
+
+
+前端：vue + SignalR
+https://www.cnblogs.com/aqgy12138/p/12877415.html
+
+注意先导入全局jquery（vue jquery 导入笔记）
+
+安装 npm install @aspnet/signalr
+引入 import * as signalR from "@aspnet/signalr";
+
+测试页面
+<template>
+  <div class="home">
+    <h1>前端演示SignalR</h1>
+    <input v-model="user" type="text" />
+    <input v-model="message" type="text" />
+    <button @click="sendAll">发送全部</button>
+    <button @click="sendOwn">对自己发送</button>
+    <div>
+      <ul v-for="(item ,index) in messages" v-bind:key="index +'itemMessage'">
+        <li>{{item.user}} says {{item.message}}</li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+  // @ is an alias to /src
+  import HelloWorld from "@/components/HelloWorld.vue";
+  import * as signalR from "@aspnet/signalr";
+  export default {
+    name: "Home",
+    components: {
+      HelloWorld
+    },
+    data() {
+      return {
+        user: "", //用户
+        message: "", //消息
+        connection: "", //signalr连接
+        messages: [] //返回消息
+      };
+    },
+    methods: {
+      //给全部发送消息
+      sendAll: function() {
+        this.connection
+          .invoke("SendMessage", this.user, this.message)
+          .catch(function(err) {
+            return console.error(err);
+          });
+      },
+      //只给自己发送消息
+      sendOwn: function() {
+        this.connection
+          .invoke("SendMessageCaller", this.message)
+          .catch(function(err) {
+            return console.error(err);
+          });
+      }
+
+
+    },
+    created: function() {
+      let thisVue = this;
+      this.connection = new signalR.HubConnectionBuilder()
+        .withUrl("https://localhost:5001/chathub", {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets
+        })
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+      this.connection.on("ReceiveMessage", function(user, message) {
+        thisVue.messages.push({ user, message });
+        console.log({ user, message });
+      });
+      this.connection.on("ReceiveCaller", function(message) {
+        let user = "自己";//这里为了push不报错，我就弄了一个默认值。
+        thisVue.messages.push({ user, message });
+        console.log({ user, message });
+      });
+      this.connection.start();
+    }
+  };
+</script>
+

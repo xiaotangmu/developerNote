@@ -1,0 +1,40 @@
+https://www.cnblogs.com/agansj/p/10783764.html
+
+1、serialize()方法
+
+描述：序列化表单内容为字符串,用于Ajax请求。
+
+数据类似于这种： FirstName=Bill&LastName=Gates    注意这个是字符串
+
+格式：var data = $(form).serialize();
+ 
+
+2.serializeArray()方法
+
+描述：序列化表单元素(类似'.serialize()'方法)返回JSON数据结构数据。 
+
+类似于这种：           [{"name":"lihui", "age":"20"},{...}]
+
+注意,此方法返回的是JSON对象而非JSON字符串。需要使用插件或者第三方库进行字符串化操作。
+
+格式：var jsonData = $(form).serializeArray();
+
+在使用ajax提交表单数据时,以上两种方法都可以将data参数设置为$(form).serialize()或$(form).serializeArray()。
+
+
+
+1.serialize()方法
+
+　　格式：var data = $("form").serialize();
+
+　　功能：将表单内容序列化成一个字符串。
+
+　　这样在ajax提交表单数据时，就不用一一列举出每一个参数。只需将data参数设置为 $("form").serialize() 即可。
+
+2.serializeArray()方法
+
+　　格式：var jsonData = $("form").serializeArray();
+
+　　功能：将页面表单序列化成一个JSON结构的对象。注意不是JSON字符串。
+
+　　比如，[{"name":"lihui", "age":"20"},{...}] 获取数据为 jsonData[0].name 可以获取对应的一个个对象数据
