@@ -1,0 +1,36 @@
+自定义函数例子：
+DELIMITER $$
+DROP FUNCTION IF EXISTS genPerson$$
+CREATE FUNCTION genPerson(name varchar(20)) RETURNS varchar(50)
+BEGIN
+  DECLARE str VARCHAR(50) DEFAULT '';
+  SET @tableName=name;
+  SET str=CONCAT('create table ', @tableName,'(id int, name varchar(20));');
+  return str;
+END $$
+DELIMITER ;
+
+
+密码加密与解密
+DELIMITer $$
+drop FUNCTION if EXISTS MyEncode$$
+create FUNCTION MyEncode(pwd varchar(30), username varchar(30)) returns varchar(50)
+begin 
+	set @result = HEX(AES_ENCRYPT(pwd, username));		-- 加密操作，经过HEX 解决乱码得到字符串，（不加二进制）
+	return @result;						-- username 作为盐值
+end $$
+DeLimiter;
+
+
+Delimiter $$
+drop FUNCTION if EXISTS MyDecode$$
+create FUNCTION MyDecode(pwd varchar(50), username varchar(30)) returns varchar(30)
+BEGIN	
+	set @result = AES_DECRYPT(UNHEX(pwd), username);	-- 解密
+return @result;
+end $$
+Delimiter;
+
+
+select MyEncode('1235','xxx');
+select MyDecode('655CE328C73270C446CAA0B6A4CC1F40', 'xxx');
