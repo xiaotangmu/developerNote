@@ -217,7 +217,7 @@ SQL 创建和执行存储过程
 				string query1 = "delete from stuinfo where stuNo = @stuNo";
 				string query2 = "delete from stumark where stuNo = @stuNo";
 				
-				// 执行删除操作
+				// 执行删除操作		别忘了在操作中加入事务
 				db.Execute(query1, new {stuNO = ID}, trans, null, null);	// 主表
 				db.Execute(query2, new (stuNo = ID), trans, null, null);	// 从表
 				
@@ -332,13 +332,6 @@ class Group
     public string Name{get;set;}
     public List<Rights> RightsList{get;set;}
 }
-
-    1
-    2
-    3
-    4
-    5
-    6
 
 权限：
 
@@ -479,4 +472,9 @@ class Operator{
                 return lookup.Values.ToList();
             }
         }
-	
+
+Dapper Extensions 见
+https://www.cnblogs.com/hy59005271/p/5604118.html
+
+分页 封装方法：GetPageList
+http://www.bubuko.com/infodetail-1528143.html
