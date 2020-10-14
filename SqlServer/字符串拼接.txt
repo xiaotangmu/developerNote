@@ -1,0 +1,3 @@
+SqlServer 没有 contact 函数
+拼接直接用 + 
+select 'x' + 'b'

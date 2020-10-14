@@ -1,1 +1,10 @@
 ALTER TABLE t_user ADD id int IDENTITY(1,1);
+
+注意此时不能显示插入主键，如果要显示插入，要将INSERT_IDENTITY 设置为 off
+set IDENTITY_INSERT CMS_CLIENT ON;
+--添加数据
+insert into CMS_CLIENT(ID, COMPANY) values(123,'xiaoming');
+--关闭IDENTITY_INSERT
+set IDENTITY_INSERT CMS_CLIENT OFF;	
+
+注意要用语句连在一起执行
