@@ -1,0 +1,2 @@
+可以用IEnumerable<Object> 直接接收Object list 对象
+不能用List<Object>  接收不了，为空 -- 字符串
