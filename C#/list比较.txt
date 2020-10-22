@@ -1,0 +1,59 @@
+https://www.cnblogs.com/donchen/p/9014682.html
+好像很牛逼的东西-- 没试过 有猜测重复会出错
+假设有两个List<T>对象 ,List1和List2,如下方法判断两个List是否相等
+List1.All(List2.Contains) && List1.Count == List2.Count  
+
+猜疑例子：
+List<string> lA = new List<string>() { "111", "222", "222", "333" };
+List<string> lB = new List<string>() { "111", "222", "333", "333" };
+
+
+https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.sequenceequal?view=netframework-4.7.2#System_Linq_Enumerable_SequenceEqual__1_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEnumerable___0__
+
+官方例子：注意顺序 可以先 list.Sort() 试试
+public static void SequenceEqualEx1()
+{
+    Pet pet1 = new Pet { Name = "Turbo", Age = 2 };
+    Pet pet2 = new Pet { Name = "Peanut", Age = 8 };
+
+    // Create two lists of pets.
+    List<Pet> pets1 = new List<Pet> { pet1, pet2 };
+    List<Pet> pets2 = new List<Pet> { pet1, pet2 };
+
+    bool equal = pets1.SequenceEqual(pets2);
+
+    Console.WriteLine(
+        "The lists {0} equal.",
+        equal ? "are" : "are not");
+}
+
+
+去重： https://blog.csdn.net/maaici/article/details/89703286
+        public class Comparer: IEqualityComparer<TBINPN>
+        {
+            public bool Equals(TBINPN x, TBINPN y)
+            {
+                //这里定义比较的逻辑
+                return x.ID == y.ID && x.PN == y.PN;
+            }
+     
+            public int GetHashCode(TBINPN obj)
+            {
+                //返回字段的HashCode，只有HashCode相同才会去比较
+                return obj.ID.GetHashCode();
+            }
+        }
+
+将刚刚的代码稍作修改，将比较器传递进去看一下结果：
+
+            static void Main(string[] args)
+            {
+                List<TBINPN> tbinpns = new List<TBINPN>();
+                tbinpns.Add(new TBINPN { ID = 1, PN = "123", SPEC = "123", GOODS = "123", HSCODE = "123" });
+                tbinpns.Add(new TBINPN { ID = 1, PN = "123", SPEC = "123", GOODS = "123", HSCODE = "123" });
+                tbinpns.Add(new TBINPN { ID = 2, PN = "321123", SPEC = "123", GOODS = "123", HSCODE = "123" });
+                tbinpns.Add(new TBINPN { ID = 2, PN = "321123", SPEC = "123", GOODS = "123", HSCODE = "123" });
+                List<TBINPN> newTbinpns = tbinpns.Distinct(new Comparer()).ToList();
+                Console.WriteLine($"去重后还剩 {newTbinpns.Count()} 条数据。");
+                Console.Read();
+            }

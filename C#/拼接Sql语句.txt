@@ -1,0 +1,14 @@
+拼接SQL 语句传参失败
+ string sql = @"select ps.PRODUCT_NAME SkuName, ss.ID Id, ss.SKU_NO SkuNo,
+                ss.SPU_ID SpuId, ss.BRAND Brand, ss.PRICE Price, ss.UNIT Unit,
+                ss.TOTAL_COUNT TotalCount, ss.ALARM Alarm, ss.DESCRIPTION Description,
+                ss.Type type, ss.STATUS Status, ss.OLD_PARTID OldPartId
+                from SMS_SKU ss
+                LEFT JOIN PMS_SPU ps on ps.ID = ss.SPU_ID
+                where ps.PRODUCT_NAME like '%' + @SearchStr + '%' or ss.BRAND like '%' + @SearchStr + '%'
+                    or ss.DESCRIPTION like '%' + @SearchStr + '%'"; 
+sql += string.IsNullOrWhiteSpace(model.Catalog2Id)? "" : " AND ss.CATALOG2_ID = @Catalog2Id";
+            return await Repository.GetPageAsync<SkuModel>(model.PageIndex, model.PageSize, sql, " order by OCD ss.Desc", model);
+
+
+// 报参数为声明 -- 数据库错误
