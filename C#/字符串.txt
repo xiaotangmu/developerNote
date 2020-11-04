@@ -1,0 +1,10 @@
+不足位添0
+str.PadLeft(3, '0'); // 位数, 添加的符号 -- 向左添0
+str.PadRight(3, '0');
+
+日期转字符串
+string.Format("{0:yyyyMMdd}", model.AppointmentDate)
+
+
+去后面两位字符
+string str2 = str.Substring(str.Length - 2, 2);

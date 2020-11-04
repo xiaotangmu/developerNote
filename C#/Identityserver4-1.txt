@@ -1,0 +1,170 @@
+官方教程：
+https://identityserver4.readthedocs.io/en/latest/quickstarts/1_client_credentials.html
+
+视频教程：https://www.bilibili.com/video/BV1sJ41197af?p=4
+
+环境：.Net Code 3.0 Identityserver 3.0.0 (4.1 版本见下面访问)
+一、基础搭建
+1. 创建web空项目并导入Identityserver4包
+
+2. 配置Status.cs 文件
+方法ConfigureServices 下添加
+	var builder = services.AddIdentityServer()
+			.AddInMemoryApiResources(Config.Apis)
+			.AddInMemoryClients(Config.Clients);
+
+方法Configure 下添加
+	app.UseIdentityServer();
+
+3. 创建Config.cs 类
+public static class Config {
+public static IEnumerable<IdentityResource> Id =>
+            new IdentityResource[]
+            {
+                new IdentityResources.OpenId()
+            };
+
+        public static IEnumerable<ApiResource> Apis =>
+            new ApiResource[]
+            {};
+
+        public static IEnumerable<Client> Clients =>
+            new Client[]
+            {};
+
+3. 运行项目
+访问：localhost:5000/.well-known/openid-configuration
+
+4. 修改Config.cs
+public static IEnumerable<ApiResource> Apis => 
+	new []
+	{
+		new ApiResource("blog.core.api", "Blog.Core API")
+	};
+
+public static IEnumerable<Client> Clients => 
+	new []
+	{
+		new Client
+		{
+			ClientId = "blogvuejs", // 定义客户端Id
+			ClientSecrets = new [] { new Secret("secret".Sha256())}, // Client 用来获取token
+			AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials, // 这里使用的是通过用户名密码
+				// 和ClientGredentials 来换取token 的方式，ClientCredentials 允许 Client 只是用ClientSecrets 来获取 token，
+				// 这比较适合那种没有用户参与的 api 动作
+			AllowedScopes = new [] { "blog.core.api" } // 允许访问的 API 资源
+		}
+	};
+
+添加：
+public static List<TestUser> Users =>
+	new List<TestUser>
+	{
+		new TestUser()
+		{
+			SubjectId = "1",
+			Username = "laozhang",
+			Password = "laozhang"
+		}
+	}
+5. 修改status.cs 
+ConfigureServices
+	var builder = services.AddIdentityServer()
+			.AddTestUsers(Config.Users)
+			.AddInMemoryApiResources(Config.Apis)
+			.AddInMemoryClients(Config.Clients);
+	builder.AddDeveloperSigningCredential();
+
+	services.AddAuthentication(); // 配置认证服务	
+
+7. 使用 postman 访问
+post： localhost:59579/connect/token
+请求Body：form-data
+grant_type		password
+client_id			blogvuejs
+client_secret		secret
+username			laozhang
+password			laozhang
+
+结果返回：access_token			-- JWT Encode
+
+IdentityServer 4.1版本 --报错 400 -- invalid_request
+参考：https://www.cnblogs.com/monster17/p/13261647.html
+
+建议版本 3.0.0
+
+二、快速启动UI 模板
+1. 自动搭建
+管理员：Windows PowerShell（在文件，点击文件可以看到）
+dotnet new is4ui -n IdentityServerLz
+
+三、Ids4 持久化 -- EF Core
+导包：
+1. IdentityServer4
+1. IdentityServer4.AspNetIdentity
+1. IdentityServer4.EntityFramework
+2. Microsoft.AspNetCore.identity.EntityFrameworkCore
+3. Microsoft.EntityFrameworkCodre.SqlServer
+3. Microsoft.EntityFrameworkCore.Tools
+3. Microsoft.EntityFrameworkCore.Design 
+
+1. 创建api 项目
+2. 导包
+3. 配置Status.cs
+public static string connectionString = "";	// 数据库连接
+
+配置ConfigureServices
+services.AddControllers();
+
+services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer
+	(connectionString));
+services.AddIdentity<IdentityUser, IdentityRole>()
+	.AddEntityFrameworkStores<IdentityDbContext>()
+	.AddDefaultTokenProviders();
+
+var builder = services.AddIdentityServer()
+	
+	.AddAspNetIdentity<IdentityUser>()
+
+	.AddConfigurationStore(options => 
+	{
+		options.ConfigureDbContext = b =>
+			b.UseSqlServer(connectionString, 
+				sql => sql.MigrationsAssembly("Blog.Live.Idp");
+	})
+
+	.AddOperationalStore(option =>
+	{
+		options.ConfigureDbContext = b =>
+			b.UseSqlServer(connectionString,
+				sql => sql.MigrationAssembly("Blog.Live.Idp"));
+	})
+
+	;
+
+
+控制台导包： 工具下打开程序包管理器控制台
+add-migration InitialdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
+
+3. 将status ConfigureServices 修改
+ services.AddDbContext<ApplicationDbContext>...
+
+生成ApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+{
+	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+		: base(options)
+	{
+		
+	}
+
+	protected override void OnModelCreating(ModeBuilder builder)
+	{
+		base.OnModelCreating(builder);
+	}
+}
+程序包控制台：
+add-migration AppDbMigration -c ApplicationDbContext -o Data
+update-database -c PersistedGrantDbContext
+update-database -c ConfigrationDbContext
+update-database -c ApplicationDbContext

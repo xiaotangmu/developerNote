@@ -1,0 +1,38 @@
+下载rpm安装包：
+https://packages.microsoft.com/rhel/7/mssql-server-2017/
+
+xfthp上传
+
+安装：rpm -ivh 安装包
+
+ sudo /opt/mssql/bin/mssql-conf setup
+
+3.下面查看我们安装的sql server版本
+
+rpm -qa | grep mssql
+
+4.查看安装的路径
+
+find / -name mssql
+
+5.设置开机启动
+
+systemctl enable mssql-server
+
+6.打开1433端口
+
+firewall-cmd --zone=public --add-port=1433/tcp --permanent
+
+firewall-cmd --reload
+
+7.几个命令
+
+systemctl start mssql-server
+
+systemctl restart mssql-server
+
+systemctl stop mssql-server
+
+systemctl status mssql-server
+
+具体配置路劲为/opt/mssql/bin/mssql-conf

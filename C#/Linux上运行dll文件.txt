@@ -1,0 +1,42 @@
+https://blog.csdn.net/tangmou_ren/article/details/83657294?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-83657294.nonecase&utm_term=linux%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8dotnet%E5%91%BD%E4%BB%A4&spm=1000.2123.3001.4430
+
+
+
+后台运行
+https://www.cnblogs.com/songxingzhu/p/7403352.html
+
+一、不输出日志的命令
+
+#!/bin/bash
+echo "starting nohup..."
+nohup dotnet ./mynetcoreapp.dll > /dev/null 2>&1 &
+echo "web has been running."                                 
+
+二、默认的命令
+
+#!/bin/bash
+echo "starting nohup..."
+nohup dotnet ./mynetcoreapp.dll  &
+echo "web has been running."     
+
+nohup dotnet /opt/Maintain/WebApi.dll > /dev/null 2>&1 &
+
+具体说明：
+https://blog.csdn.net/maihilton/article/details/82781897
+
+关闭当前后台运行的程序
+
+kill 命令
+
+（1）通过jobs命令查看jobnum，然后执行   kill %jobnum
+
+（2）通过ps命令查看进程号PID，然后执行  kill %PID
+
+如果是前台进程的话，直接执行 Ctrl+c 就可以终止了
+
+
+（1）fg命令
+
+将后台中的命令调至前台继续运行
+
+如果后台中有多个命令，可以先用jobs查看jobnun，然后用 fg %jobnum 将选中的命令调出。

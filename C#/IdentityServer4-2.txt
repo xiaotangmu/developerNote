@@ -1,0 +1,2 @@
+.Net Code 3.0 配置见：https://www.cnblogs.com/haoxiaozhang/p/11727637.html
+.Net Code 2.0：https://www.cnblogs.com/stulzq/p/11497624.html

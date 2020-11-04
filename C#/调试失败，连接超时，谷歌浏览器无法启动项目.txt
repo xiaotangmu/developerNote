@@ -1,0 +1,5 @@
+https://bbs.csdn.net/topics/392436098
+
+工具  =》 选项  =》调试 =》 常规 =》启用APS.NET 的 Javascript 调试(Chrome和IE) 
+
+把这个选项勾选掉  
