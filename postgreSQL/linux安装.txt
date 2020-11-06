@@ -1,0 +1,22 @@
+https://www.cnblogs.com/wucaiyun1/p/13346005.html
+
+
+ Postgresql 帐号密码修改方法
+
+1.Linux环境下  
+#su  postgres   -- 进入 postgres
+-bash-3.2$psql -U postgres 	-- 登录  
+postgres=#alter user postgres with password 'new password';  
+postgres=#\q	-- 退出当前用户
+
+-base xx $ exit 	-- 退出postgres
+
+
+
+https://www.cnblogs.com/zuixinxian/p/11532383.html
+.修改用户密码
+    su - postgres  切换用户，执行后提示符会变为 '-bash-4.2$'     psql -U postgres 登录数据库，执行后提示符变为 'postgres=#'     ALTER USER postgres WITH PASSWORD 'postgres'  设置postgres用户密码为postgres     \q  退出数据库
+9.开启远程访问
+    vi /var/lib/pgsql/9.6/data/postgresql.conf     修改#listen_addresses = 'localhost'  为  listen_addresses='*'
+10.信任远程连接
+    vi /var/lib/pgsql/9.6/data/pg_hba.conf         修改如下内容，信任指定服务器连接     # IPv4 local connections:     host    all            all      127.0.0.1/32      trust     host    all            all     （你的服务器IP）/32（需要连接PGSQL的服务器IP）  trust

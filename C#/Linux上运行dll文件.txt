@@ -40,3 +40,42 @@ kill 命令
 将后台中的命令调至前台继续运行
 
 如果后台中有多个命令，可以先用jobs查看jobnun，然后用 fg %jobnum 将选中的命令调出。
+
+
+*********************************************************************************************************************
+https://www.cnblogs.com/hobinly/p/7382038.html
+使用Supervisor 运行守护进程 -- 后台进程 -- dll文件
+
+3、创建进程配置文件
+
+  vim /etc/supervisor/conf.d/MyDotNetName.conf
+
+"MyDotNetName"可以为dotnet core 入口dll文件名字 ，插入内容，注意首尾需无空格，需顶格：
+复制代码
+
+[program:MyDotNetName]
+command=/bin/bash -c "dotnet MyDotNetName.dll"
+directory=/usr/PublishOutput/
+stderr_logfile=/var/log/MyDotNetName.error.log
+stdout_logfile=/var/log/MyDotNetName.stdout.log
+environment=ASPNETCORE_ENVIRONMENT=Production
+user=root
+stopsignal=INT
+autostart=true
+autorestart=true
+startsecs=3
+
+复制代码
+
+[program:MyDotNetName] ;显示名称
+**************************************************************************************************************************************
+command=/bin/bash -c "dotnet MyDotNetName.dll"  ;运行命令,启动dotnet进程 *****************************************************
+directory=/usr/PublishOutput/   ;MyDotNetName目录  *****************************************************************************
+stderr_logfile=/var/log/MyDotNetName.error.log  ;错误日志文件
+stdout_logfile=/var/log/MyDotNetName.stdout.log  ;日志文件
+environment=ASPNETCORE_ENVIRONMENT=Production  ;进程环境变量
+user=root   ;进程执行用户
+autostart=true  ;自动启动 autorestart=true   ;是否自动重启
+startsecs=3     ;自动重启间隔时间
+
+

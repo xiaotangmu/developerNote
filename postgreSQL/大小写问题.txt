@@ -1,0 +1,12 @@
+https://blog.csdn.net/zengchaoyue/article/details/8279744
+
+难道PostgreSQL不能用大写？又试试T_User，没有报错，到数据库里一看，哎？还是t_user！大写自动变小写了。PostgreSQL不识别大小写？用pgAdmin图形化界面创建一个User表完全没问题啊。之后又试验了一下表中的字段，发现也是这个问题，总是提示ERROR: syntax error at or near "…"
+
+        来在看pgAdmin的SQL窗口时突然发现（很多时候仔细观察真的很重要啊），有大写的地方都加了双引号
+
+
+解决：要么都小写，要么加 ""
+
+--
+create table "Article" ("Id" int, "Name" varchar(64));
+创建的表以后查询语句中也要带引号，好麻烦啊

@@ -1,0 +1,9 @@
+https://blog.csdn.net/qq_43466457/article/details/100145062
+
+
+1. 使用 || 拼接
+select 'xxx' || 'hhh';
+
+2. 使用 concat 函数
+select concat('Hello ' , 'World', 'Lady') ;
+							
