@@ -1,0 +1,8 @@
+要使用as 防止字段转换不了 -- 关键字出现 会报语法错误
+如：
+select mm.OPERATOR  Operator,
+                     ma.TYPE  Type
+...
+
+要写成
+select mm.OPERATOR as Operator
