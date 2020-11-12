@@ -1,0 +1,7 @@
+HttpContext 在Controller 直接传入 HttpContext
+
+IPService.GetRealIP -- >
+public static string GetRealIP(HttpContext httpContext)
+        {
+            string result = httpContext.Connection.RemoteIpAddress.ToString();
+}

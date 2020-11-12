@@ -1,0 +1,6 @@
+1. 去官网获取下载路径，使用迅雷下载，不然很慢
+http://nginx.org/en/download.html 
+
+下载后，解压，双击，或者指令运行
+
+访问 localhost（80端口） 看到nginx  页面，安装成功

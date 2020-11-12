@@ -1,0 +1,35 @@
+server {
+        listen 8888;
+
+        server_name 106.53.249.31;
+
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-Server $proxy_add_x_forwarded_for;
+
+        #·´в´񮊱º򣭉闃nginx½«ԲĻЯ´񼳯mcat·þϱǷ
+        proxy_set_header Host $host;
+        proxy_set_header Cookie $http_cookie;
+
+        # 文件系统
+        location /group1/M00/ {
+                ngx_fastdfs_module;
+        }
+
+        location / {
+
+                proxy_pass_header Set-Cookie;
+                proxy_pass_header P3P;
+
+                proxy_pass http://127.0.0.1:8080/warehouse/;
+
+                index index.html index.htm;
+        }
+
+        location /api {
+
+                proxy_pass_header Set-Cookie;
+                proxy_pass_header P3P;
+
+                proxy_pass http://106.53.249.31:8081/warehouse/;
+        }
+    }

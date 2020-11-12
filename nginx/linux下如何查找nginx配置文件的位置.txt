@@ -1,0 +1,19 @@
+https://www.cnblogs.com/jpfss/p/10077004.html
+
+查看nginx实际调用的配置文件
+1.查看nginx路径
+
+ps aux|grep nginx
+root              352   0.0  0.0  2468624    924   ??  S    10:43上午   0:00.08 nginx: worker process  
+root              232   0.0  0.0  2459408    532   ??  S    10:43上午   0:00.02 nginx: master process /usr/local/opt/nginx/bin/nginx -g daemon off;  
+root             2345   0.0  0.0  2432772    640 s000  S+    1:01下午   0:00.00 grep nginx
+
+nginx的路径为：/usr/local/opt/nginx/bin/nginx
+
+2.查看nginx配置文件路径
+
+使用nginx的 -t 参数进行配置检查，即可知道实际调用的配置文件路径及是否调用有效。
+
+/usr/local/opt/nginx/bin/nginx -t
+nginx: the configuration file /usr/local/etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /usr/local/etc/nginx/nginx.conf test is successful

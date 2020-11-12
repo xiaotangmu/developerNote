@@ -7,3 +7,38 @@ build{
 npm run build
 
 还要解决图标、字体找不到问题 -- 看vue 打包找不到element ui 字体笔记
+
+如果 npm run build 报错：npm ERR! missing script: build
+https://www.jianshu.com/p/6048426282fa
+
+
+
+后来发现package.json中scripts参数为
+  "scripts": {
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "build:prod": "cross-env NODE_ENV=production env_config=prod node build/build.js",
+    "build:sit": "cross-env NODE_ENV=production env_config=sit node build/build.js",
+    "lint": "eslint --ext .js,.vue src",
+    "test": "npm run lint"
+  },
+
+所以正确的命令应该为
+npm run build:prod --report
+
+
+cli3.0 打包 
+打包之后需要把dist 放在服务器上才能正常使用
+https://bbs.huaweicloud.com/blogs/145088
+
+把 vue.config.js 下面 的
+publicPath: './', 		// '/' 改为 './'
+
+打包完成后的注意事项：
+
+打包后我们可以看到dist文件下的index.html,一般是看不到什么的，但是这不是打包失败，只是要设置一下
+在router.js下把mode设置成mode:'hash'就可以看到了
+
+不配置直接访问静态文件没有东西，需要放到服务器上
+
+
+
