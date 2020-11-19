@@ -1,0 +1,19 @@
+
+https://blog.csdn.net/quanqxj/article/details/76210419
+在使用pgsql时，想要取到某些字段不为空或者为空的数据，可以用以下方法：
+
+1、不为空
+
+Select   *   From   table Where id<>''
+
+Select   *   From   table Where id!=''
+
+2、为空
+
+Select   *   From   table Where id=''
+
+Select   *   From   table Where   IS NULL(id)
+
+ 
+
+如果字段是类型是字符串，用 id=''可以；如果是int型则用 IS NULL

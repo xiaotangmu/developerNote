@@ -1,3 +1,7 @@
+打包后看不到东西： 路由router/index.js 配置 mode为hash
+mode: 'hash',
+
+
 先将 confing/index.js
 build{
 
@@ -31,7 +35,7 @@ cli3.0 打包
 https://bbs.huaweicloud.com/blogs/145088
 
 把 vue.config.js 下面 的
-publicPath: './', 		// '/' 改为 './'
+publicPath: './', 		// '/' 改为 './'	-- 已经解决图标找不到问题
 
 打包完成后的注意事项：
 
