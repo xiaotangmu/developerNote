@@ -19,3 +19,5 @@ https://docs.microsoft.com/zh-cn/nuget/quickstart/install-and-use-a-package-in-v
 
 使用：
 	string json = JsonConvert.SerializeObject(account, Formatting.Indented);
+
+    	var o = JsonConvert.DeserializeObject<T>(input);

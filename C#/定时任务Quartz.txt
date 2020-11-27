@@ -1,0 +1,3 @@
+定义学习：https://www.cnblogs.com/taadis/p/quartz-3-x-tutorial-jobs-and-triggers.html
+
+使用：参考SpringBoot 定时任务笔记

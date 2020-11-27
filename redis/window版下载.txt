@@ -1,0 +1,4 @@
+下载地址：https://github.com/MSOpenTech/redis/releases
+建议下载 3.0.504 版本，因为 3.2.100 不是稳定版本
+
+参考：https://www.cnblogs.com/tommy-huang/p/6093813.html

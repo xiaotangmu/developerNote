@@ -1,0 +1,25 @@
+来源：https://www.cnblogs.com/mebius4789/p/9152106.html
+
+ .net core定时任务
+
+1、HangFire
+
+HangFire官网
+
+Hangfire项目实践分享  ：  讲解的比较详细
+
+2、Quartz.NET
+
+https://www.cnblogs.com/best/p/7658573.html
+
+https://www.quartz-scheduler.net/documentation/quartz-3.x/quick-start.html
+
+3、 FluentScheduler
+
+https://www.cnblogs.com/lgxlsm/p/6734011.html
+
+https://github.com/fluentscheduler/FluentScheduler
+
+
+.NetCode + Quartz
+https://www.cnblogs.com/zhengyb/p/13722371.html

@@ -1,0 +1,321 @@
+总结：HashTable（慢）, ConcurrentDictionary（快） 线程安全，适用于多线程，
+多线程建议用ConcurrentDictionary或者HashTable（Hashtable tab = Hashtable.Synchronized(new Hashtable());获得线程安全的对象）
+	Dictionary 适用于单线程（大数据最快）
+
+https://www.cnblogs.com/yinrq/p/5584885.html
+一、HashTable
+
+HashTable表示键/值对的集合。在.NET Framework中，Hashtable是System.Collections命名空间提供的一个容器，用于处理和表现类似key-value的键值对，其中key通常可用来快速查找，同时key是区分大小写；value用于存储对应于key的值。Hashtable中key-value键值对均为object类型，所以Hashtable可以支持任何类型的keyvalue键值对，任何非 null 对象都可以用作键或值。
+
+HashTable是一种散列表，他内部维护很多对Key-Value键值对，其还有一个类似索引的值叫做散列值(HashCode)，它是根据GetHashCode方法对Key通过一定算法获取得到的，所有的查找操作定位操作都是基于散列值来实现找到对应的Key和Value值的。
+
+散列函数(GetHashCode)让散列值对应HashTable的空间地址尽量不重复。
+
+当一个HashTable被占用一大半的时候我们通过计算散列值取得的地址值可能会重复指向同一地址，这就造成哈希冲突。
+
+C#中键值对在HashTable中的位置Position= (HashCode& 0x7FFFFFFF) % HashTable.Length，C#是通过探测法解决哈希冲突的，当通过散列值取得的位置Postion以及被占用的时候，就会增加一个位移x值判断下一个位置Postion+x是否被占用，如果仍然被占用就继续往下位移x判断Position+2*x位置是否被占用，如果没有被占用则将值放入其中。当HashTable中的可用空间越来越小时，则获取得到可用空间的难度越来越大，消耗的时间就越多。
+
+使用方法如下：
+复制代码
+
+using System;
+using System.Collections;
+
+namespace WebApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {   
+            Hashtable myHash=new Hashtable();
+            
+            //插入
+            myHash.Add("1","joye.net");
+            myHash.Add("2", "joye.net2");
+            myHash.Add("3", "joye.net3");
+
+            //key 存在
+            try
+            {
+                myHash.Add("1", "1joye.net");
+            }
+            catch
+            {
+                Console.WriteLine("Key = \"1\" already exists.");
+            }
+            //取值
+            Console.WriteLine("key = \"2\", value = {0}.", myHash["2"]);
+
+            //修改
+            myHash["2"] = "http://www.cnblogs.com/yinrq/";
+            myHash["4"] = "joye.net4";   //修改的key不存在则新增
+            Console.WriteLine("key = \"2\", value = {0}.", myHash["2"]);
+            Console.WriteLine("key = \"4\", value = {0}.", myHash["4"]);
+
+            //判断key是否存在
+            if (!myHash.ContainsKey("5"))
+            {
+                myHash.Add("5", "joye.net5");
+                Console.WriteLine("key = \"5\": {0}", myHash["5"]);
+            }
+             //移除
+            myHash.Remove("1");
+
+            if (!myHash.ContainsKey("1"))
+            {
+                Console.WriteLine("Key \"1\" is not found.");
+            }
+            //foreach 取值
+            foreach (DictionaryEntry item in myHash)
+            {
+                Console.WriteLine("Key = {0}, Value = {1}", item.Key, item.Value);
+            }
+            //所有的值
+            foreach (var item in myHash.Values)
+            {
+                Console.WriteLine("Value = {0}",item);
+            }
+
+            //所有的key
+            foreach (var item in myHash.Keys)
+            {
+                Console.WriteLine("Key = {0}", item);
+            }
+            Console.ReadKey();
+        }
+    }
+}
+
+复制代码
+
+结果如下：
+
+更多参考微软官方文档：Hashtable 类
+二、Dictionary
+
+Dictionary<TKey, TValue> 泛型类提供了从一组键到一组值的映射。通过键来检索值的速度是非常快的，接近于 O(1)，这是因为 Dictionary<TKey, TValue> 类是作为一个哈希表来实现的。检索速度取决于为 TKey 指定的类型的哈希算法的质量。TValue可以是值类型，数组，类或其他。
+
+Dictionary是一种变种的HashTable,它采用一种分离链接散列表的数据结构来解决哈希冲突的问题。
+
+简单使用代码：
+复制代码
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace WebApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<string, string> myDic = new Dictionary<string, string>();
+            
+            //插入
+            myDic.Add("1", "joye.net");
+            myDic.Add("2", "joye.net2");
+            myDic.Add("3", "joye.net3");
+
+            //key 存在
+            try
+            {
+                myDic.Add("1", "1joye.net");
+            }
+            catch
+            {
+                Console.WriteLine("Key = \"1\" already exists.");
+            }
+            //取值
+            Console.WriteLine("key = \"2\", value = {0}.", myDic["2"]);
+
+            //修改
+            myDic["2"] = "http://www.cnblogs.com/yinrq/";
+            myDic["4"] = "joye.net4";   //修改的key不存在则新增
+            Console.WriteLine("key = \"2\", value = {0}.", myDic["2"]);
+            Console.WriteLine("key = \"4\", value = {0}.", myDic["4"]);
+
+            //判断key是否存在
+            if (!myDic.ContainsKey("5"))
+            {
+                myDic.Add("5", "joye.net5");
+                Console.WriteLine("key = \"5\": {0}", myDic["5"]);
+            }
+             //移除
+            myDic.Remove("1");
+
+            if (!myDic.ContainsKey("1"))
+            {
+                Console.WriteLine("Key \"1\" is not found.");
+            }
+            //foreach 取值
+            foreach (var item in myDic)
+            {
+                Console.WriteLine("Key = {0}, Value = {1}", item.Key, item.Value);
+            }
+            //所有的值
+            foreach (var item in myDic.Values)
+            {
+                Console.WriteLine("Value = {0}",item);
+            }
+
+            //所有的key
+            foreach (var item in myDic.Keys)
+            {
+                Console.WriteLine("Key = {0}", item);
+            }
+            Console.ReadKey();
+        }
+    }
+}
+
+复制代码
+
+运行结果：
+
+更多资料参考：Dictionary 类
+三、ConcurrentDictionary
+
+表示可由多个线程同时访问的键/值对的线程安全集合。
+
+ConcurrentDictionary<TKey, TValue> framework4出现的，可由多个线程同时访问，且线程安全。用法同Dictionary很多相同，但是多了一些方法。ConcurrentDictionary 属于System.Collections.Concurrent 命名空间按照MSDN上所说：
+
+System.Collections.Concurrent 命名空间提供多个线程安全集合类。当有多个线程并发访问集合时，应使用这些类代替 System.Collections 和 System.Collections.Generic 命名空间中的对应类型。
+
+更多资料：ConcurrentDictionary<TKey,?TValue> 类
+
+ 
+四、对比总结
+
+分别插入500万条数据，然后遍历，看看耗时。
+复制代码
+
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace WebApp
+{
+    class Program
+    {
+        static Hashtable _hashtable;
+        static Dictionary<string, string> _dictionary;
+        static ConcurrentDictionary<string, string> _conDictionary;
+        static void Main(string[] args)
+        {
+            Compare(5000000);
+            Console.ReadLine();
+            Console.Read();
+        }
+
+        public static void Compare(int dataCount)
+        {
+            _hashtable = new Hashtable();
+            _dictionary = new Dictionary<string, string>();
+            _conDictionary=new ConcurrentDictionary<string, string>();
+            Stopwatch stopWatch = new Stopwatch();
+
+            // Hashtable
+            stopWatch.Start();
+            for (int i = 0; i < dataCount; i++)
+            {
+                _hashtable.Add("key" + i.ToString(), "Value" + i.ToString());
+            }
+            stopWatch.Stop();
+            Console.WriteLine("HashTable插" + dataCount + "条耗时(毫秒)：" + stopWatch.ElapsedMilliseconds);
+
+            //Dictionary
+            stopWatch.Reset();
+            stopWatch.Start();
+            for (int i = 0; i < dataCount; i++)
+            {
+                _dictionary.Add("key" + i.ToString(), "Value" +i.ToString());
+            }
+            stopWatch.Stop();
+            Console.WriteLine("Dictionary插" + dataCount + "条耗时(毫秒)：" + stopWatch.ElapsedMilliseconds);
+
+            //ConcurrentDictionary
+            stopWatch.Reset();
+            stopWatch.Start();
+            for (int i = 0; i < dataCount; i++)
+            {
+                _conDictionary.TryAdd("key" + i.ToString(), "Value" + i.ToString());
+            }
+            stopWatch.Stop();
+            Console.WriteLine("ConcurrentDictionary插" + dataCount + "条耗时(毫秒)：" + stopWatch.ElapsedMilliseconds);
+
+            // Hashtable
+            stopWatch.Reset();
+            stopWatch.Start();
+            for (int i = 0; i < _hashtable.Count; i++)
+            {
+                var key = _hashtable[i];
+            }
+            stopWatch.Stop();
+            Console.WriteLine("HashTable遍历时间(毫秒)：" + stopWatch.ElapsedMilliseconds);
+
+            //Dictionary
+            stopWatch.Reset();
+            stopWatch.Start();
+            for (int i = 0; i < _hashtable.Count; i++)
+            {
+                var key = _dictionary["key" + i.ToString()];
+            }
+            stopWatch.Stop();
+            Console.WriteLine("Dictionary遍历时间(毫秒)：" + stopWatch.ElapsedMilliseconds);
+
+            //ConcurrentDictionary
+            stopWatch.Reset();
+            stopWatch.Start();
+            for (int i = 0; i < _hashtable.Count; i++)
+            {
+                var key = _conDictionary["key"+i.ToString()];
+            }
+            stopWatch.Stop();
+            Console.WriteLine("ConcurrentDictionary遍历时间(毫秒)：" + stopWatch.ElapsedMilliseconds);
+        }
+    }
+}
+
+复制代码
+
+运行结果：
+
+可以看出：
+
+大数据插入Dictionary花费时间最少
+
+遍历HashTable最快是Dictionary的1/5,ConcurrentDictionary的1/10
+
+单线程建议用Dictionary，多线程建议用ConcurrentDictionary或者HashTable（Hashtable tab = Hashtable.Synchronized(new Hashtable());获得线程安全的对象）
+
+
+
+ConcurrentDictionary
+    AddOrUpdate：如果键不存在，方法会在容器中添加新的键和值，如果存在，则更新现有的键和值。
+    GetOrAdd：如果键不存在，方法会向容器中添加新的键和值，如果存在则返回现有的值，并不添加新值。
+    TryAdd：尝试在容器中添加新的键和值。
+    TryGetValue：尝试根据指定的键获得值。
+    TryRemove：尝试删除指定的键。
+    TryUpdate：有条件的更新当前键所对应的值。
+    GetEnumerator：返回一个能够遍历整个容器的枚举器。
+
+
+ public class Test
+    {
+        private static ConcurrentDictionary<string, int> testDictionary = new ConcurrentDictionary<string, int>();
+
+        public void test()
+        {
+            string _key = "a";
+            int _value = 0;
+            int curValue = 1;
+
+            testDictionary.TryAdd(_key, _value);
+            testDictionary.AddOrUpdate(_key, _value, (key, value) => { return value = curValue; });
+            testDictionary.TryGetValue(_key, out int getValue);
+            testDictionary.GetOrAdd("b", 2);
+        }
+    }

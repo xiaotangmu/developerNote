@@ -1,0 +1,43 @@
+https://www.cnblogs.com/bossing/p/12579183.html
+
+ 如何在ASP.NET Core项目启动时执行异步定时任务
+
+背景介绍：
+
+　　项目环境为ASP.NET Core 2.1.2。
+
+　　需要在项目启动时运行一个定时任务，在后台每隔一定时间执行任务。
+
+实现方法：
+
+　　1、写一个任务服务类继承BackgroundService
+
+     public class APIDataService : BackgroundService
+     {
+         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+         {
+             while (!stoppingToken.IsCancellationRequested)
+             {
+                 try
+                 {
+                     //需要执行的任务
+ 
+                }
+                catch (Exception ex)
+                {
+                     LogHelper.Error(ex.Message);
+                 }
+                 await Task.Delay(1000, stoppingToken);//等待1秒
+             }
+         }
+     }
+
+　　2、在Startup.cs中注入
+
+ public void ConfigureServices(IServiceCollection services)
+ {
+ 　　...
+ 　　services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, APIDataService>();
+ }
+
+　　3、运行代码，进行测试

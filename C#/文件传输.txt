@@ -1,0 +1,173 @@
+参考：https://blog.csdn.net/upi2u/article/details/80352809
+
+案例一，将前端上传文件保存在本地
+	//路径拼接
+                // 路径上的文件夹需要存在，不然会报错
+                webRootPath = _hostingEnvironment.WebRootPath + "\\" + "upload-file" + "\\" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + Path.GetFileNameWithoutExtension(item.FileName) + Path.GetExtension(item.FileName).ToLower();
+                //创建文件流
+                using (var FileStream = new FileStream(webRootPath, FileMode.Create))
+                {
+                    //拷贝文件流
+                    await item.CopyToAsync(FileStream);
+                    //释放缓存
+                	FileStream.Flush();
+                }
+                //再根据路径打开文件，得到文件流
+                FileStream stream = new FileStream(webRootPath, FileMode.Open);
+                // 添加至附件中
+                mailMessage.Attachments.Add(new Attachment(stream, item.FileName)); 
+
+
+
+对流进行操作时要引用 using System.IO; 命名空间
+
+FileStream常用的属性和方法：
+
+属性：
+
+CanRead 判断当前流是否支持读取，返回bool值，True表示可以读取
+
+CanWrite 判断当前流是否支持写入，返回bool值，True表示可以写入
+
+方法：
+
+Read() 从流中读取数据，返回字节数组
+
+Write() 将字节块（字节数组）写入该流
+
+Seek() 设置文件读取或写入的起始位置
+
+Flush() 清除该流缓冲区，使得所有缓冲的数据都被写入到文件中
+
+Close() 关闭当前流并释放与之相关联的所有系统资源
+
+文件的访问方式：（FileAccess）
+
+包括三个枚举：
+
+FileAccess.Read（对文件读访问）
+
+FileAccess.Write（对文件进行写操作）
+
+FileAccess.ReadWrite（对文件读或写操作）
+
+文件打开模式：（FileMode）包括6个枚举
+
+FileMode.Append 打开现有文件准备向文件追加数据，只能同FileAccess.Write一起使用
+
+FileMode.Create 指示操作系统应创建新文件，如果文件已经存在，它将被覆盖
+
+FileMode.CreateNew 指示操作系统应创建新文件，如果文件已经存在，将引发异常
+
+FileMode.Open 指示操作系统应打开现有文件，打开的能力取决于FileAccess所指定的值
+
+FileMode.OpenOrCreate 指示操作系统应打开文件，如果文件不存在则创建新文件
+
+FileMode.Truncate 指示操作系统应打开现有文件，并且清空文件内容
+
+文件共享方式：（FileShare）
+
+FileShare方式是为了避免几个程序同时访问同一个文件会造成异常的情况。
+
+文件共享方式包括四个：
+
+FileShare.None 谢绝共享当前文件
+
+FileShare.Read 充许别的程序读取当前文件
+
+FileShare.Write 充许别的程序写当前文件
+
+FileShare.ReadWrite 充许别的程序读写当前文件
+
+使用FileStream类创建文件流对象：
+
+FileStream（String 文件路径，FileMode 文件打开模式）
+
+FileStream（String 文件路径，FileMode 文件打开模式，FileAccess 文件访问方式）
+
+FileStream（String 文件路径，FileMode 文件打开模式，FileAccess 文件访问方式，FileShare 文件共享方式）
+
+例：
+
+//在C盘创建a.txt文件，使用fs流对象对文件进行操作，fs的工作模式是新建（FileMode.Create）
+
+FileStream fs=new FileStream(@"c:\a.txt",FileMode.Create);
+
+//在C盘创建a.txt文件，使用fs流对象对文件进行操作，fs工作模式是新建（FileMode.Create）文件的访问模式是写入（Fileaccess.Write）
+
+FileStream fs=new FileStream(@"c:\a.txt",FileMode.Create,FileAccess.Write);
+
+//在C盘创建a.txt文件，使用fs流对象对文件进行操作，fs工作模式是新建（FileMode.Create）文件的访问模式是写入（FileAccess.Write）文件的共享模式是谢绝共享（FileShare.None）
+
+FileStream fs=new FileStream(@"c:\a.txt",FileMode.Create,FileAccess.Write,FileShare.None);
+
+使用File类来创建对象：(常用)
+
+自定义打开文件的方式：File.Open(String，FileMode);
+
+打开文件进行读取： File.OpenRead(String);
+
+打开文件进行写入： File.OpenWrite(String);
+
+示例如下：
+
+//在C盘新建123.txt文件，使用流对象fs对文件进行操作，fs可以行文件内容追加操作FileMode.Append
+
+FileStream fs=File.Open(@"c:\123.txt",FileMode.Append);
+
+//在C盘新建123.txt文件，使用流对象fs对文件进行操作，fs可以进行读文件File.OpenRead()
+
+FileStream fs=File.OpenRead(@"c:\123.txt");
+
+//在C盘新建123.txt文件，使用流对象fs对文件进行操作，fs可以进行写操作File.OpenWrite()
+
+FileStream fs=File.OpenWrite(@"c:\123.txt");
+
+使用File例：
+
+对文件进行读操作：
+
+//新建fs流对象对象产生的路径是textbox1.text的值，文件的模式是FileMode.OpenOrCreate(可读可写)
+
+using (FileStream fs = File.Open(textBox1.Text, FileMode.OpenOrCreate))
+{
+
+//新建字节型数组，数组的长度是fs文件对象的长度（后面用于存放文件）
+byte[] bt=new byte[fs.Length];
+
+//通过fs对象的Read方法bt得到了fs对象流中的内容
+fs.Read(bt,0,bt.Length);
+
+//关闭fs流对象
+fs.Close();
+
+//将bt字节型数组中的数据由Encoding.Default.GetString(bt)方法取出，交给textbox2.text
+textBox2.Text = System.Text.Encoding.Default.GetString(bt);
+}
+
+对文件进行写入操作：
+
+//新建fs流对象，对象操作的文件路径在textbox1.text中，fs的操作模式是FileMode.Create
+
+using (FileStream fs = File.Open(textBox1.Text, FileMode.Create))
+{
+
+//新建字节型数组bt对象，bt对象得到了textbox2.text的Encoding的值
+byte[] bt = System.Text.Encoding.Default.GetBytes(textBox2.Text);
+
+//将bt字节型数组对象的值写入到fs流对象中（文件）
+fs.Write(bt,0,bt.Length);
+
+//关闭流对象
+fs.Close();
+}
+
+注：
+
+对文件的读写操多不管代码有多少，无非就是下面的三步：
+
+1.创建文件读写流对象
+
+2.对文件进行读写
+
+3.关闭文件流

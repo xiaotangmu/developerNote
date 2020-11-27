@@ -1,0 +1,8 @@
+1. RedisDesktopManager
+参考：https://blog.csdn.net/leisure_life/article/details/78460632?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control
+
+2. QuickRedis
+下载：https://gitee.com/quick123official/quick_redis_blog
+
+3. Another
+ https://github.com/qishibo/AnotherRedisDesktopManager

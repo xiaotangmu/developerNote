@@ -1,0 +1,168 @@
+参考：https://www.cnblogs.com/zhangnever/p/11926020.html（需要修改点东西）
+
+Mail.cs
+/// <summary>
+    /// 邮件类 
+    /// </summary>
+    public class Mail
+    {
+        /// <summary>
+        /// 发送人
+        /// </summary>
+        public string fromPerson { get; set; }
+
+        /// <summary>
+        /// 收件人地址(多人)
+        /// </summary>
+        public string[] recipientArry { get; set; }
+
+        /// <summary>
+        /// 抄送地址(多人)
+        /// </summary>
+        public string[] mailCcArray { get; set; }
+
+        /// <summary>
+        /// 标题
+        /// </summary>
+        public string mailTitle { get; set; }
+
+        /// <summary>
+        /// 正文
+        /// </summary>
+        public string mailBody { get; set; }
+
+        /// <summary>
+        /// 客户端授权码(可存在配置文件中)
+        /// </summary>
+        public string code { get; set; }
+
+        /// <summary>
+        /// SMTP邮件服务器
+        /// </summary>
+        public string host { get; set; }
+
+        /// <summary>
+        /// 正文是否是html格式
+        /// </summary>
+        public bool isbodyHtml { get; set; }
+        /// <summary>
+        /// 接收文件
+        /// </summary>
+        public List<IFormFile> files { get; set; } = new List<IFormFile>();
+    }
+
+Controller
+[Route("api/[controller]/[action]")]
+    [ApiController]
+    public class SendMailController : ControllerBase
+    {
+        private readonly Mail _mail;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public SendMailController(Mail mail = null,
+            IHostingEnvironment hostingEnvironment = null)
+        {
+            _mail = mail;
+            _hostingEnvironment = hostingEnvironment;
+        }
+        
+        /// <summary>
+        /// 发送邮件
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> PostEmails([FromForm]Mail mails)
+        {
+            //截取发件人邮箱地址从而判断Smtp的值
+            string[] sArray = mails.fromPerson.Split(new char[2] { '@', '.' });
+            if (sArray[1] == "qq")
+            {
+                mails.host = "smtp.qq.com";//如果是QQ邮箱则：smtp.qq.com,依次类推  163:smtp.163.com
+            }
+            else if (sArray[1] == "163")
+            {
+                mails.host = "smtp.163.com";//如果是QQ邮箱则：smtp.qq.com,依次类推  163:smtp.163.com
+            }
+
+            //将发件人邮箱带入MailAddress中初始化
+            MailAddress mailAddress = new MailAddress(mails.fromPerson);
+            //创建Email的Message对象
+            MailMessage mailMessage = new MailMessage();
+
+            //判断收件人数组中是否有数据
+            if (mails.recipientArry.Any())
+            {
+                //循环添加收件人地址
+                foreach (var item in mails.recipientArry)
+                {
+                    if (!string.IsNullOrEmpty(item))
+                        mailMessage.To.Add(item.ToString());
+                }
+            }
+
+            //判断抄送地址数组是否有数据
+            if (mails.mailCcArray.Any())
+            {
+                //循环添加抄送地址
+                foreach (var item in mails.mailCcArray)
+                {
+                    if (!string.IsNullOrEmpty(item))
+                        mailMessage.To.Add(item.ToString());
+                }
+            }
+            //发件人邮箱
+            mailMessage.From = mailAddress;
+            //标题
+            mailMessage.Subject = mails.mailTitle;
+            //编码
+            mailMessage.SubjectEncoding = Encoding.UTF8;
+            //正文
+            mailMessage.Body = mails.mailBody;
+            //正文编码
+            mailMessage.BodyEncoding = Encoding.Default;
+            //邮件优先级
+            mailMessage.Priority = MailPriority.High;
+            //正文是否是html格式
+            mailMessage.IsBodyHtml = mails.isbodyHtml;
+            //取得Web根目录和内容根目录的物理路径
+            string webRootPath = string.Empty;
+            //添加附件
+            foreach (IFormFile item in mails.files)
+            {
+                // 1. 先将文件保存到服务器，再读取发送
+                //路径拼接
+                // 路径上的文件夹需要存在，不然会报错
+                //webRootPath = _hostingEnvironment.WebRootPath + "\\" + "upload-file" + "\\" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + Path.GetFileNameWithoutExtension(item.FileName) + Path.GetExtension(item.FileName).ToLower();
+                ////创建文件流
+                //using (var FileStream = new FileStream(webRootPath, FileMode.Create))
+                //{
+                //    //拷贝文件流
+                //    await item.CopyToAsync(FileStream);
+                //    //释放缓存
+                //FileStream.Flush();
+                //}
+                ////再根据路径打开文件，得到文件流
+                //FileStream stream = new FileStream(webRootPath, FileMode.Open);
+                //// 添加至附件中
+                //mailMessage.Attachments.Add(new Attachment(stream, item.FileName)); 
+
+                // 2. 直接发送附件
+                mailMessage.Attachments.Add(new Attachment(item.OpenReadStream(), item.FileName));
+            };
+
+            //实例化一个Smtp客户端
+            SmtpClient smtp = new SmtpClient();
+            //将发件人的邮件地址和客户端授权码带入以验证发件人身份
+            smtp.Credentials = new System.Net.NetworkCredential(mails.fromPerson, mails.code);
+            //指定SMTP邮件服务器
+            smtp.Host = mails.host;
+
+            //邮件发送到SMTP服务器
+            smtp.Send(mailMessage);
+            return new JsonResult(new
+            {
+                message = "发送成功",
+                code = 200,
+                success = true
+            });
+        }
+    }
+

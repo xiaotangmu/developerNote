@@ -1,0 +1,104 @@
+参考：https://www.pianshen.com/article/8180317203/
+
+
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using web.Model;
+ 
+namespace web.Core
+{
+    public class MyHub : Hub
+    { 
+        //发送消息--发送给所有连接的客户端
+        public Task SendMessage(string msg)
+        {
+            return Clients.All.SendAsync("ReceiveMessage", msg);
+        }
+ 
+        //发送消息--发送给指定用户
+        public Task SendPrivateMessage(string userId, string message)
+        {
+            return Clients.User(userId).SendAsync("ReceiveMessage", message);
+        }
+    }
+}
+
+
+首先在HomeController中注入IHubContext实例：
+
+    private readonly IHubContext<MyHub> myHub;
+    public HomeController(IHubContext<MyHub> _myHub)
+    {
+        myHub=_myHub;
+    } 
+
+然后发送消息Action代码：
+
+    [Authorize,HttpPost]
+    public async Task<IActionResult> PostData()
+    {
+         var userId = Request.Form["userid"];
+         var message = Request.Form["message"];
+                
+         if(!string.IsNullOrWhiteSpace(userId))
+             await myHub.Clients.User(userId).SendAsync("ReceiveMessage", new {message=message});
+                
+         return Json(new { code = "success", msg = "发送成功" });
+    }
+
+
+如果要多一层业务层调用，需要现在Startup 中注入，否则报跨域问题 -- HubTestSupervisor 
+        private readonly HubTestSupervisor hubTestSupervisor;   // 需要在Startup 中先注入
+        public TestController(Utils.TokenManagement.TokenManager tokenManager, HubTestSupervisor _hubTestSupervisor) : base(tokenManager)
+        {
+            myHub = _myHub;
+            hubTestSupervisor = _hubTestSupervisor;
+        }
+
+[HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestHub()
+        {
+            return await ResponseResult(async () =>
+            {
+                await hubTestSupervisor.Broadcast();
+                return "发送成功";
+            });
+        }
+
+
+使用自定义ClientId，而非ConnectionId -- new Claim(ClaimTypes.NameIdentifier,userId) 储存用户id
+
+[HttpPost]
+        public async Task<JsonResult> LoginPost()
+        {
+            var username = Request.Form["username"];
+            var userpwd = Request.Form["userpwd"];            
+ 
+            //本demo没连接数据库，就不做用户验证了，用户id就用Guid生成了
+            
+            //登陆授权
+            string userId=Guid.NewGuid().ToString().Replace("-","");
+            var claims =new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name,username),   //储存用户name
+                new Claim(ClaimTypes.NameIdentifier,userId)  //储存用户id
+            };
+ 
+            var indentity = new ClaimsIdentity(claims,"formlogin");
+            var principal = new ClaimsPrincipal(indentity);
+ 
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,principal);
+ 
+            //验证是否授权成功
+            if (principal.Identity.IsAuthenticated)
+            {
+                return Json(new { code = "success", msg = "登陆成功" });
+            }
+            else
+                return Json(new { code = "failed", msg = "登陆失败" });
+        }
+
+使用：
+         await myHub.Clients.User(userId).SendAsync("ReceiveMessage", new {message=message});

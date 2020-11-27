@@ -1,5 +1,25 @@
 官方文档：https://docs.microsoft.com/zh-cn/aspnet/core/fundamentals/websockets?view=aspnetcore-3.0
 
+参考：
+https://www.cnblogs.com/cgyqu/p/9563193.html
+总结：使用Group 发送信息
+
+参考：https://blog.csdn.net/qq_26900081/article/details/90296333
+.NetCode 2.0 APi 参考：https://www.cnblogs.com/webenh/p/7897195.html
+
+前端：
+npm init -y
+npm install @aspnet/signalr
+import * as signalR from "@aspnet/signalr";
+
+发送对象总结：
+await Clients.All.SendAsync("ReceiveMessage", user, message);		// All: 全部客户
+await Clients.Caller.SendAsync("ReceiveCaller", message);		// Caller: 发送给请求客户（自己）
+							// Group 发送组
+await Groups.AddToGroupAsync(Context.ConnectionId, groupName);	// 加入组
+await Clients.Group(groupName).SendAsync("ReceiveMessage", $"{Context.ConnectionId} joined {groupName}");
+
+注意sevices 先配置signalr 再配置跨域
 一、SignalR
 1. 创建空项目
 2. 添加SignalR Hub Class 类
