@@ -1,0 +1,7 @@
+参考：
+https://www.cnblogs.com/lijingyang/p/3949380.html
+https://www.cnblogs.com/dreamer-fish/p/3911953.html
+https://shiyousan.com/post/636204388373544350
+http://www.webkaka.com/blog/archives/how-to-use-the-url-rewrite-module.html
+https://blog.csdn.net/weixin_33889245/article/details/92847441
+https://www.cnblogs.com/pengqf/p/9345624.html
