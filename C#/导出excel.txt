@@ -1,0 +1,436 @@
+
+C#使用NPOI读写excel
+参考： https://www.cnblogs.com/bestlove/p/12227236.html
+例子：
+/// <summary>
+        /// 将datatable写入到excel(xls)
+        /// </summary>
+        /// <param name="dt">datatable</param>
+        /// <param name="filepath">写入的文件路径</param>
+        /// <returns></returns>
+        public static bool DataTableToExcel(DataTable dt, string filepath)
+        {
+            bool result = false;
+            IWorkbook workbook = null;
+            FileStream fs = null;
+            IRow row = null;
+            ISheet sheet = null;
+            ICell cell = null;
+            try
+            {
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    if (filepath.Substring(filepath.LastIndexOf(".")) == ".xlsx")
+                    {
+                        workbook = new XSSFWorkbook(); 
+                    }
+                    else if (filepath.Substring(filepath.LastIndexOf(".")) == ".xls")
+                    {
+                        workbook = new HSSFWorkbook(); 
+                    } 
+                    else
+                    {
+                        workbook = null;
+                    }
+                    sheet = workbook.CreateSheet("Sheet0");//创建一个名称为Sheet0的表  
+                    int rowCount = dt.Rows.Count;//行数  
+                    int columnCount = dt.Columns.Count;//列数  
+
+                    int cellnum;
+
+                    //设置列头  
+                    row = sheet.CreateRow(0);//excel第一行设为列头  
+                    for (int c = 0; c < columnCount; c++)
+                    {
+                        cell = row.CreateCell(c);
+                        cell.SetCellValue(dt.Columns[c].ColumnName);
+                    }
+
+                    //设置每行每列的单元格,  
+                    for (int i = 0; i < rowCount; i++)
+                    {
+                        row = sheet.CreateRow(i + 1);
+                        for (int j = 0; j < columnCount; j++)
+                        {
+                            cell = row.CreateCell(j);//excel第二行开始写入数据
+                            //cell.SetCellValue(dt.Rows[i][j].ToString());
+
+                            //保存单元格格式为数字
+                            if (j < 2)
+                            {
+                                cell.SetCellValue(dt.Rows[i][j].ToString());
+                            }
+                            else
+                            {
+                                //cell.SetCellValue(int.Parse(dt.Rows[i][j].ToString()));
+                                if (dt.Rows[i][j] is DBNull)
+                                {
+                                    cell.SetCellValue(dt.Rows[i][j].ToString());
+                                }
+                                else
+                                {
+                                    cellnum = Convert.ToInt32(dt.Rows[i][j].ToString());
+                                    cell.SetCellValue(cellnum);
+                                }
+                            }
+                        }
+                    }
+                    if (System.IO.File.Exists(filepath))
+                    {
+                        // 已经存在删除，覆盖
+                        File.Delete(filepath);
+                    }
+                    using (fs = File.OpenWrite(filepath))
+                    {
+                        workbook.Write(fs);//向打开的这个xls文件中写入数据
+                        result = true;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                }
+            }
+        }
+
+DataTable 操作参考：https://blog.csdn.net/yelin042/article/details/90479330
+1、添加引用	
+
+using System.Data;
+
+2、创建表
+//创建一个空表
+
+DataTable dt = new DataTable();
+
+//创建一个名为"Table_New"的空表
+
+DataTable dt = new DataTable("Table_New");
+
+3、创建列
+
+//1.创建空列
+
+DataColumn dc = new DataColumn();
+
+dt.Columns.Add(dc);
+
+//2.创建带列名和类型名的列(两种方式任选其一)
+
+dt.Columns.Add("column0", System.Type.GetType("System.String"));
+
+dt.Columns.Add("column0", typeof(String));
+
+//3.通过列架构添加列
+
+DataColumn dc = new DataColumn("column1",System.Type.GetType("System.DateTime"));
+
+DataColumn dc = new DataColumn("column1", typeof(DateTime));
+
+dt.Columns.Add(dc);
+
+4、创建行
+
+//1.创建空行
+
+DataRow dr = dt.NewRow();
+
+dt.Rows.Add(dr);
+
+//2.创建空行
+
+dt.Rows.Add();
+
+//3.通过行框架创建并赋值
+
+dt.Rows.Add("张三",DateTime.Now);//Add里面参数的数据顺序要和dt中的列的顺序对应
+
+//4.通过复制dt2表的某一行来创建
+
+dt.Rows.Add(dt2.Rows[i].ItemArray);
+
+5、赋值和取值
+//新建行的赋值
+
+DataRow dr = dt.NewRow();
+
+dr[0] = "张三";//通过索引赋值
+
+dr["column1"] = DateTime.Now; //通过名称赋值
+
+//对表已有行进行赋值
+
+dt.Rows[0][0] = "张三"; //通过索引赋值
+
+dt.Rows[0]["column1"] = DateTime.Now;//通过名称赋值
+
+//取值
+
+string name=dt.Rows[0][0].ToString();
+
+string time=dt.Rows[0]["column1"].ToString();
+
+6、筛选行
+
+//选择column1列值为空的行的集合
+
+DataRow[] drs = dt.Select("column1 is null");
+
+//选择column0列值为"李四"的行的集合
+
+DataRow[] drs = dt.Select("column0 = '李四'");
+
+//筛选column0列值中有"张"的行的集合(模糊查询)
+
+DataRow[] drs = dt.Select("column0 like '张%'");//如果的多条件筛选，可以加 and 或 or
+
+//筛选column0列值中有"张"的行的集合并按column1降序排序
+
+DataRow[] drs = dt.Select("column0 like '张%'", "column1 DESC");
+
+7、删除行
+
+//使用DataTable.Rows.Remove(DataRow)方法
+
+dt.Rows.Remove(dt.Rows[0]);
+
+//使用DataTable.Rows.RemoveAt(index)方法
+
+dt.Rows.RemoveAt(0);
+
+//使用DataRow.Delete()方法
+
+dt.Row[0].Delete();
+
+dt.AcceptChanges();
+
+ 
+
+//-----区别和注意点-----
+
+//Remove()和RemoveAt()方法是直接删除
+
+//Delete()方法只是将该行标记为deleted，但是还存在，还可DataTable.RejectChanges()回滚，使该行取消删除。
+
+//用Rows.Count来获取行数时，还是删除之前的行数，需要使用DataTable.AcceptChanges()方法来提交修改。
+
+//如果要删除DataTable中的多行，应该采用倒序循环DataTable.Rows，而且不能用foreach进行循环删除，因为正序删除时索引会发生变化，程式发生异常，很难预料后果。
+
+for (int i = dt.Rows.Count - 1; i >= 0; i--)
+
+{
+
+　　dt.Rows.RemoveAt(i);
+
+}
+
+8、复制表
+
+//复制表，同时复制了表结构和表中的数据
+
+DataTable dtNew = new DataTable();
+
+dtNew = dt.Copy();
+
+//复制表
+
+DataTable dtNew = dt.Copy(); //复制dt表数据结构
+
+dtNew.Clear() //清空数据
+
+for (int i = 0; i < dt.Rows.Count; i++)
+
+{
+
+  if (条件语句)
+
+  {
+
+     dtNew.Rows.Add(dt.Rows[i].ItemArray); //添加数据行
+
+  }
+
+}
+
+//克隆表，只是复制了表结构，不包括数据
+
+DataTable dtNew = new DataTable();
+
+dtNew = dt.Clone();
+
+//如果只需要某个表中的某一行
+
+DataTable dtNew = new DataTable();
+
+dtNew = dt.Copy();
+
+dtNew.Rows.Clear();//清空表数据
+
+dtNew.ImportRow(dt.Rows[0]);//这是加入的是第一行
+
+9、表排序
+
+DataTable dt = new DataTable();//创建表
+
+dt.Columns.Add("ID", typeof(Int32));//添加列
+
+dt.Columns.Add("Name", typeof(String));
+
+dt.Columns.Add("Age", typeof(Int32));
+
+dt.Rows.Add(new object[] { 1, "张三" ,20});//添加行
+
+dt.Rows.Add(new object[] { 2, "李四" ,25});
+
+dt.Rows.Add(new object[] { 3, "王五" ,30});
+
+DataView dv = dt.DefaultView;//获取表视图
+
+dv.Sort = "ID DESC";//按照ID倒序排序
+
+dv.ToTable();//转为表
+
+
+参考2：https://blog.csdn.net/hcw_peter/article/details/3980723
+  一、DataTable简介    
+
+          (1)构造函数 
+          DataTable()   不带参数初始化DataTable 类的新实例。 
+          DataTable(string tableName)  用指定的表名初始化DataTable 类的新实例。 
+          DataTable(string tableName, string tableNamespace) 用指定的表名和命名空间初始化DataTable 类的新实例。 
+          (2) 常用属性 
+          CaseSensitive    指示表中的字符串比较是否区分大小写。 
+          ChildRelations   获取此DataTable 的子关系的集合。 
+          Columns             获取属于该表的列的集合。 
+          Constraints        获取由该表维护的约束的集合。 
+          DataSet               获取此表所属的DataSet。 
+          DefaultView       获取可能包括筛选视图或游标位置的表的自定义视图。 
+          HasErrors          获取一个值，该值指示该表所属的DataSet 的任何表的任何行中是否有错误。 
+          MinimumCapacity  获取或设置该表最初的起始大小。该表中行的最初起始大小。默认值为 50。 
+          Rows                  获取属于该表的行的集合。 
+          TableName       获取或设置DataTable 的名称。 
+
+          (3)常用方法 
+          AcceptChanges()   提交自上次调用AcceptChanges() 以来对该表进行的所有更改。 
+          BeginInit()         开始初始化在窗体上使用或由另一个组件使用的DataTable。初始化发生在运行时。
+
+          Clear()               清除所有数据的DataTable。 
+          Clone()              克隆DataTable 的结构，包括所有DataTable 架构和约束。 
+          EndInit()            结束在窗体上使用或由另一个组件使用的DataTable 的初始化。初始化发生在运行时。 
+          ImportRow(DataRow row)    将DataRow 复制到DataTable 中，保留任何属性设置以及初始值和当前值。 
+          Merge(DataTable table)  将指定的DataTable 与当前的DataTable 合并。 
+          NewRow()         创建与该表具有相同架构的新DataRow。
+ 
+        二、DataTable使用技巧
+
+      （1）Create a DataTable
+         DataTable dt = new DataTable("Table_AX"); 
+
+      （2）Add columns for DataTable
+        //Method 1
+        dt.Columns.Add("column0", System.Type.GetType("System.String"));
+        //Method 2
+        DataColumn dc = new DataColumn("column1", System.Type.GetType("System.Boolean"));
+        dt.Columns.Add(dc); 
+
+       （3）Add rows for DataTable
+         //Initialize the row
+         DataRow dr = dt.NewRow();
+         dr["column0"] = "AX";
+         dr["column1"] = true;
+         dt.Rows.Add(dr);
+         //Doesn't initialize the row
+         DataRow dr1 = dt.NewRow();
+         dt.Rows.Add(dr1);  
+
+        （4）Select row
+         //Search the second row 如果没有赋值,则用is null来select
+         DataRow[] drs = dt.Select("column1 is null");
+         DataRow[] drss = dt.Select("column0 = 'AX'"); 
+
+        （5）Copy DataTable include data
+         DataTable dtNew = dt.Copy(); 
+
+        （6）Copy DataTable only scheme
+         DataTable dtOnlyScheme = dt.Clone(); 
+
+        （7）Operate one row
+         //对dt的操作
+         //Method 1
+         DataRow drOperate = dt.Rows[0];
+         drOperate["column0"] = "AXzhz";
+         drOperate["column1"] = false;
+         //Method 2
+         drOperate[0] = "AXzhz";
+         drOperate[1] = false;
+         //Method 3
+         dt.Rows[0]["column0"] = "AXzhz";
+         dt.Rows[0]["column1"] = false;
+         //Method 4
+         dt.Rows[0][0] = "AXzhz";
+         dt.Rows[0][1] = false; 
+
+       （8）Evaluate another DataTable's row to current Datatable
+         dtOnlyScheme.Rows.Add(dt.Rows[0].ItemArray); 
+
+       （9）Convert to string
+         System.IO.StringWriter sw = new System.IO.StringWriter();
+         System.Xml.XmlTextWriter xw = new System.Xml.XmlTextWriter(sw);
+         dt.WriteXml(xw);
+         string s = sw.ToString();
+
+        （10）Filter DataTable
+         dt.DefaultView.RowFilter = "column1 <> true";
+         dt.DefaultView.RowFilter = "column1 = true";
+
+        （11）Sort row
+          dt.DefaultView.Sort = "ID ,Name ASC";
+          dt=dt.DefaultView.ToTable();
+
+         （12）Bind DataTable
+           //绑定的其实是DefaultView
+          gvTestDataTable.DataSource = dt;
+          gvTestDataTable.DataBind();
+
+         （13）judge the DataTable’s Column name is a string
+          //判断一个字符串是否为DataTable的列名
+         dtInfo.Columns.Contains("AX");
+
+         （14）DataTable convert to XML and XML convert to DataTable
+          protected void Page_Load(object sender, EventArgs e)
+          {
+             DataTable dt_AX = new DataTable();
+             //dt_AX.Columns.Add("Sex", typeof(System.Boolean));
+             //DataRow dr = dt_AX.NewRow();
+             //dr["Sex"] = true;
+             //dt_AX.Rows.Add(dr);
+             string xml=ConvertBetweenDataTableAndXML_AX(dt_AX);
+             DataTable dt = ConvertBetweenDataTableAndXML_AX(xml);
+         }
+         public string ConvertBetweenDataTableAndXML_AX(DataTable dtNeedCoveret)
+        {
+             System.IO.TextWriter tw = new System.IO.StringWriter();
+             //if TableName is empty, WriteXml() will throw Exception.                 
+
+dtNeedCoveret.TableName=dtNeedCoveret.TableName.Length==0?"Table_AX":dtNeedCoveret.TableName;
+             dtNeedCoveret.WriteXml(tw);
+             dtNeedCoveret.WriteXmlSchema(tw);
+             return tw.ToString();
+        }
+         public DataTable ConvertBetweenDataTableAndXML_AX(string xml)
+        {
+             System.IO.TextReader trDataTable = new System.IO.StringReader(xml.Substring(0, xml.IndexOf("<?xml")));
+             System.IO.TextReader trSchema = new System.IO.StringReader(xml.Substring(xml.IndexOf("<?xml")));
+             DataTable dtReturn = new DataTable();
+             dtReturn.ReadXmlSchema(trSchema);
+             dtReturn.ReadXml(trDataTable);
+             return dtReturn;
+        }

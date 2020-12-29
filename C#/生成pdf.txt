@@ -1,0 +1,417 @@
+https://www.cnblogs.com/zhuor/archive/2005/12/31/308908.html
+
+建议导包：iTextSharp.LGPLv2.Core
+
+例子：
+/// <summary>
+        /// 构建表格，生成PDF
+        /// </summary>
+        /// <param name="fileName">保存文件名称，不包括路径</param>
+        /// <param name="model">数据模型</param>
+        /// <param name="currentUser">当前用户信息</param>
+        /// <returns>FileContentResult格式的文件流</returns>
+        //public static async Task<IActionResult> GeneratePDF(string fileName, AssetInfoModel model, CurrentUserInfo currentUser)
+        //{
+        //    if (model.AssetInfo == null)
+        //    {
+        //        model.AssetInfo = new AssetInfo();
+        //    }
+        //    if (model.AssetCurrent == null)
+        //    {
+        //        model.AssetCurrent = new AssetCurrent();
+        //    }
+        //    if (model.AssetMain == null)
+        //    {
+        //        model.AssetMain = new AssetMaintenance();
+        //    }
+        //    if (!Directory.Exists(Startup.TemporaryFileDirectory))
+        //    {
+        //        Directory.CreateDirectory(Startup.TemporaryFileDirectory);
+        //    }
+        //    string filePath = Path.Combine(Startup.TemporaryFileDirectory, fileName);
+        //    using (FileStream wfs = new FileStream(filePath, FileMode.OpenOrCreate))
+        //    {
+        //        //PageSize.A4.Rotate();当需要把PDF纸张设置为横向时
+        //        Document docPDF = new Document(PageSize.A4, 10, 10, 20, 20);
+        //        PdfWriter write = PdfWriter.GetInstance(docPDF, wfs);
+        //        docPDF.Open();
+        //        //在这里需要注意的是，itextsharp不支持中文字符，想要显示中文字符的话需要自己设置字体 
+        //        BaseFont bsFont = BaseFont.CreateFont(Path.Combine(Startup.CurrentContentPath, _basePath, "simsun.ttc,0"), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        //        //标题字体
+        //        Font fontTitle = new Font(bsFont, 18);
+        //        fontTitle.SetStyle("bold");
+        //        fontTitle.SetFamily("黑体");
+        //        //文本字体
+        //        Font fontText = new Font(bsFont, 9);
+        //        fontText.SetStyle("bold");
+        //        fontText.SetFamily("黑体");
+        //        //填充值字体
+        //        Font fontValue = new Font(bsFont, 9);
+        //        fontValue.SetFamily("黑体");
+        //        // 宽度
+        //        float[] clos = new float[] { 25, 25, 25, 25, 25, 25 };
+        //        PdfPTable table = new PdfPTable(clos);
+        //        #region 标题
+        //        PdfPCell cellTitle = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Card"), fontTitle));
+        //        cellTitle.HorizontalAlignment = Element.ALIGN_CENTER;
+        //        cellTitle.DisableBorderSide(Rectangle.TOP_BORDER);
+        //        cellTitle.DisableBorderSide(Rectangle.LEFT_BORDER);
+        //        cellTitle.DisableBorderSide(Rectangle.RIGHT_BORDER);
+        //        //cellTitle.Border = Rectangle.RIGHT_BORDER | Rectangle.TOP_BORDER | Rectangle.LEFT_BORDER;
+        //        cellTitle.Colspan = 6;
+        //        table.AddCell(cellTitle);
+        //        #endregion
+        //        #region 第1行
+        //        PdfPCell cell1_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("AssetCode"), fontText));
+        //        cell1_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell1_2 = new PdfPCell(new Paragraph(model.AssetInfo.AssetCode, fontValue));
+        //        cell1_2.MinimumHeight = 5f;
+        //        cell1_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell1_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("AssetName"), fontText));
+        //        cell1_3.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell1_4 = new PdfPCell(new Paragraph(model.AssetInfo.AssetName, fontValue));
+        //        cell1_4.MinimumHeight = 5f;
+        //        cell1_4.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell1_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("IRange_Type_Asset_Category"), fontText));
+        //        cell1_5.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        //资产分类
+        //        PdfPCell cell1_6 = new PdfPCell();
+        //        var category = await new AssetManagement().GetAssetCateGory(currentUser.SuperId, model.AssetInfo.ACCode);
+        //        if (category != null)
+        //        {
+        //            cell1_6.Phrase = new Paragraph(category.AC_NAME, fontValue);
+        //            cell1_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        }
+        //        table.AddCell(cell1_1);
+        //        table.AddCell(cell1_2);
+        //        table.AddCell(cell1_3);
+        //        table.AddCell(cell1_4);
+        //        table.AddCell(cell1_5);
+        //        table.AddCell(cell1_6);
+        //        #endregion
+        //        #region 第2行
+        //        PdfPCell cell2_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("AssetSpecification"), fontText));
+        //        cell2_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell2_2 = new PdfPCell(new Paragraph(model.AssetInfo.AssetType, fontValue));
+        //        cell2_2.MinimumHeight = 5f;
+        //        cell2_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell2_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("SN"), fontText));
+        //        cell2_3.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell2_4 = new PdfPCell(new Paragraph(model.AssetInfo.AssetSN, fontValue));
+        //        cell2_4.MinimumHeight = 5f;
+        //        cell2_4.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell2_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Unit"), fontText));
+        //        cell2_5.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        //资产分类
+        //        PdfPCell cell2_6 = new PdfPCell(new Paragraph(model.AssetInfo.ACUnit, fontValue));
+        //        cell2_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        table.AddCell(cell2_1);
+        //        table.AddCell(cell2_2);
+        //        table.AddCell(cell2_3);
+        //        table.AddCell(cell2_4);
+        //        table.AddCell(cell2_5);
+        //        table.AddCell(cell2_6);
+        //        #endregion
+        //        #region 第3行
+        //        PdfPCell cell3_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Amount"), fontText));
+        //        cell3_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell3_2 = new PdfPCell(new Paragraph(model.AssetInfo.AssetPrice, fontValue));
+        //        cell3_2.MinimumHeight = 5f;
+        //        cell3_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell3_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("UsageOrganization"), fontText));
+        //        cell3_3.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell3_4 = new PdfPCell();
+        //        var currentUsingOrganization = await new OrganizationManagement().GetBySmidAndCode(currentUser.SuperId, model.AssetCurrent.CurrentOrgCode);
+        //        if (currentUsingOrganization != null)
+        //        {
+        //            cell3_4.Phrase = new Paragraph(currentUsingOrganization.ORGANIZATION_NAME, fontValue);
+        //            cell3_4.MinimumHeight = 5f;
+        //            cell3_4.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        }
+        //        PdfPCell cell3_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("UsageDepartment"), fontText));
+        //        cell3_5.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        //资产分类
+        //        PdfPCell cell3_6 = new PdfPCell();
+        //        //资产使用部门
+        //        var currentDepartment = await new OrganizationManagement().GetDepartment(currentUser.SuperId, model.AssetCurrent.CurrentDepCode, currentUsingOrganization?.ID);
+        //        if (currentDepartment != null)
+        //        {
+        //            cell3_6.Phrase = new Paragraph(currentDepartment.DEPART_NAME, fontValue);
+        //            cell3_6.MinimumHeight = 5f;
+        //            cell3_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        }
+        //        table.AddCell(cell3_1);
+        //        table.AddCell(cell3_2);
+        //        table.AddCell(cell3_3);
+        //        table.AddCell(cell3_4);
+        //        table.AddCell(cell3_5);
+        //        table.AddCell(cell3_6);
+        //        #endregion
+        //        #region 第4行
+        //        PdfPCell cell4_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("UsageUser"), fontText));
+        //        cell4_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell4_2 = new PdfPCell();
+        //        //资产使用人（员工）
+        //        if (currentUsingOrganization != null && currentDepartment != null && model != null && model.AssetCurrent != null && !string.IsNullOrEmpty(model.AssetCurrent.CurrentUserCode))
+        //        {
+        //            var currentStaff = await new OrganizationManagement().GetStaff(currentUsingOrganization.ID, currentDepartment.ID, model.AssetCurrent.CurrentUserCode);
+        //            if (currentStaff != null)
+        //            {
+        //                cell4_2.Phrase = new Paragraph(currentStaff.STAFF_NAME, fontValue);
+        //                cell4_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //            }
+        //        }
+        //        PdfPCell cell4_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("PurchaseDate"), fontText));
+        //        cell4_3.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell4_4 = new PdfPCell(new Paragraph(model.AssetInfo.PurDate, fontValue));
+        //        cell4_4.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell4_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("AssetSource"), fontText));
+        //        cell4_5.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell4_6 = new PdfPCell();
+        //        cell4_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        if (!string.IsNullOrEmpty(model.AssetInfo.AssetFrom))
+        //        {
+        //            string fromText = await new DictBLL().GetDictDataText("AssetSource", model.AssetInfo.AssetFrom, true);
+        //            cell4_6.Phrase = new Paragraph(fromText, fontValue);
+        //        }
+        //        table.AddCell(cell4_1);
+        //        table.AddCell(cell4_2);
+        //        table.AddCell(cell4_3);
+        //        table.AddCell(cell4_4);
+        //        table.AddCell(cell4_5);
+        //        table.AddCell(cell4_6);
+        //        #endregion
+        //        #region 第5行
+        //        PdfPCell cell5_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("IRange_Type_OwnCompany"), fontText));
+        //        cell5_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell5_2 = new PdfPCell();
+        //        //资产所属公司
+        //        var belongOrganization = await new OrganizationManagement().GetBySmidAndCode(currentUser.SuperId, model.AssetInfo.OrgCode);
+        //        if (belongOrganization != null)
+        //        {
+        //            cell5_2.Phrase = new Paragraph(belongOrganization.ORGANIZATION_NAME, fontValue);
+        //            cell5_2.MinimumHeight = 5f;
+        //            cell5_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        }
+        //        PdfPCell cell5_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("UsageArea"), fontText));
+        //        cell5_3.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell5_4 = new PdfPCell();
+        //        //区位
+        //        var area = await new AssetAreaManagement().GetArea(currentUser.SuperId, model.AssetCurrent.AreaCode);
+        //        if (area != null)
+        //        {
+        //            cell5_4.Phrase = new Paragraph(area.AA_NAME, fontValue);
+        //            cell5_4.MinimumHeight = 5f;
+        //            cell5_4.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        }
+        //        PdfPCell cell5_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Age"), fontText));
+        //        cell5_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell5_6 = new PdfPCell();
+        //        //使用期限（月），需要将资产的年期限进行转换
+        //        if (!string.IsNullOrEmpty(model.AssetInfo.ACLife))
+        //        {
+        //            if (int.TryParse(model.AssetInfo.ACLife, out int year))
+        //            {
+        //                cell5_6.Phrase = new Paragraph((year * 12).ToString(), fontValue);
+        //                cell5_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //            }
+        //        }
+        //        //PdfPCell cell5_5 = new PdfPCell(new Paragraph("存放地点", fontText));
+        //        //cell5_5.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        ////存放地点
+        //        //PdfPCell cell5_6 = new PdfPCell(new Paragraph(model.AssetCurrent.Location, fontValue));
+        //        //cell5_6.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        table.AddCell(cell5_1);
+        //        table.AddCell(cell5_2);
+        //        table.AddCell(cell5_3);
+        //        table.AddCell(cell5_4);
+        //        table.AddCell(cell5_5);
+        //        table.AddCell(cell5_6);
+        //        #endregion
+        //        #region 第6行
+        //        PdfPCell cell6_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Supplier"), fontText));
+        //        cell6_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell6_2 = new PdfPCell(new Paragraph(model.AssetMain.Supplier, fontValue));
+        //        cell6_2.MinimumHeight = 5f;
+        //        cell6_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+
+        //        PdfPCell cell6_3 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("ContractPerson"), fontText));
+        //        cell6_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell6_4 = new PdfPCell(new Paragraph(model.AssetMain.Contacts, fontValue));
+        //        cell6_2.MinimumHeight = 5f;
+        //        cell6_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+
+        //        PdfPCell cell6_5 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("ContractTel"), fontText));
+        //        cell6_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell6_6 = new PdfPCell(new Paragraph(model.AssetMain.TelNum, fontValue));
+        //        cell6_2.MinimumHeight = 5f;
+        //        cell6_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        table.AddCell(cell6_1);
+        //        table.AddCell(cell6_2);
+        //        table.AddCell(cell6_3);
+        //        table.AddCell(cell6_4);
+        //        table.AddCell(cell6_5);
+        //        table.AddCell(cell6_6);
+        //        #endregion
+        //        #region 第7行
+        //        PdfPCell cell7_1 = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("Remark"), fontText));
+        //        cell7_1.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        PdfPCell cell7_2 = new PdfPCell(new Paragraph(model.AssetInfo.AssetDes, fontValue));
+        //        cell7_2.MinimumHeight = 5f;
+        //        cell7_2.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        cell7_2.Colspan = 5;
+        //        table.AddCell(cell7_1);
+        //        table.AddCell(cell7_2);
+        //        #endregion
+        //        #region 变更记录
+        //        //标题
+        //        PdfPCell cellRecord = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("ChangeLog"), fontValue));
+        //        cellRecord.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //        cellRecord.Colspan = 6;
+        //        table.AddCell(cellRecord);
+        //        //表头
+        //        PdfPCell cellTitleDate = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("ProcessingDate"), fontText));
+        //        cellTitleDate.HorizontalAlignment = Element.ALIGN_CENTER;
+        //        PdfPCell cellTitleCharge = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("DealingPeople"), fontText));
+        //        cellTitleCharge.HorizontalAlignment = Element.ALIGN_CENTER;
+        //        PdfPCell cellTitleType = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("DealingMethod"), fontText));
+        //        cellTitleType.HorizontalAlignment = Element.ALIGN_CENTER;
+        //        PdfPCell cellTitleRemark = new PdfPCell(new Paragraph(await Localizer.GetValueAsync("DealingContent"), fontText));
+        //        cellTitleRemark.HorizontalAlignment = Element.ALIGN_CENTER;
+        //        cellTitleRemark.Colspan = 3;
+        //        table.AddCell(cellTitleDate);
+        //        table.AddCell(cellTitleCharge);
+        //        table.AddCell(cellTitleType);
+        //        table.AddCell(cellTitleRemark);
+        //        //资产变更信息
+        //        var assetInfo = await new AssetsOperationBLL().GetAssetInfo(currentUser, model.AssetInfo.AssetCode);
+        //        if (assetInfo == null)
+        //        {
+        //            throw new Exception(await Localizer.GetValueAsync("NoExistAssetInformation"));
+        //        }
+        //        var modification = await new AssetManagement().GetModifyRecord(currentUser.SuperId, assetInfo.ID);
+        //        if (modification != null)
+        //        {
+        //            foreach (var record in modification)
+        //            {
+        //                PdfPCell cellDate = new PdfPCell(new Paragraph(record.OrderDate, fontValue));
+        //                cellDate.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //                PdfPCell cellCharge = new PdfPCell(new Paragraph(record.Audit, fontValue));
+        //                cellCharge.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //                PdfPCell cellType = new PdfPCell(new Paragraph(record.Type, fontValue));
+        //                cellType.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //                PdfPCell cellRemark = new PdfPCell(new Paragraph(record.Remark, fontValue));
+        //                cellRemark.Colspan = 3;
+        //                cellRemark.MinimumHeight = 5f;
+        //                cellRemark.VerticalAlignment = Element.ALIGN_MIDDLE;
+        //                table.AddCell(cellDate);
+        //                table.AddCell(cellCharge);
+        //                table.AddCell(cellType);
+        //                table.AddCell(cellRemark);
+        //            }
+        //        }
+        //        #endregion
+        //        docPDF.Add(table);//将表格添加到pdf文档中
+
+        //        docPDF.Close();//关闭
+        //        write.Close();
+        //        wfs.Close();
+        //    }
+
+        //    return new FileContentResult(File.ReadAllBytes(filePath), "application/pdf");
+        //}
+
+        //private static async Task<Dictionary<string, string>> FillKeys(AssetInfoModel model, CurrentUserInfo currentUser)
+        //{
+        //    Dictionary<string, string> para = new Dictionary<string, string>();
+        //    para.Add("asset_code", model.AssetInfo.AssetCode);
+        //    para.Add("asset_name", model.AssetInfo.AssetName);
+        //    //资产分类
+        //    var category = await new AssetManagement().GetAssetCateGory(currentUser.SuperId, model.AssetInfo.ACCode);
+        //    if (category != null)
+        //    {
+        //        para.Add("asset_category", category.AC_NAME);
+        //    }
+        //    else
+        //    {
+        //        para.Add("asset_category", "");
+        //    }
+        //    para.Add("asset_type", model.AssetInfo.AssetType);
+        //    para.Add("asset_sn", model.AssetInfo.AssetSN);
+        //    para.Add("asset_unit", model.AssetInfo.ACUnit);
+        //    para.Add("asset_price", model.AssetInfo.AssetPrice);
+        //    //资产使用公司
+        //    var currentUsingOrganization = await new OrganizationManagement().GetBySmidAndCode(currentUser.SuperId, model.AssetCurrent.CurrentOrgCode);
+        //    if (currentUsingOrganization != null)
+        //    {
+        //        para.Add("asset_using_org", currentUsingOrganization.ORGANIZATION_NAME);
+        //    }
+        //    //资产使用部门
+        //    var currentDepartment = await new OrganizationManagement().GetDepartment(currentUser.SuperId, model.AssetCurrent.CurrentDepCode, currentUsingOrganization?.ID);
+        //    if (currentDepartment != null)
+        //    {
+        //        para.Add("asset_using_depart", currentDepartment.DEPART_NAME);
+        //    }
+        //    //资产使用人（员工）
+        //    if (currentUsingOrganization != null && currentDepartment != null && model != null && model.AssetCurrent != null && !string.IsNullOrEmpty(model.AssetCurrent.CurrentUserCode))
+        //    {
+        //        var currentStaff = await new OrganizationManagement().GetStaff(currentUsingOrganization?.ID, currentDepartment?.ID, model.AssetCurrent.CurrentUserCode);
+        //        if (currentStaff != null)
+        //        {
+        //            para.Add("asset_user", currentStaff.STAFF_NAME);
+        //        }
+        //    }
+        //    para.Add("asset_purchase_date", model.AssetInfo.PurDate);
+        //    //资产管理员（当前使用公司的管理员）
+        //    if (currentUsingOrganization != null && model != null && model.AssetCurrent != null && !string.IsNullOrEmpty(model.AssetCurrent.CurrentManager))
+        //    {
+        //        var currentManager = await new OrganizationManagement().GetStaff(currentUsingOrganization.ID, model.AssetCurrent.CurrentManager);
+        //        if (currentManager != null)
+        //        {
+        //            para.Add("asset_manager", currentManager.STAFF_NAME);
+        //        }
+        //    }
+        //    //资产所属公司
+        //    var belongOrganization = await new OrganizationManagement().GetBySmidAndCode(currentUser.SuperId, model.AssetInfo.OrgCode);
+        //    if (belongOrganization != null)
+        //    {
+        //        para.Add("asset_belong_org", belongOrganization.ORGANIZATION_NAME);
+        //    }
+        //    //区位
+        //    var area = await new AssetAreaManagement().GetArea(currentUser.SuperId, model.AssetCurrent.AreaCode);
+        //    if (area != null)
+        //    {
+        //        para.Add("asset_area", model.AssetCurrent.AreaCode);
+        //    }
+        //    para.Add("asset_address", model.AssetCurrent.Location);
+        //    //使用期限（月），需要将资产的年期限进行转换
+        //    if (!string.IsNullOrEmpty(model.AssetInfo.ACLife))
+        //    {
+        //        if (int.TryParse(model.AssetInfo.ACLife, out int year))
+        //        {
+        //            para.Add("asset_life", (year * 12).ToString());
+        //        }
+        //    }
+        //    para.Add("asset_support", model.AssetMain.Supplier);
+        //    para.Add("asset_from", model.AssetInfo.AssetFrom);
+        //    para.Add("asset_remark", model.AssetInfo.AssetDes);
+        //    //资产变更信息
+        //    var assetInfo = await new AssetsOperationBLL().GetAssetInfo(currentUser, model.AssetInfo.AssetCode);
+        //    if (assetInfo == null)
+        //    {
+        //        throw new Exception(await Localizer.GetValueAsync("NoExistAssetInformation"));
+        //    }
+        //    var modification = await new AssetManagement().GetModifyRecord(currentUser.SuperId, assetInfo.ID);
+        //    if (modification != null)
+        //    {
+        //        for (int i = 0; i < modification.Count(); i++)
+        //        {
+        //            para.Add(string.Format("asset_modify_date{0}", i), modification.ToList()[i].OrderDate);
+        //            para.Add(string.Format("asset_modify_charge{0}", i), modification.ToList()[i].Audit);
+        //            para.Add(string.Format("asset_modify_type{0}", i), modification.ToList()[i].Type);
+        //            para.Add(string.Format("asset_modify_remark{0}", i), modification.ToList()[i].Remark);
+        //        }
+        //    }
+
+        //    return para;
+        //}

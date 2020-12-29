@@ -1,0 +1,42 @@
+https://www.cnblogs.com/mybk/p/10475170.html
+/// <summary>
+        /// 反射获取属性名
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        public static List<string> FromatDitits<T>(T model)
+        {
+            List<string> columns = new List<string>();
+            var newType = model.GetType();
+            foreach (var item in newType.GetRuntimeProperties())
+            {
+                var type = item.PropertyType.Name;
+                var IsGenericType = item.PropertyType.IsGenericType;
+                var list = item.PropertyType.GetInterface("IEnumerable", false);
+                columns.Add($"属性名称：{item.Name}，类型：{type}，值：{item.GetValue(model)}");
+                if (IsGenericType && list != null)
+                {
+                    var listVal = item.GetValue(model) as IEnumerable<object>;
+                    if (listVal == null) continue;
+                    foreach (var aa in listVal)
+                    {
+                        var dtype = aa.GetType();
+                        foreach (var bb in dtype.GetProperties())
+                        {
+                            var dtlName = bb.Name.ToLower();
+                            var dtlType = bb.PropertyType.Name;
+                            var oldValue = bb.GetValue(aa);
+                            if (dtlType == typeof(decimal).Name)
+                            {
+                                int dit = 4;
+                                if (dtlName.Contains("price") || dtlName.Contains("amount"))
+                                    dit = 2;
+                                bb.SetValue(aa, Math.Round(Convert.ToDecimal(oldValue), dit, MidpointRounding.AwayFromZero));
+                            }
+                            columns.Add($"子级属性名称：{dtlName}，类型：{dtlType}，值：{oldValue}");
+                        }
+                    }
+                }
+            }
+            return columns;
+        }

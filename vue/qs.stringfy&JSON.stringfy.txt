@@ -1,3 +1,5 @@
+
+npm install qs
 1. qs.stringfy(data) 是将对象序列化，类似于jq 的 $("form").serialize()
 qs.stringfy(JSONData);	// Username=dfsd&Pwd=123
 

@@ -1,0 +1,9 @@
+一、List
+1. Add() 添加
+2. Remove() 移除
+3. 可以像数组那样直接获取元素
+list[0]
+4. list.Count 直接获取list元素个数
+5. list.IndexOf(包含元素); 
+包含该元素返回下标值，不包含返回-1；
+6. list.Sort() 排序，字符串则按字母排序

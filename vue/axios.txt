@@ -1,4 +1,13 @@
 https://www.kancloud.cn/yunye/axios/234845
+安装：npm install axios --save
+普通引入： input axios from 'axios'
+
+全局引入：main.js
+import axios form axios
+Vue.prototype.$axios = axios		// $axios 可以根据需要改名
+调用：
+this.$axios.
+
 
 执行 GET 请求
 

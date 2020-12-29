@@ -1,0 +1,10 @@
+https://docs.microsoft.com/zh-cn/dotnet/csharp/tour-of-csharp/types
+任何类型的变量都可以声明为“不可为null” 或可为 null。
+可为 null 的变量包含一个额外的 null 值，表示没有值。 
+可为 null 的值类型（结构或枚举）由 System.Nullable<T> 表示。
+不可为 null 和可为 null 的引用类型都由基础引用类型表示。
+
+int? optionalInt = default; 
+optionalInt = 5;
+string? optionalText = default;
+optionalText = "Hello World.";

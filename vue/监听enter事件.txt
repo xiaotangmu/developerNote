@@ -1,0 +1,7 @@
+例子 keyup
+
+<input v-on:keyup.13="open"/>
+<input @keyup.enter="open" />
+
+element ui  监听失败，加native
+<el-input @keyup.native.13="open"></el-input>

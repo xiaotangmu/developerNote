@@ -1,10 +1,27 @@
-不足位添0
+1. 不足位添0
 str.PadLeft(3, '0'); // 位数, 添加的符号 -- 向左添0
 str.PadRight(3, '0');
 
-日期转字符串
+2. 日期转字符串
 string.Format("{0:yyyyMMdd}", model.AppointmentDate)
+注意如果AppointmentDate 为字符串，会格式化失败，需要先将字符串转为日期类型
+to_date();
 
-
-去后面两位字符
+3. 截取：去后面两位字符
 string str2 = str.Substring(str.Length - 2, 2);
+
+4. 字符串替换Replace
+string str1 = "Hello World";
+str1 = str1.Replace("Hello", "Greetings");
+Console.WriteLine(str1);
+打印结果：Greetings World
+
+5. 判断字符串是否包含某个字段
+bool result = str.Contains("xx");
+
+6. 是否以开头/结尾
+StartsWith()/EndsWith()
+
+7. 将字符全部变为大写
+str.ToUpper();
+

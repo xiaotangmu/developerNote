@@ -1,0 +1,19 @@
+https://blog.csdn.net/qq_36074218/article/details/90442855
+
+1,从System.String[]转到List<System.String>
+ 
+System.String[] str={"str","string","abc"};
+ 
+List<System.String> listS=new List<System.String>(str);
+ 
+ 
+2, 从List<System.String>转到System.String[]
+ 
+复制代码
+List<System.String> listS=new List<System.String>();
+ 
+listS.Add("str");
+ 
+listS.Add("hello");
+ 
+System.String[] str=listS.ToArray();

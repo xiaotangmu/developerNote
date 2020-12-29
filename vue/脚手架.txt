@@ -1,7 +1,8 @@
-脚手架安装过一次就可以了 -- npm install -g vue-cli 
+脚手架安装过一次就可以了，全局安裝 -- npm install -g vue-cli /cnpm install -g vue-cli 
 
 cmd 进入项目目录 -- vue init webpack 创建基于脚手架的项目
 
+安裝依賴：npm install /cnpm install
 全局脚手架参考： https://www.jianshu.com/p/1ee1c410dc67
 
 

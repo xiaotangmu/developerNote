@@ -1,0 +1,45 @@
+一、字符串与日期相互格式化函数
+函数 	返回类型 	描述 	例子
+to_char(timestamp, text) 	text 	把时间戳转换成字串 	to_char(current_timestamp, 'HH12:MI:SS')
+to_char(interval, text) 	text 	把时间间隔转为字串 	to_char(interval '15h 2m 12s', 'HH24:MI:SS')
+to_char(int, text) 	text 	把整数转换成字串 	to_char(125, '999')
+to_char(double precision, text) 	text 	把实数/双精度数转换成字串 	to_char(125.8::real, '999D9')
+to_char(numeric, text) 	text 	把numeric转换成字串 	to_char(-125.8, '999D99S')
+to_date(text, text) 	date 	把字串转换成日期 	to_date('05 Dec 2000', 'DD Mon YYYY')
+to_timestamp(text, text) 	timestamp 	把字串转换成时间戳 	to_timestamp('05 Dec 2000', 'DD Mon YYYY')
+to_timestamp(double) 	timestamp 	把UNIX纪元转换成时间戳 	to_timestamp(200120400)
+to_number(text, text) 	numeric 	把字串转换成numeric 	to_number('12,454.8-', '99G999D9S')
+
+ 
+二、用于日期/时间格式化的占位符
+占位符 	描述
+HH 	一天的小时数(01-12)
+HH12 	一天的小时数(01-12)
+HH24 	一天的小时数(00-23)
+MI 	分钟(00-59)
+SS 	秒(00-59)
+MS 	毫秒(000-999)
+US 	微秒(000000-999999)
+AM 	正午标识(大写)
+Y,YYY 	带逗号的年(4和更多位)
+YYYY 	年(4和更多位)
+YYY 	年的后三位
+YY 	年的后两位
+Y 	年的最后一位
+MONTH 	全长大写月份名(空白填充为9字符)
+Month 	全长混合大小写月份名(空白填充为9字符)
+month 	全长小写月份名(空白填充为9字符)
+MON 	大写缩写月份名(3字符)
+Mon 	缩写混合大小写月份名(3字符)
+mon 	小写缩写月份名(3字符)
+MM 	月份号(01-12)
+DAY 	全长大写日期名(空白填充为9字符)
+Day 	全长混合大小写日期名(空白填充为9字符)
+day 	全长小写日期名(空白填充为9字符)
+DY 	缩写大写日期名(3字符)
+Dy 	缩写混合大小写日期名(3字符)dy缩写小写日期名(3字符)
+DDD 	一年里的日子(001-366)
+DD 	一个月里的日子(01-31)
+D 	一周里的日子(1-7；周日是1)
+W 	一个月里的周数(1-5)(第一周从该月第一天开始)
+WW 	一年里的周数(1-53)(第一周从该年的第一天开始)

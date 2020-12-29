@@ -1,0 +1,8 @@
+https://www.cnblogs.com/xiaoleilei123/p/10861039.html
+
+<el-dialog title="收货地址" :visible.sync="dialogFormVisible" :modal-append-to-body="false"> 
+添加 :modal-append-to-body="false"
+
+
+建议直接用dialogFormVisible
+:modal-append-to-body="dialogFormVisible"

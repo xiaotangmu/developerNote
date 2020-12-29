@@ -1,0 +1,32 @@
+https://www.cnblogs.com/hspl/p/11189088.html
+
+第一步：
+
+npm安装：
+	
+npm install --save js-md5
+
+第二步：
+
+全局引用
+	
+import md5 from 'js-md5';
+Vue.prototype.$md5 = md5;
+
+第三步：
+	
+this.$md5('This is encrypted content')  // 6f43dd5db792acb25d6fe32f3dddac70
+ 
+
+在页面单独使用：
+
+首先安装依赖，然后引入
+	
+import md5 from 'js-md5';
+
+第二步：	
+md5('This is encrypted content')  // 6f43dd5db792acb25d6fe32f3dddac70
+
+
+AES加密
+https://blog.csdn.net/u014678583/article/details/105157695/

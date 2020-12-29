@@ -1,0 +1,4 @@
+参考：https://cloud.tencent.com/document/product/382/43198
+Nut包：TencentCloudSDK.Sms
+
+其他参考：https://blog.csdn.net/qq_40409260/article/details/104884690
