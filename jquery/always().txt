@@ -1,0 +1,4 @@
+在延迟方法执行后，无论结果怎样都执行，类型finally
+$.get("test.php").always( function() { 
+  alert("$.get completed with success or error callback arguments"); 
+} );

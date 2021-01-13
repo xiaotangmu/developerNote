@@ -1,0 +1,40 @@
+https://www.cnblogs.com/keyi/p/7261545.html
+
+ jquery的on()绑定无效的方式
+
+on前面的元素也必须在页面加载的时候就存在于dom里面。动态的元素或者样式等，可以放在on的第二个参数里面
+
+jQuery on()方法是官方推荐的绑定事件的一个方法。使用 on() 方法可以给将来动态创建的动态元素绑定指定的事件，例如append等。
+	
+<div id="test">
+<div class="evt">evt1</div>
+</div>
+
+错误的用法，下面方法只为第一个class 为 evt 的div 绑定了click事件，使用append动态创建的div则没有绑定
+	
+<script>
+// 先绑定事件再添加div
+$('#test .evt').on('click', function() {alert($(this).text())});
+$('#test').append('<div class="evt">evt2</div>');
+</script>
+
+正确的用法如下：
+	
+<script>
+$('body').on('click', '#test .evt', function() {alert($(this).text())});
+$('#test').append('<div class="evt">evt2</div>');
+</script>
+
+ 
+
+ 
+
+checkbox单选设置  如果 <input name="ck" type="checkbox">是动态添加的则可以这样
+
+$("#grid").on("click","input[name=ck]",function(){
+
+$("input[name=ck]").not(this).prop("checked",false);
+
+});
+
+  注：$(selector).on(event,childSelector,data,function,map)

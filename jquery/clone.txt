@@ -1,0 +1,33 @@
+
+例子：
+$(function(){
+	$('#complaint-obj-table').clone(true).appendTo($('#complaint-type-div'));
+})
+
+克隆方法分为浅层克隆与深层克隆
+
+当（）内为true，代表深层克隆，即完全复制所有东西，包括变量和方法。
+
+当（）内 为false，代表浅层克隆，即只复制表层，不复制变量和其上方法。
+<b>Hello</b><p>, how are you?</p>
+
+jQuery 代码:
+
+$("b").clone().prependTo("p");
+
+结果:
+
+<b>Hello</b><p><b>Hello</b>, how are you?</p>
+
+描述:
+
+创建一个按钮，他可以复制自己，并且他的副本也有同样功能。
+HTML 代码:
+
+<button>Clone Me!</button>
+
+jQuery 代码:
+
+$("button").click(function(){
+  $(this).clone(true).insertAfter(this);
+});

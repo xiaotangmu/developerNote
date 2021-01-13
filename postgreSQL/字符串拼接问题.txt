@@ -6,4 +6,6 @@ select 'xxx' || 'hhh';
 
 2. 使用 concat 函数
 select concat('Hello ' , 'World', 'Lady') ;
-							
+		
+
+截取：substring(order_no from length(order_no)-2 for 3)					

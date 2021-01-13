@@ -1,0 +1,66 @@
+/// <summary>
+    /// 訂單查詢與同步定時器
+    /// </summary>
+    public class QueryOrderTimer
+    {
+        static IConfiguration _configuration;
+
+        static QueryOrderTimer()
+        {
+        }
+
+        public static void Start(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            Thread thread = new Thread(async () =>
+            {
+	// 业务代码
+                await RunTimer();
+            });
+            thread.IsBackground = true;	// 设置后台运行
+            thread.Name = "訂單查詢定時器";
+            thread.Start();
+        }
+
+        private static async Task RunTimer()
+        {
+            try
+            {
+                while (1 == 1)
+                {
+                    // 业务代码
+	    // ...
+                    // Thread.Sleep(new TimeSpan(0, 0, sleepTimespan));  // 实现周期执行
+	    WaitForNextAction(interval);	
+                }
+            }
+            catch (Exception ex)
+            {
+                Common.Logger.LoggerManager.DefaultLogger.Error("线程执行异常：" + ex.Message);
+            }
+        }
+
+        private static void WaitForNextAction(string interval)
+        {
+            int sleepTimespan = 3600;
+
+            if (!string.IsNullOrEmpty(interval))
+            {
+                sleepTimespan = int.Parse(interval);
+            }
+            Thread.Sleep(new TimeSpan(0, 0, sleepTimespan));
+        }
+    }
+
+// 开机自启动
+Startup.cs
+public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            RunThreadForUpdateOrder();
+        }
+
+        private void RunThreadForUpdateOrder()
+        {
+            QueryOrderTimer.Start(Configuration);
+        }

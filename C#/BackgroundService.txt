@@ -1,0 +1,84 @@
+參考：
+https://blog.csdn.net/weixin_41472521/article/details/110364892
+https://www.cnblogs.com/fanfan-90/p/12455740.html
+https://www.it1352.com/1771620.html
+
+ackgroundService是一个抽象类，继承IHostedService然后就拥有了StartAsync()、StopAsync()方法。
+
+当我们继承BackgroundService之后需要重写ExecuteAsync抽象方法，然后我们只需要在ExecuteAsync方法中
+写入自己需要执行的方法就可以了。
+
+然后在配置服务中心注入该方法就可以了services.AddHostedService ();
+
+實例：
+Startup.cs
+// services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, UePayQueryTimer>();  // 注冊UePay查詢定時任務
+// 或者
+ services.AddHostedService< Service1>（）; 
+ services.AddHostedService< Service2>（）; 
+
+注意在有多個任務時，Task.Compeleted; 無效，所以只執行一次的任務，不要用while
+
+// 周期/定時任務
+public class UePayQueryTimer : BackgroundService
+    {
+        // 服務根據實際寫入
+        private readonly ISchedulerFactory _schedulerFactory;
+        private readonly IConfiguration _configuration;
+        private IScheduler _scheduler;
+        public UePayQueryTimer(IConfiguration configuration, ISchedulerFactory schedulerFactory)
+        {
+            _configuration = configuration;
+            _schedulerFactory = schedulerFactory;
+        }
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            // 判斷異步操作是否已經取消，取消不再執行
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await RunTimer();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.LogExceptionMessage(ex);
+                }
+                await Task.Delay((12 * 60 * 60 * 1000), stoppingToken); //12個鈡判斷一次任務是否已被取消或完成
+	// await Task.Compeleted;	// 結束任務
+            }
+        }
+
+        private async Task RunTimer()
+        {
+            // ...
+        }
+}
+// 單次任務
+/// <summary>
+    /// 開啓啓動執行一次對賬
+    /// </summary>
+    public class UePayQueryOne : BackgroundService
+    {
+        public UePayQueryOne()
+        {
+        }
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)	
+        {
+	// 不要使用while
+            try
+            {
+                await RunTimer();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogExceptionMessage(ex);
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task RunTimer()
+        {
+            // ...
+        }
+    }

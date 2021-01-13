@@ -1,0 +1,37 @@
+參考：https://www.it1352.com/1770606.html
+	https://blog.csdn.net/dietisi8980/article/details/101856677
+	https://www.cnblogs.com/walt/p/11947464.html
+
+var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+IServiceProvider 是具有单个方法的接口：
+  object GetService （类型serviceType）; 
+  
+用于创建在.NET Core本机DI容器中注册的类型的实例。
+IServiceProvider 本身的实例可以通过调用 BuildServiceProvider 方法获得 IServiceCollection 。 IServiceCollection 是 Startup 类中 ConfigureServices 方法的参数。框架似乎用 IServiceCollection 的实例神奇地调用了它。
+
+實例：.NetCode2.1
+Starup.cs:
+private void ConfigureTokenService(IServiceCollection services, IConfiguration configuration, TokenProviderOptions tokenOptions)
+        {
+           // ...
+            var serviceProvider = services.BuildServiceProvider();
+            // 将注入放在全局变量里维护
+            ServiceLocator.SetServices(serviceProvider);
+        }
+
+
+服務獲取工具類：
+public class ServiceLocator
+    {
+        public static IServiceProvider Services { get; private set; }
+
+        public static void SetServices(IServiceProvider services)
+        {
+            Services = services;
+        }
+    }
+
+調用實例：
+// 直接获取某个接口服务类的实例
+                    var userService = ServiceLocator.Services.GetService(typeof(IConfiguration)) as IConfiguration;
+                    string  str = userService.GetSection("UePay:Cny").Value;

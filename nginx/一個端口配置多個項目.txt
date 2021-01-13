@@ -1,0 +1,35 @@
+理解 root 與 alias
+參考：https://blog.csdn.net/line_aijava/article/details/71473793
+ alias与root区别
+
+    官方root	
+
+    Sets the root directory for requests. For example, with the following configuration
+    location /i/ {
+        root /data/w3;
+    }
+
+The /data/w3/i/top.gif file will be sent in response to the “/i/top.gif” request
+
+    官方alias    	
+
+    Defines a replacement for the specified location. For example, with the following configuration
+    location /i/ {
+        alias /data/w3/images/;
+    }
+
+on request of “/i/top.gif”, the file /data/w3/images/top.gif will be sent.
+
+    当访问/i/top.gif时，root是去/data/w3/i/top.gif请求文件，alias是去/data/w3/images/top.gif请求,也就是说
+    root响应的路径：配置的路径+完整访问路径(完整的location配置路径+静态文件)
+    alias响应的路径：配置路径+静态文件(去除location中配置的路径)
+
+簡言之，root 配置的路徑會加上localtion，才是真正訪問的路徑，location為目標前的部分路徑
+alias 是去除location, location 僅僅為代理路徑
+
+所以，一般 / {} 使用 root ，路徑不會再次拼接，
+/xx 使用 alias , 代理路徑；
+
+
+注意二：
+訪問頁面的js等靜態路徑，此時要把基礎路徑設置相對大點，覆蓋相對靜態文件，才能直接訪問成功。

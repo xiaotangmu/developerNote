@@ -2,6 +2,9 @@
 
 https://www.jb51.net/article/168383.htm
 
+
+DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH-mm-ss")
+
 方法一：Convert.ToDateTime(string)
 
 string格式有要求，必须是yyyy-MM-dd hh:mm:ss
