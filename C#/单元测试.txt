@@ -1,1 +1,95 @@
-https://docs.microsoft.com/en-us/dotnet/core/testing/
+Xunit
+参考：https://docs.microsoft.com/en-us/dotnet/core/testing/
+https://blog.csdn.net/w3800/article/details/84415986
+使用: https://www.jianshu.com/p/987b0c2aa40e?utm_source=oschina-app
+断言： https://www.cnblogs.com/tianguook/p/3993952.html
+在这里我举例说明Assert里面的一些主要的静态成员。
+1、             AreEqual：方法被重载了N多次，主要功能是判断两个值是否相等；如果两个值不相等，则测试失败。
+2、             AreNotEqual：方法被重载了N多次，主要功能是判断两个值是否不相等；如果两个值相等，则测试失败。
+3、             AreNotSame：引用的对象是否不相同；如果两个输入内容引用相同的对象，则测试失败.
+4、             AreSame：引用的对象是否相同；如果两个输入内容引用不相同的对象，则测试失败.
+5、             Fail：断言失败。
+6、             Inconclusive：表示无法证明为 true 或 false 的测试结果
+7、             IsFalse：指定的条件是否为 false；如果该条件为 true，则测试失败。
+8、             IsTrue：指定的条件是否为 true；如果该条件为 false，则测试失败
+9、             IsInstanceofType：测试指定的对象是否为所需类型的实例；如果所需的实例不在该对象的继承层次结构中，则测试失败
+10、        IsNotInstanceofType: 测试指定的对象是否为所需类型的实例；如果所需的实例在该对象的继承层次结构中，则测试失败
+11、        IsNull：测试指定的对象是否为非空
+12、        IsNotNull：测试指定的对象是否为非空 
+
+using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework;//引用单元测试类库
+using UnityEngine;
+
+https://www.cnblogs.com/lihengbk/p/11009707.html
+//断言测试代码类
+public class NUnitTestSprites : MonoBehaviour
+{
+    private void Start()
+    {
+        Assert.IsTrue(true);//当传入参数 不为true时 抛出异常 断言失败
+        Assert.IsFalse(true);//和上面的相反
+
+        Assert.IsNull(new List<int> { 6, 6, 6 });//当传入的参数 不为null时 抛出异常 断言失败
+        Assert.IsNotNull(null);//和上面相反
+
+        Assert.AreEqual("six", "six");//比较两个参数 用相等运算符 判断是否相等 不相等 抛出异常 断言失败
+        Assert.AreNotEqual("six", "6");//和上面相反
+
+        GameObject go1 = new GameObject();
+        GameObject go2 = go1;
+        Assert.AreSame(go1, go2);//比较两个参数 判定两个对象是否引用同一个对象 不相同 抛出异常 断言失败
+        Assert.AreNotSame(go1, new GameObject());
+
+        Assert.Equals(new object(), new Object());//判定两个对象是否相等
+        Assert.Fail();//直接使断言失败
+        Assert.Inconclusive();//无法验证的断言
+
+    }
+}
+
+
+案例：.NetCode 使用版本2.1
+    1. 新建 asp.net core web 工程
+
+    2. 新建 xunit 工程，引用 web 工程
+    在 xunit 工程中添加包：Microsoft.AspNetCore.All。
+添加后如果有问题，将 csporj 文件中的 Microsoft.AspNetCore.All 版本号去掉
+    可选择添加 Moq 库 Mock
+
+public class UnitTest1
+    {
+        [Fact]
+        public void Test1()
+        {
+            var repository = new Mock<UserSupervisor>();
+            var controller = new UserController(repository.Object);
+            var result = controller.Hello();
+            Assert.Null(result);
+        }
+        [Fact]
+        public void Test2()
+        {
+            //var repository = new UserSupervisor();
+            //var controller = new UserController(repository);
+            var repository = new Mock<UserSupervisor>();
+            var controller = new UserController(repository.Object);
+            var result = controller.Hello();
+            Assert.NotNull(result);
+        }
+        [Theory]
+        [InlineData("xx")]
+        [InlineData("yy")]
+        [InlineData("zz")]
+        public void IsPrime_ValuesLessThan2_ReturnFalse(string value)
+        {
+            var result = Test(value);
+
+            Assert.Equal(result, $"{value} should not be prime");
+        }
+        public string Test(string value)
+        {
+            return value;
+        }
+    }
