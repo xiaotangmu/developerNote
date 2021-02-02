@@ -1,0 +1,65 @@
+参考：https://www.cnblogs.com/cteng-common/p/reflectdll.html
+
+1. 如果是普通方法（非任务Task）
+public class ClassUtils
+    {
+        //辅助方法:调用其他类的私有方法
+        //InstanceClass:类的实例,Params:方法的参数实例
+        public static object InvokePMethod(System.Type Type, string MethodName, object InstanceClass, object[] Params)
+        {
+            //发现方法的属性 (Attribute) 并提供对方法元数据的访问(摘自:MSDN)
+            //这里方法的属性指方法的static,virtual,final等修饰,方法的参数,方法的返回值等详细信息
+            //最重要一点是通过MethodInfo可以调用方法(invoke)
+            MethodInfo Method;
+
+            //指定被搜索成员的类型,NonPublic表示搜索非公有成员,Instance表示搜索实例成员(非static)
+            //所以下面这句表示搜索类型为非公有的实例成员
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            //Type为System.Reflection功能的根，也是访问元数据的主要方式。(摘自:MSDN)
+            //使用Type的成员获取关于类型声明的信息,如构造函数、方法、字段、属性 (Property) 
+            //和类的事件,以及在其中部署该类的模块和程序集。(摘自:MSDN)
+            //Type是.net中反射的根源,就如java中的Class类.如果连类都没有,那么调用方法,得到属性,一切都无从入手.
+            //GetMethod:通过方法名和搜索方式得MethodInfo
+            Method = Type.GetMethod(MethodName, flags);
+
+            //调用private方法:参数分别为类的实例和方法参数
+            object result = Method.Invoke(InstanceClass, Params);
+
+            return result;
+        }
+    }
+
+2. 异步任务
+public async static Task<T> CallPrivateMethod<T>(object instance, string name, params object[] param)
+        {
+            BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
+            Type type = instance.GetType();
+            MethodInfo method = type.GetMethod(name, flag);
+            Task task = method.Invoke(instance, param) as Task;
+            await task;
+            return (T)task.GetType().GetProperty("Result").GetValue(task, null); //result就是异步函数的返回值
+        }
+
+3.  获取私有成员和私有属性
+public static T GetPrivateProperty<T>(object instance, string propertyname)
+        {
+            BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
+            Type type = instance.GetType();
+            PropertyInfo field = type.GetProperty(propertyname, flag);
+            return (T)field.GetValue(instance, null);
+        }
+        /// <summary>
+        /// 获取私有属性
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="fieldname"></param>
+        /// <returns></returns>
+        public static T GetPrivateField<T>(object instance, string fieldname)
+        {
+            BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
+            Type type = instance.GetType();
+            FieldInfo field = type.GetField(fieldname, flag);
+            return (T)field.GetValue(instance);
+        }

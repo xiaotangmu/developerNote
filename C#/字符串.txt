@@ -25,3 +25,15 @@ StartsWith()/EndsWith()
 7. 将字符全部变为大写
 str.ToUpper();
 
+8. 拼接列表string 数据 - string.Join()
+List<string> list = new List<string>();
+
+           list.add("aa");
+
+           list.add("bb");
+
+           list.add("cc");
+
+           Console.WriteLine(string.Join("-", list));
+
+  输出的结果就是    aa-bb-cc

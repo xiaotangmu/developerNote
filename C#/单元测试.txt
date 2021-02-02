@@ -49,6 +49,8 @@ public class NUnitTestSprites : MonoBehaviour
     }
 }
 
+mock 设置返回值为空值
+mock.Setup(exp => exp.GetHostelDiagramData(viewModel)).ReturnsAsync(null, new TimeSpan(100));
 
 案例：.NetCode 使用版本2.1
     1. 新建 asp.net core web 工程

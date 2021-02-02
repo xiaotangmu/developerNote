@@ -1,0 +1,89 @@
+参考: https://www.cnblogs.com/xlhblogs/archive/2013/04/28/3048869.html
+
+
+下列 BindingFlags 筛选标志可用于定义包含在搜索中的成员：
+
+ 
+
+为了获取返回值，必须指定 BindingFlags.Instance 或 BindingFlags.Static。
+
+指定 BindingFlags.Public 可在搜索中包含公共成员。
+
+指定 BindingFlags.NonPublic 可在搜索中包含非公共成员（即私有成员和受保护的成员）。
+
+指定 BindingFlags.FlattenHierarchy 可包含层次结构上的静态成员。
+
+下列 BindingFlags 修饰符标志可用于更改搜索的执行方式：
+
+ 
+
+BindingFlags.IgnoreCase，表示忽略 name 的大小写。
+
+BindingFlags.DeclaredOnly，仅搜索 Type 上声明的成员，而不搜索被简单继承的成员。
+
+可以使用下列 BindingFlags 调用标志表示要对成员采取的操作：
+
+ 
+
+CreateInstance，表示调用构造函数。忽略 name。对其他调用标志无效。
+
+InvokeMethod，表示调用方法，而不调用构造函数或类型初始值设定项。对 SetField 或 SetProperty 无效。
+
+GetField，表示获取字段值。对 SetField 无效。
+
+SetField，表示设置字段值。对 GetField 无效。
+
+GetProperty，表示获取属性。对 SetProperty 无效。
+
+SetProperty 表示设置属性。对 GetProperty 无效。
+
+使用反射动态调用类成员，需要Type类的一个方法：InvokeMember。对该方法的声明如下（摘抄于MSDN）：
+public object InvokeMember(
+
+    string name,
+
+    BindingFlags invokeAttr,
+
+    Binder binder,
+
+    object target,
+
+    object[] args
+
+);
+
+参数
+
+name
+
+String，它包含要调用的构造函数、方法、属性或字段成员的名称。
+
+- 或 -
+
+空字符串 ("")，表示调用默认成员。
+
+invokeAttr
+
+一个位屏蔽，由一个或多个指定搜索执行方式的 BindingFlags 组成。访问可以是 BindingFlags 之一，如 Public、NonPublic、Private、InvokeMethod 和 GetField 等。不需要指定查找类型。如果省略查找类型，则将应用 BindingFlags.Public | BindingFlags.Instance。
+
+binder
+
+一个 Binder 对象，该对象定义一组属性并启用绑定，而绑定可能涉及选择重载方法、强制参数类型和通过反射调用成员。
+
+- 或 -
+
+若为空引用（Visual Basic 中为 Nothing），则使用 DefaultBinder。
+
+target
+
+要在其上调用指定成员的 Object。
+
+args
+
+包含传递给要调用的成员的参数的数组。
+
+  
+
+返回值
+
+表示被调用成员的返回值的 Object。

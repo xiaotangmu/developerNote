@@ -1,0 +1,18 @@
+用于子类传递父类接收，后面用as 将该转换的父类转回原来子类
+
+
+public class BedspaceChangeReportSearchFilter : BaseSearchModel
+{
+	...
+}
+
+public override async Task<SearchReportResultViewModel<T>> BuildReport<T>(BaseSearchModel filter)
+{
+            BedspaceChangeReportSearchFilter filterModel = filter as BedspaceChangeReportSearchFilter;
+	。。。
+}
+调用：
+BuildReport(new BedspaceChangeReportSearchFilter());
+
+
+不能直接传递父类 BaseSearchModel , 否则 filterModel 报空
