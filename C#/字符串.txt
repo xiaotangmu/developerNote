@@ -37,3 +37,7 @@ List<string> list = new List<string>();
            Console.WriteLine(string.Join("-", list));
 
   输出的结果就是    aa-bb-cc
+
+9. 占位符
+string str = string.Format("{0}, {1}", "123", "23");
+此时 str 为: "123, 23"

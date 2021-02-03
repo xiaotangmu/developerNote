@@ -2,6 +2,13 @@
 
 https://www.jb51.net/article/168383.htm
 
+1. 字符串转换为日期
+DateTime.Parse(str); // 默认转换为 yyyy:MM:dd HH:mm:ss 格式, str 可以用空格 ' ' 代替分割符 
+如： DateTime.Parse("2020 10"); 
+转换为：2020-10-01 00:00:00
+
+2. DateTime.Today.ToString("yyyy-MM-dd")
+如果是用默认DateTime.Today.ToString(); // 格式为 2020/02/02
 
 DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH-mm-ss")
 
@@ -69,7 +76,7 @@ dt.Ticks.ToString();//632667942284412864
 dt.TimeOfDay.ToString();//13:30:28.4412864
 dt.ToString();//2005-11-5 13:47:04
 dt.AddYears(1).ToString();//2006-11-5 13:47:04
-dt.AddDays(1.1).ToString();//2005-11-6 16:11:04
+dt.AddDays(1.1).ToString();	//2005-11-6 16:11:04 加负为减
 dt.AddHours(1.1).ToString();//2005-11-5 14:53:04
 dt.AddMilliseconds(1.1).ToString();//2005-11-5 13:47:04
 dt.AddMonths(1).ToString();//2005-12-5 13:47:04

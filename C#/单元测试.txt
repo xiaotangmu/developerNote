@@ -1,3 +1,6 @@
+XUnit 断言异常
+Assert.ThrowsAsync<Exception>(() => supervisor.Submit(viewModel));
+
 Xunit
 参考：https://docs.microsoft.com/en-us/dotnet/core/testing/
 https://blog.csdn.net/w3800/article/details/84415986
