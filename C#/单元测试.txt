@@ -1,6 +1,12 @@
 XUnit 断言异常
 Assert.ThrowsAsync<Exception>(() => supervisor.Submit(viewModel));
 
+Moq 参考：https://github.com/Moq/moq4/wiki/Quickstart
+
+1. 输入相同类型参数得到同一结果
+It.IsAny<T_NEW_STUDENT_APPLICATION>()
+mock2.Setup(exp => exp.IsExist(It.IsAny<T_NEW_STUDENT_APPLICATION>())).ReturnsAsync(true);
+
 Xunit
 参考：https://docs.microsoft.com/en-us/dotnet/core/testing/
 https://blog.csdn.net/w3800/article/details/84415986
