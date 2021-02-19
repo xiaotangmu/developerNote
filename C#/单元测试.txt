@@ -7,6 +7,9 @@ Moq 参考：https://github.com/Moq/moq4/wiki/Quickstart
 It.IsAny<T_NEW_STUDENT_APPLICATION>()
 mock2.Setup(exp => exp.IsExist(It.IsAny<T_NEW_STUDENT_APPLICATION>())).ReturnsAsync(true);
 
+模拟静态参数
+https://www.itranslater.com/qa/details/2583878001796580352
+
 Xunit
 参考：https://docs.microsoft.com/en-us/dotnet/core/testing/
 https://blog.csdn.net/w3800/article/details/84415986
