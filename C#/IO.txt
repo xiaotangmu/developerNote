@@ -10,3 +10,109 @@ FileMode 枚举定义了各种打开文件的方法。FileMode 枚举的成员�
     Open：打开一个已有的文件。如果文件不存在，则抛出异常。
     OpenOrCreate：指定操作系统应打开一个已有的文件。如果文件不存在，则用指定的名称创建一个新的文件打开。
     Truncate：打开一个已有的文件，文件一旦打开，就将被截断为零字节大小。然后我们可以向文件写入全新的数据，但是保留文件的初始创建日期。如果文件不存在，则抛出异常。
+
+
+// file:/// 网络路径
+            string path = @"F:\\FileStream\Hello1.txt";
+            #region 文件读取
+            // 判断文件是否存在
+            //if (File.Exists(path))
+            //{
+            //    Console.WriteLine("存在文件");
+            //    FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
+            //    StreamReader sr = new StreamReader(fs);
+            //    Console.WriteLine(sr.ReadToEnd());
+            //    sr.Close();
+            //    fs.Close();
+            //}
+            //else
+            //{
+            //    Console.WriteLine("不存在文件");
+            //}
+            #endregion
+            #region 文件写入
+            //if (File.Exists(path))
+            //{
+            //    Console.WriteLine("存在该文件");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("不存在，创建文件");
+            //    // 路径包含不存在的文件夹，报错DirectoryNotFoundException
+            //    FileStream fs = new FileStream(path, FileMode.Create);
+            //    StreamWriter sw = new StreamWriter(fs);
+            //    for(int i = 0; i < 100; i++)
+            //    {
+            //        sw.WriteLine("祝刘漂亮生日快乐，送你{0}个棒棒糖！", i);
+            //    }
+            //    sw.Close();
+            //    fs.Close();
+            //    Console.WriteLine("写入完毕！");
+            //}
+            #endregion
+            string pathDiretory = @"F:\\FileStream\xx";
+            #region 文件夹创建
+            //if (Directory.Exists(pathDiretory))
+            //{
+            //    Console.WriteLine("存在文件夹");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("不存在该文件夹");
+            //    Directory.CreateDirectory(pathDiretory);
+            //}
+            #endregion
+            string path2 = @"F:\\FileStream";
+            #region 文件删除
+            //if (Directory.Exists(path2))
+            //{
+            //    Console.WriteLine("存在文件夹");
+            //    // 只读取文件，不读取文件夹 -- F:\\FileStream\Hello.txt
+            //    string[] files = Directory.GetFiles(path2);
+            //    int filesLength = files.Length;
+            //    for (int i = 0; i < filesLength; i++)
+            //    {
+            //        Console.WriteLine(files[i]);
+            //        // 删除文件，不能删除文件夹
+            //        File.Delete(files[i]); 
+            //        Console.WriteLine(files[i] + " 删除成功");
+            //    }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("不存在该文件夹");
+            //}
+
+            // 查询更深的路径 -- 子文件
+            //string[] ds = Directory.GetDirectories(path2);
+            //int dLength = ds.Length;
+            //for (int i = 0; i < dLength; i++)
+            //{
+            //    Console.WriteLine(ds[i]);
+            //}
+
+            // // 获取文件夹下文件（包括所有子（子子...）文件夹下的文件）
+            //string[] files = Directory.GetFiles(path2, "*", SearchOption.AllDirectories);
+            //int filesLength = files.Length;
+            //Console.WriteLine(filesLength);
+            //for(int i = 0; i < filesLength; i++)
+            //{
+            //    Console.WriteLine(files[i]);
+            //    //File.Delete(files[i]);
+            //}
+            #endregion
+            #region 文件夹删除
+            string[] ds = Directory.GetDirectories(path2);
+            int dsLength = ds.Length;
+            foreach(var item in ds)
+            {
+                Console.WriteLine(item);
+                // 只能删除空文件夹, 若文件夹不为空，则报错
+                //Directory.Delete(item);
+                // 是否递归删除文件（包括文件夹和文件）为false 效果和上面一样
+                Directory.Delete(item, true);
+            }
+            #endregion
+
+            Console.WriteLine("执行完成");
+            Console.ReadKey();
