@@ -1,0 +1,44 @@
+https://www.cnblogs.com/frank0812/p/10903650.html
+1. sealed关键字
+    当对一个类应用 sealed 修饰符时，此修饰符会阻止其他类从该类继承。类似于Java中final关键字。
+    在下面的示例中，类 B 从类 A 继承，但是任何类都不能从类 B 继承。
+
+class A {}
+sealed class B : A {}
+
+
+2. sealed 修饰方法或属性
+    能够允许类从基类继承，并防止它们重写特定的虚方法或虚属性。
+    1）sealed是对虚方法或虚属性，也就是同override一起使用，如果不是虚方法或虚属性会报出错误：cannot be sealed because it is not an override
+
+public class D  
+{  
+    /* ConsoleApplication1.MSFun.Sealed.D.M()'   
+     * cannot be sealed because it is not an override   
+     */  
+    public sealed void M() { Console.WriteLine("D.M()"); }  
+} 
+
+ 2）防止子类重写特定的方法或属性
+
+public class A  
+{  
+    protected virtual void M() { Console.WriteLine("A.M()"); }  
+    protected virtual void M1() { Console.WriteLine("A.M1()"); }  
+}  
+  
+public class B : A  
+{  
+    protected sealed override void M() { Console.WriteLine("B.M()"); }  
+    protected override void M1() { Console.WriteLine("B.M1()"); }  
+}  
+  
+public sealed class C : B  
+{  
+    /* ConsoleApplication1.MSFun.Sealed.C.M()': 
+     * cannot override inherited member 'ConsoleApplication1.MSFun.Sealed.B.M()' 
+     * because it is sealed */  
+    //protected override void M() { Console.WriteLine("C.M()"); }  
+  
+    protected override void M1() { Console.WriteLine("C.M1()"); }  
+}  
