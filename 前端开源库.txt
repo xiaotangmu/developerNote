@@ -4,3 +4,5 @@ https://www.bootcdn.cn/
 
 样式框架
 https://www.cnblogs.com/colewort/p/13693554.html
+
+https://www.avuejs.com/doc/echart/echart-scatter
