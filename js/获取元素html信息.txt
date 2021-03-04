@@ -1,0 +1,8 @@
+1. 获取元素内部html 信息
+js: document.getElementById("id").innerHTML;
+jQuery: $("#id").html();
+
+2. 获取元素html信息(包含本身)
+js: document.getElementByid("id").outerHTML;
+
+jQuery: $("#id").prop("outerHTML");
