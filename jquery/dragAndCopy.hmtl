@@ -1,0 +1,124 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>拖拽复制</title>
+    <style>
+    .divCopy {
+        width: 100px;
+        height: 100px;
+        background: #ff6666;
+        position: absolute;
+        left: 0;
+        top: 0;
+        cursor: move;
+        z-index: 5;
+        border: 2px dashed green;
+    }
+    
+    .box {
+        width: 320px;
+        height: 320px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 2px dashed #ccc;
+    }
+    .divCopyStyle{
+        float: left;
+        margin-top: 2px;
+        margin-left: 2px;
+    }
+    </style>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+ 
+ 
+<body>
+    <div class="div1 divCopy">
+        drag
+    </div>
+    <div class="box" id="box" draggable ="false">
+    </div>
+	<p>来自：https://blog.csdn.net/qq_20353887/article/details/71713150</p>
+    <script>
+    var oldPageX, oldPageY, cloneHtml, dragging;
+//1.鼠标按下时复制目标元素
+    $(document).on("mousedown",".div1",function(event){
+        dragging = true;
+        if (dragging) {
+            var _this = $(event.currentTarget);
+            oldPageX = event.pageX;
+            oldPageY = event.pageY;
+            cloneHtml = $(_this).clone();
+            oldoffset = $(_this).offset();
+            $(document.body).append(cloneHtml)
+            cloneHtml.css({
+                position: 'fixed',
+                left: oldoffset.left,
+                top: oldoffset.top +10
+            });
+ 
+ 
+        }
+    })
+    
+    $(document).on({
+        //2.寻找位置做判断处理
+        'mousemove':function(event){
+            if(dragging){
+                var currPageX = event.pageX;
+                var currPageY = event.pageY;
+                var movePageX = currPageX - oldPageX;
+                var movePageY = currPageY - oldPageX;
+                cloneHtml.css({
+                    opacity: '0.8',
+                    position: 'fixed',
+                    left: oldoffset.left + movePageX,
+                    top: oldoffset.top - 10 + movePageY,
+                    'z-index': 5
+                });
+                var targetBox = $("#box");
+                var targetBoxOffset = targetBox.offset();
+                if(currPageX > targetBoxOffset.left && currPageX <targetBoxOffset.left +300 && currPageY > targetBoxOffset.top && currPageY <targetBoxOffset.top +300){
+                    targetBox.css("border","2px dashed blue");
+ 
+ 
+                }else{
+                    targetBox.css("border","2px dashed #ccc");
+                }
+            }
+        },
+       
+       
+    })
+     //3.释放鼠标将目标元素放置
+    $(document).on("mouseup",".div1",function(event){
+       var currPageX = event.pageX;
+            var currPageY = event.pageY;
+            var targetBox = $("#box");
+            var targetBoxOffset = targetBox.offset();
+                if(!(currPageX > targetBoxOffset.left && currPageX <targetBoxOffset.left +300 && currPageY > targetBoxOffset.top && currPageY <targetBoxOffset.top +300)){
+                   cloneHtml.remove();
+                   dragging = false;
+                   return;
+                };
+                console.log($(".box").find(".divCopy").length);
+               targetBox.append(cloneHtml);
+               $(event.target).removeClass("div1");
+               $(event.target).css("position","static");
+               $(event.target).addClass("divCopyStyle");
+                targetBox.css("border","2px dashed #ccc");
+               $(event.target).removeAttr("onmousedown");
+               dragging = false;
+               if($(".box").find(".divCopy").length  >9){
+                     $(event.target).remove();
+               }
+                
+    })
+ 
+ 
+    </script>
+</body>
+ 
+ 
+</html>
