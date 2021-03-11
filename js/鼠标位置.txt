@@ -1,0 +1,40 @@
+https://www.cnblogs.com/dolphinX/archive/2012/10/09/2717119.html
+
+鼠标点击位置坐标
+相对于屏幕
+
+如果是涉及到鼠标点击确定位置相对比较简单，获取到鼠标点击事件后，事件screenX，screenY获取的是点击位置相对于屏幕的左边距与上边距，不考虑iframe因素，不同浏览器下表现的还算一致。
+
+function getMousePos(event) {
+            var e = event || window.event;
+            return {'x':e.screenX,'y':screenY}
+        }
+
+ 
+相对浏览器窗口
+
+简单代码即可实现，然而这是还不够，因为绝大多数情况下我们希望获取鼠标点击位置相对于浏览器窗口的坐标，event的clientX，clientY属性分别表示鼠标点击位置相对于文档的左边距，上边距。于是类似的我们写出了这样的代码
+
+function getMousePos(event) {
+            var e = event || window.event;
+            return {'x':e.clientX,'y':clientY}
+        }
+
+ 
+相对文档
+
+简单测试也没什么问题，但是clientX与clientY获取的是相对于当前屏幕的坐标，忽略页面滚动因素，这在很多条件下很有用，但当我们需要考虑页面滚动，也就是相对于文档（body元素）的坐标时怎么办呢？加上滚动的位移就可以了，下边我们试试怎么计算页面滚动的位移。
+
+其实在Firefox下问题会简单很多，因为Firefox支持属性pageX,与pageY属性，这两个属性已经把页面滚动计算在内了。
+
+在Chrome可以通过document.body.scrollLeft，document.body.scrollTop计算出页面滚动位移，而在IE下可以通过document.documentElement.scrollLeft ，document.documentElement.scrollTop
+
+function getMousePos(event) {
+            var e = event || window.event;
+            var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+            var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+            var x = e.pageX || e.clientX + scrollX;
+            var y = e.pageY || e.clientY + scrollY;
+            //alert('x: ' + x + '\ny: ' + y);
+            return { 'x': x, 'y': y };
+        }

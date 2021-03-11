@@ -1,0 +1,5 @@
+生命周期		是否获取dom节点	是否可以获取data	是否获取methods
+beforeCreate 	否 		否 		否
+created 		否 		是 		是
+beforeMount 	否 		是 		是
+mounted 		是 		是 		是
