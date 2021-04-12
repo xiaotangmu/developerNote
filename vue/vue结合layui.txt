@@ -1,0 +1,11 @@
+layUI 官网：https://www.layui.com/doc/element/form.html
+
+注意事项： https://blog.csdn.net/qq_39009348/article/details/81456704
+
+npm i layui-src
+
+编辑 vuejs/index.html , 加载 layui ,内容如下
+        <link rel="stylesheet" type="text/css" href="./static/layui/css/layui.css">
+        <script type="text/javascript" src="./static/layui/layui.js"></script>
+
+下载的文件包必须放在static文件中
