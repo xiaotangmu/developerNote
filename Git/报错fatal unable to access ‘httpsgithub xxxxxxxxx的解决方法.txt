@@ -12,3 +12,25 @@ fatal: unable to access 'https://github.com/IntelRealSense/librealsense.git/': g
 将命令中的 https改为 git
 
 git clone -b v2.24.0 git://github.com/IntelRealSense/librealsense.git
+
+
+取消代理：
+
+    git config --global --unset http.proxy 
+
+    git config --global --unset https.proxy 
+
+解决办法三：
+https://alex007.blog.csdn.net/article/details/114744671
+
+clone: 把路径https 改为 http
+其他把 .git/config 里面的
+[remote "origin"]
+	url = https://github.com/koking0/Algorithm.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+
+改成
+
+[remote "origin"]
+	url = http://github.com/koking0/Algorithm.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

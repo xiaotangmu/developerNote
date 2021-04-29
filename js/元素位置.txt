@@ -1,0 +1,19 @@
+https://blog.csdn.net/u013909970/article/details/50727688
+
+当$(selector).scrollTop(val)方法带有参数的时候置垂直滚动条顶部偏移为该值。
+当$(selector).scrollTop()方法不带有参数的时候是返回匹配元素相对滚动条顶部的偏移量。
+
+    offset:获取元素相对于文档（document）的当前坐标  
+    注意  
+    使用offset()方法不管该元素如何定位，也不管其父元素如何定位，都是获取的该元素相对于当前视口的偏移。  
+      
+      
+     postion : 获取元素相对父元素的偏移  
+    注意:  
+    1，使用position()方法时事实上是把该元素当绝对定位来处理，获取的是该元素相当于最近的一个拥有绝对或者相对定位的父元素的偏移位置。  
+    2，使用position()方法时如果其所有的父元素都为默认定位（static）方式，则其处理方式和offset()一样，是当前窗口的相对偏移。  
+      
+      
+    用法:如  var position=$(this).position() 定义当前元素 而且当前元素css:  position:absolute  
+              alert(position.top),alert(position.left) 输出当前元素距离最近的父元素的垂直距离值和水平距离值注意 当前元素的父亲元素的CSS最好为 position:relative  
+

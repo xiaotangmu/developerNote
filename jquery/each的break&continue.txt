@@ -1,0 +1,6 @@
+https://www.cnblogs.com/dongh/p/9341018.html
+
+jQuery中each类似于javascript的for循环 
+但不同于for循环的是在each里面不能使用break结束循环，也不能使用continue来结束本次循环，想要实现类似的功能就只能用return,
+break           用return false
+continue      用return true

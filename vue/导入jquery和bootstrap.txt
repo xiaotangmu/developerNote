@@ -30,8 +30,11 @@ import $ from 'jquery'
 
 具体：https://www.cnblogs.com/freephp/p/11671521.html
 
-
+https://www.cnblogs.com/sunjinggege/p/9407040.html
 webpack.base.conf.js
+
+在项目根目录下的build/webpack.base.conf.js文件中，第5行下面加入这行代码：
+var webpack = require("webpack")
 
 module.exports = {
 plugins: [

@@ -10,7 +10,7 @@ methods: {
 
     clickfun(e) {
 
-        // e.target 是你当前点击的元素
+        // e.target 是你当前点击的元素（可能是绑定元素的内部元素）
 
         // e.currentTarget 是你绑定事件的元素
 

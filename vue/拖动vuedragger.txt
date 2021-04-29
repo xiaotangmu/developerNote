@@ -1,0 +1,276 @@
+低代码参考：https://lc.100tal.com/doc/#/
+https://imonkey-static-test.oss-cn-beijing.aliyuncs.com/vue-creater-platform/index.html#/
+
+https://www.cnblogs.com/raind/p/10620454.html
+1. value（不拖动，不添加）
+类型：数组，
+必需：否，
+默认值：null
+通常与内部元素v-for指令引用的数组相同,该组件的首先使用方法，与vuex兼容，也可使用v-model
+
+2. list
+类型：数组，
+必需：否，
+默认值：null
+除了上面的 value prop之外，list是一个要与拖放同步的数组。
+主要的区别是list prop是由使用splice方法的draggable组件更新的，而value是不可变的,两者不能一起使用
+
+组件拖动
+使用见： http://www.itxst.com/vue-draggable/yvq3mifz.html
+
+<draggable class="list-group" :list="list1" group="people" @change="log">
+        <div
+          class="list-group-item"
+        >
+          <el-button type="sucess" @click="test($event)">Hello</el-button>
+        </div>
+
+      </draggable>
+如上面代码所示，只要把固定死的 :list 属性去除就可以直接拖动 element ui 元素
+
+如：
+<div class="row">
+    <div class="col-3">
+      <div id="main-box">
+        <el-button id="hello" type="sucess" @click="test($event)">Hello</el-button>
+      </div>
+      <h3>Draggable 1</h3>
+      <draggable class="list-group" group="people" @change="log">
+        <el-button type="sucess" @click="test($event)">Hello</el-button>
+        <el-button type="sucess" @click="test($event)">Hello2</el-button>
+
+      </draggable>
+    </div>
+
+    <div class="col-3">
+      <h3>Draggable 2</h3>
+      <draggable class="list-group" group="people" @change="log">
+        <div
+          class="list-group-item"
+          v-for="(element, index) in list2"
+          :key="element.name"
+        >
+          {{ element.name }} {{ index }}
+        </div>
+      </draggable>
+    </div>
+
+  </div>
+
+克隆：类似低代码效果
+将被克隆的元素组 去除group 属性，换成:options="{group:{name: 'people',pull:'clone'},sort: true}"
+<template>
+
+  <div class="row">
+    <div class="col-3">
+      <div id="main-box">
+        <el-button id="hello" type="sucess" @click="test($event)">Hello</el-button>
+      </div>
+      <h3>Draggable 1</h3>
+      <draggable class="list-group" :options="{group:{name: 'people',pull:'clone'},sort: true}" @change="log">
+        <el-button type="success" @click="test($event)">Hello</el-button>
+        <el-button type="success" @click="test($event)">Hello2</el-button>
+
+      </draggable>
+    </div>
+
+    <div class="col-3">
+      <h3>Draggable 2</h3>
+      <draggable class="list-group" group="people" @change="log">
+        <div
+          class="list-group-item"
+          v-for="(element, index) in list2"
+          :key="element.name"
+        >
+          {{ element.name }} {{ index }}
+        </div>
+      </draggable>
+    </div>
+    /////////////////////////////////////////////////////////////////////
+    <div>
+      <!--使用draggable组件-->
+      <div class="itxst">
+        <div style="padding-left:6px">clone例子,左边往右边拖动试试看</div>
+        <div class="col">
+          <draggable v-model="arr1"   @end="end1" :options="{group:{name: 'itxst',pull:'clone'},sort: true}"  animation="300"  :move="onMove">
+            <transition-group>
+              <div :class="item.id==1?'item forbid':'item'" v-for="item in arr1" :key="item.id">{{item.name}}</div>
+            </transition-group>
+          </draggable>
+        </div>
+        <div class="col">
+          <draggable v-model="arr2"   @end="end2" group="itxst"  animation="300" :move="onMove">
+            <transition-group>
+              <div :class="item.id==12?'item2 forbid':'item2'" v-for="item in arr2" :key="item.id">{{item.name}}</div>
+            </transition-group>
+          </draggable>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import draggable from 'vuedraggable'
+  export default {
+    name: 'Test',
+    display: "Two Lists",
+    order: 1,
+    components: {
+      draggable
+    },
+    data() {
+      return {
+        list1: [
+          { name: "John", id: 1 },
+          { name: "Joao", id: 2 },
+          { name: "Jean", id: 3 },
+          { name: "Gerard", id: 4 }
+        ],
+        list2: [
+          { name: "Juan", id: 5 },
+          { name: "Edgard", id: 6 },
+          { name: "Johnson", id: 7 }
+        ],
+        //定义要被拖拽对象的数组
+        arr1:[
+          { id: 1, name: 'www.itxst.com（不允许停靠）' },
+          { id: 2, name: 'www.jd.com' },
+          { id: 3, name: 'www.baidu.com' },
+          { id: 5, name: 'www.google.com' },
+          { id: 4, name: 'www.taobao.com（不允许拖拽）' }
+        ],
+        arr2:[
+          { id: 11, name: '常用菜单' },
+        ],
+        moveId:-1
+      };
+    },
+    methods: {
+      //左边往右边拖动时的事件
+      end1(e){
+        console.log(e)
+        var that=this;
+        var  items=this.arr2.filter(function(m){
+          return  m.id==that.moveId
+        })
+        //如果左边
+        if(items.length<2) return;
+        this.arr2.splice(e.newDraggableIndex, 1)
+      },
+      //右边往左边拖动时的事件
+      end2(e){
+        console.log(e)
+        var that=this;
+        var  items=this.arr1.filter(function(m){
+          return  m.id==that.moveId
+        })
+        //如果左边
+        if(items.length<2) return;
+        this.arr1.splice(e.newDraggableIndex, 1)
+      },
+      //move回调方法
+      onMove(e,originalEvent){
+        this.moveId=e.relatedContext.element.id;
+        //不允许停靠
+        if (e.relatedContext.element.id == 1) return false;
+        //不允许拖拽
+        if (e.draggedContext.element.id == 4) return false;
+        if (e.draggedContext.element.id == 11) return false;
+        return true;
+      },
+      add: function(e) {
+        console.log(e.target)
+        this.list.push({ name: "Juan" });
+      },
+      replace: function() {
+        this.list = [{ name: "Edgard" }];
+      },
+      clone: function(el) {
+        return {
+          name: el.name + " cloned"
+        };
+      },
+      log: function(evt) {
+        window.console.log(evt);
+      },
+      test: function(e){
+        console.log($(e.currentTarget).prop('outerHTML'))
+        $('#main-box').append($('#hello').prop("outerHTML"));
+      }
+    }
+
+  }
+  Array.prototype.filter = Array.prototype.filter || function(func) {
+    var arr = this;
+    var r = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (func(arr[i],i,arr)) {
+        r.push(arr[i]);
+      }
+    }
+    return r;
+  }
+</script>
+
+<style scoped>
+  [v-cloak] {
+    display: none;
+  }
+
+  .draggable {
+  }
+  .list-complete-item {
+    transition: all 1s;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    color: black;
+    text-align: center;
+    font-size: 10pt;
+    vertical-align: middle;
+    margin-top: 0.1rem;
+    border-bottom: #e0e0e0 0.8px solid;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .styleclass {
+    width: 100%;
+    display: inline-block;
+    text-align: left;
+    height: 2.5rem;
+    line-height: 2.3rem;
+    padding-top: 0.2rem;
+  }
+
+  .dargDiv {
+    cursor: move;
+  }
+
+  .img_template_item_remove {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.65rem;
+    float: left;
+    margin-right: 0.3rem;
+  }
+
+  .img_template_item_sort {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.65rem;
+    vertical-align: middle;
+    float: right;
+    right: 0.5rem;
+  }
+  p {
+    display: inline-block;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    width: 85%;
+    margin-left: 0.2rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+</style>

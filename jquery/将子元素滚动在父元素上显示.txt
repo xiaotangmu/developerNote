@@ -1,0 +1,5 @@
+$(this).parent().scrollTop() ：父元素滚动条的偏移量
+$(this).position().top：距离父元素的相对距离
+
+$(this).parent().animate({scrollTop: $(this).position().top + $(this).parent().scrollTop()}, 500);
+            

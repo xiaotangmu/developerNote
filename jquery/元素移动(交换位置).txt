@@ -1,0 +1,31 @@
+// 上移
+      $(document).on("click",".toUp",function (e) {
+        //屏蔽事件冒泡
+        e.stopPropagation();
+        if($chooseElem === '')
+          return false;
+        // 判断是否还有前面兄弟
+        let $before = $chooseElem.prev('.panel-element');
+        if($before.length === 0)
+          return false;
+        $($before).before($chooseElem)
+      });
+      // 下移
+      $(document).on("click",".toDown",function (e) {
+        //屏蔽事件冒泡
+        e.stopPropagation();
+        if($chooseElem === '')
+          return false;
+        let $after = $chooseElem.next('.panel-element');
+        if($after.length === 0)
+          return false;
+        $($after).after($chooseElem)
+      });
+      // 移除
+      $(document).on("click",".toRemove",function (e) {
+        //屏蔽事件冒泡
+        e.stopPropagation();
+        if($chooseElem === '')
+          return false;
+        $chooseElem.remove()
+      });
