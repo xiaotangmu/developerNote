@@ -1,0 +1,9 @@
+https://www.cnblogs.com/weibanggang/articles/11097723.html
+
+1.打开控制面板（快捷打开win+R，输入control）
+
+2.点击打开用户账户
+
+3.点击凭据管理器
+
+4.点击windows凭据删除你的git凭据即可
