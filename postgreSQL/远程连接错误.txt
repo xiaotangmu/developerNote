@@ -1,0 +1,35 @@
+https://blog.csdn.net/sunny_day_day/article/details/108239972
+
+
+方式1
+
+FATAL: no pg_hba.conf entry for host "172.16.1.25", user "postgres", database "postgres", SSL off
+
+要解决这个问题，只需要在PostgreSQL数据库的安装目录下找到/data/pg_hba.conf
+
+修改配置文件，添加如下内容
+
+host all all 0.0.0.0/0 md5
+
+方式2
+
+The server doesn't grant access to the database: the server reports 
+FATAL: no pg_hba.conf entry for host "172.16.1.25", user "postgres", database "postgres" 
+FATAL: no pg_hba.conf entry for host "172.16.1.25", user "postgres", database "postgres"
+
+PostgreSQL数据库为了安全，它不会监听除本地以外的所有连接请求，当用户通过JDBC访问是，会报一些如下的异常：
+
+org.postgresql.util.PSQLException: FATAL: no pg_hba.conf entry for host
+
+要解决这个问题，只需要在PostgreSQL数据库的安装目录下找到/data/pg_hba.conf,找到“# IPv4 local connections:”
+
+在其下加上请求连接的机器IP
+
+host all all 127.0.0.1/32 md5
+
+    1
+
+32是子网掩码的网段；md5是密码验证方法，可以改为trust
+————————————————
+版权声明：本文为CSDN博主「ac.char」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/sunny_day_day/article/details/108239972
